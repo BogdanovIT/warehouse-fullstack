@@ -1,0 +1,150 @@
+# ========================================
+# ОБЩИЕ ФАЙЛЫ
+# ========================================
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Файлы окружения
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Идентификаторы сессий и ключи
+*.pid
+*.seed
+*.pid.lock
+*.key
+*.pem
+
+# Резервные копии и временные файлы
+*.tmp
+*.temp
+*.bak
+*.backup
+*~
+\#*#
+.#*
+%*%
+._*
+
+# ========================================
+# REACT NATIVE / FRONTEND (client/)
+# ========================================
+client/node_modules/
+client/.expo/
+client/dist/
+client/coverage/
+client/.nyc_output/
+client/.jest/
+client/.expo-shared/
+
+# React Native специфичные
+client/android/.gradle/
+client/android/app/build/
+client/android/build/
+client/android/.idea/
+client/android/*.iml
+client/android/local.properties
+client/ios/build/
+client/ios/Pods/
+client/ios/*.xcworkspace
+client/ios/*.xcodeproj/xcuserdata/
+client/ios/*.xcodeproj/project.xcworkspace/
+
+# Кэш пакетов
+client/.npm
+client/.eslintcache
+client/.stylelintcache
+client/.cache/
+client/.parcel-cache/
+
+# Артефакты сборки
+client/*.tgz
+client/*.tar.gz
+client/*.zip
+
+# ========================================
+# BACKEND (server/)
+# ========================================
+server/node_modules/
+server/dist/
+server/build/
+server/coverage/
+server/.nyc_output/
+
+# Базы данных и хранилища
+server/*.db
+server/*.sqlite
+server/*.sqlite3
+server/storage/
+server/uploads/
+server/temp/
+
+# Логи приложения
+server/logs/
+*.log
+
+# ========================================
+# IDE и редакторы кода
+# ========================================
+# VS Code
+.vscode/
+!.vscode/extensions.json
+.vscode/*.code-workspace
+
+# WebStorm
+.idea/
+*.iml
+*.iws
+
+# Sublime Text
+.sublime-
+sftp-config.json
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# ========================================
+# СИСТЕМНЫЕ ПАПКИ
+# ========================================
+# OS
+ehthumbs.db
+
+# Windows
+[Tt]humbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+.history/
+*~
+
+# ========================================
+# ДОКУМЕНТАЦИЯ И ГЕНЕРИРУЕМЫЕ ФАЙЛЫ
+# ========================================
+# Документация
+docs/_build/
+docs/_static/
+docs/_templates/
+
+# Генерируемая документация
+*.aux
+*.toc
+*.out
+*.log
+*.idx
+*.ind
+*.ilg
+*.glo
+*.bbl
+*.blg
