@@ -17,7 +17,7 @@ import { userProfileAtom } from "../../entities/user/model/user.state";
 import { authAtom } from "../../entities/auth/model/auth.state";
 import { Input } from "../../shared/input/input";
 
-
+const API_URL = process.env.HOME_URL
 const DEFAULT_IMAGES = [
     require('../../assets/images/recieving/face.jpg'),
     require('../../assets/images/recieving/zakryto.jpg'),
@@ -123,7 +123,7 @@ export default function Receiving () {
                 } as any)
             }
         })
-        const response = await fetch('https://literally-fair-lark.cloudpub.ru/api/upload-temp-photos', {
+        const response = await fetch(`${API_URL}/api/upload-temp-photos`, {
             method: 'POST',
             body: formData as any,
             headers: {
@@ -154,7 +154,7 @@ export default function Receiving () {
                     type: 'image/jpeg'
                 } as any)
             })
-            const uploadResponse = await fetch('https://literally-fair-lark.cloudpub.ru/api/upload-temp-photos', {
+            const uploadResponse = await fetch(`${API_URL}/api/upload-temp-photos`, {
                 method: 'POST',
                 body: uploadFormData as any,
                 headers: {'Content-Type': 'multipart/form-data',}
@@ -169,7 +169,7 @@ export default function Receiving () {
                 processPhotos: processPaths,
                 defectivePhotos: defectPaths,
             }
-            const mailResponse = await fetch('https://literally-fair-lark.cloudpub.ru/api/receiving/send', {
+            const mailResponse = await fetch(`${API_URL}/api/receiving/send`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json',},
                 body: JSON.stringify(mailData)

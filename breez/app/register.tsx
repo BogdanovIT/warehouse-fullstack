@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Button } from "@/button/button";
 import { router } from "expo-router";
 
+const API_URL = process.env.HOME_URL
 export default function Register() {
     const [formData, setFormData] = useState({
         firstName: '',
@@ -74,7 +75,7 @@ export default function Register() {
             if (!formData.email || !formData.email.includes('@')) {
                 Alert.alert("Ошибка", "Пожалуйста, введите корректный email")
             }
-            const response = await fetch('https://literally-fair-lark.cloudpub.ru/api/users/send-verification', {
+            const response = await fetch(`${API_URL}/api/users/send-verification`, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json"
@@ -120,7 +121,7 @@ export default function Register() {
         }
         
         try {
-            const verifyResponse = await fetch('https://literally-fair-lark.cloudpub.ru/api/users/verify-code', {
+            const verifyResponse = await fetch(`${API_URL}/api/users/verify-code`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -133,7 +134,7 @@ export default function Register() {
             if (!verifyResponse.ok) {
                 Alert.alert("Ошибка","Неверный код подтверждения")
             }
-            const response = await fetch('https://literally-fair-lark.cloudpub.ru/api/users/register', {
+            const response = await fetch(`${API_URL}/api/users/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

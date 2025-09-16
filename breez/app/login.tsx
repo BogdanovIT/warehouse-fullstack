@@ -153,7 +153,8 @@ export default function Login() {
 
   const checkBlockStatus = async (email: string): Promise<boolean> => {
     try {
-      const response = await fetch('https://literally-fair-lark.cloudpub.ru/api/auth/check-block-status', {
+      const API_URL = process.env.HOME_URL
+      const response = await fetch(`${API_URL}/api/auth/check-block-status`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

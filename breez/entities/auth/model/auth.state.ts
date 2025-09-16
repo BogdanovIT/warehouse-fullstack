@@ -6,6 +6,7 @@ import axios, { AxiosError } from "axios"
 import { API } from "../api/api"
 import * as SecureStore from 'expo-secure-store'
 
+const API_URL = process.env.HOME_URL
 const storage = createJSONStorage<AuthState>(()=> AsyncStorage)
 const INITIAL_STATE: AuthState = {
     access_token: null,
@@ -36,7 +37,7 @@ export const RestorePasswordAtom = atom(
     async (get, set, email:string) => {
         try {
             set(RestorePasswordStateAtom, {isLoading: true, error: null})
-            await axios.post('https://literally-fair-lark.cloudpub.ru/api/auth/restore-password', { email })
+            await axios.post(`${API_URL}/api/auth/restore-password`, { email })
             set(RestorePasswordStateAtom, {isLoading: false, error: null})
         } catch (error) {
             let errorMessage = "Ошибка восстановления пароля"

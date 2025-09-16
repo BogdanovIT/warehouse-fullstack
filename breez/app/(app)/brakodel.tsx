@@ -11,6 +11,7 @@ import { authAtom } from "../../entities/auth/model/auth.state";
 import { DOCUMENT_PREFIXES, LocationKeys, WarehouseKeys } from "../../shared/documentPrefixes";
 import { DefectivePhotosHandler } from "../../components/DefectivePhotosHandler";
 
+const API_URL = process.env.HOME_URL
 export default function brakodel() {
     const [auth] = useAtom(authAtom)
     const [userProfile, setUserProfile] = useAtom(userProfileAtom)
@@ -78,9 +79,10 @@ export default function brakodel() {
     })
 
     function debounce<F extends (...args: any[]) => any>(func: F, wait: number): F {
-        let timeout: NodeJS.Timeout
-        return ((...args: any[]) => {
-            clearTimeout(timeout)
+        let timeout: ReturnType<typeof setTimeout> | null = null
+        return ((...args: Parameters<F>) => {
+            if (timeout !== null)
+            {clearTimeout(timeout)}
             timeout = setTimeout(()=>func(...args), wait)
         }) as F
     }
@@ -114,7 +116,7 @@ export default function brakodel() {
                     type: 'image/jpeg'
                 } as any)
             })
-            const response = await fetch('https://literally-fair-lark.cloudpub.ru/api/upload-temp-photos', {
+            const response = await fetch(`${API_URL}/api/upload-temp-photos`, {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -176,7 +178,7 @@ export default function brakodel() {
                 photoPaths: serverPhotoPaths,
             }))
             formData.append('recipients', JSON.stringify(userProfile?.operators || []))
-            const response = await fetch('https://literally-fair-lark.cloudpub.ru/api/brakodel/send', {
+            const response = await fetch(`${API_URL}/api/brakodel/send`, {
                 method: 'POST',
                 body: formData,
                 headers:{
@@ -232,7 +234,7 @@ export default function brakodel() {
         }
         const fullArticle = `${inputValuePrefix}${articleCode}`
         try {
-            const response = await fetch(`https://literally-fair-lark.cloudpub.ru/api/products/by-article?article=${encodeURIComponent(fullArticle)}`)
+            const response = await fetch(`${API_URL}/api/products/by-article?article=${encodeURIComponent(fullArticle)}`)
             const data = await response.json()
             if (data.success && data.product && data.product.name) {
                 setProductName(data.product.name)

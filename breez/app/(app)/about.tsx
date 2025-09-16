@@ -3,12 +3,15 @@ import { CustomFonts, SystemColors } from "../../shared/tokens";
 import Telegram from "../../assets/icons/telegram";
 import Whatsapp from "../../assets/icons/whatsapp";
 
+const T_MAIL = process.env.T_URL
+const WA_MAIL = process.env.WA_URL
+
 export default function About () {
     const handlePress = () => {
-        Linking.openURL("https://t.me/Bogdanov_IT").catch(err => console.error("Не удалось открыть ссылку", err))
+        Linking.openURL(`${T_MAIL}`).catch(err => console.error("Не удалось открыть ссылку", err))
     }
     const handlePressWA = () => {
-        Linking.openURL("https://wa.me/79137509720").catch(err => console.error("Не удалось открыть ссылку", err))
+        Linking.openURL(`${WA_MAIL}`).catch(err => console.error("Не удалось открыть ссылку", err))
     }
     return (
         

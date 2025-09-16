@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const API_URL = "https://literally-fair-lark.cloudpub.ru/api";
+const API_URL = process.env.HOME_URL;
 
 interface UserProfile {
   id: number;
@@ -15,7 +15,7 @@ interface UserProfile {
 export const getUserProfile = async (token: string): Promise<UserProfile> => {
   try {
     
-    const response = await axios.get(`${API_URL}/users/me`, {
+    const response = await axios.get(`${API_URL}/api/users/me`, {
       headers: {
         Authorization: `Bearer ${token}`
       },

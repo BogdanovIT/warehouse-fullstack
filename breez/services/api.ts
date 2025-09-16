@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://literally-fair-lark.cloudpub.ru'
+const API_BASE_URL = process.env.HOME_URL
 
 export interface CourseItem {
     id: number

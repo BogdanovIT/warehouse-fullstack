@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Alert } from "react-native";
 import  PasswordChangeModal  from "@/components/PasswordChangeModal"
 
+const API_URL = process.env.HOME_URL
 export default function PasswordCheck({ children }: {children: React.ReactNode}) {
     const [auth] = useAtom(authAtom)
     const [showPasswordModal, setShowPasswordModal] = useState(false)
@@ -17,7 +18,7 @@ export default function PasswordCheck({ children }: {children: React.ReactNode})
 
     const checkPasswordStatus = async () => {
     try {
-        const response = await fetch('https://literally-fair-lark.cloudpub.ru/api/auth/password-status', {
+        const response = await fetch(`${API_URL}/api/auth/password-status`, {
             headers: {
                 'Authorization': `Bearer ${auth.access_token}`
             }

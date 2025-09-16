@@ -2,11 +2,7 @@ import { Alert, Animated, Image, LayoutAnimation, Linking, Pressable, SafeAreaVi
 import SwitchButton from "../../switch/switch";
 import { CustomFonts, SystemColors } from "../../shared/tokens";
 import { useEffect, useRef, useState } from "react";
-import { Input2 } from "../../shared/input/input copy";
 import { launchCameraAsync, requestCameraPermissionsAsync, PermissionStatus, useCameraPermissions, useMediaLibraryPermissions } from "expo-image-picker";
-import axios, { AxiosError } from "axios";
-import { UploadResponse } from "../../shared/ImageUploader/imageUploader.interface";
-import { FILE_API } from "../../shared/api";
 import FormData from "form-data";
 import { Button_2 } from "../../button/button_2";
 import { Button } from "../../button/button";
@@ -16,6 +12,7 @@ import { userProfileAtom } from "../../entities/user/model/user.state";
 import { authAtom } from "../../entities/auth/model/auth.state";
 import { useAtom } from "jotai";
 
+const API_URL = process.env.HOME_URL
 interface ImageUploaderProps {
     onUpload: (uri:string) => void
     onError? : (error: string) => void
@@ -64,9 +61,10 @@ export default function Shipment ({onUpload}: ImageUploaderProps) {
     const [tempPhotoUris, setTempPhotoUris] = useState<(string | null )[]>(Array(10).fill(null))
 
     function debounce<F extends (...args: any[]) => any>(func: F, wait: number): F {
-        let timeout: NodeJS.Timeout
-        return ((...args: any[]) => {
-            clearTimeout(timeout)
+        let timeout: ReturnType<typeof setTimeout> | null = null
+        return ((...args: Parameters<F>) => {
+            if (timeout !== null)
+            {clearTimeout(timeout)}
             timeout = setTimeout(()=>func(...args), wait)
         }) as F
     }
@@ -129,7 +127,7 @@ export default function Shipment ({onUpload}: ImageUploaderProps) {
                     type: 'image/jpeg'
                 } as any)
             })
-            const response = await fetch('https://literally-fair-lark.cloudpub.ru/api/upload-temp-photos', {
+            const response = await fetch(`${API_URL}/api/upload-temp-photos`, {
                 method: 'POST',
                 body: formData as any,
                 headers: {
@@ -160,7 +158,7 @@ export default function Shipment ({onUpload}: ImageUploaderProps) {
         setIsSubmitting(true)
         try {
             const { savedPaths } = await uploadPhotoToServer(photosToUpload)
-            const response  = await fetch('https://literally-fair-lark.cloudpub.ru/api/shipment/send', {
+            const response  = await fetch(`${API_URL}/api/shipment/send`, {
                 method: "POST",
                 body: JSON.stringify({
                     photoPaths: savedPaths,

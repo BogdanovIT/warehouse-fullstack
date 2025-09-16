@@ -6,6 +6,7 @@ import { Button } from "../button/button"
 import { useAtom } from "jotai";
 import { authAtom } from "@/entities/auth/model/auth.state";
 
+const API_URL = process.env.HOME_URL
 export default function PasswordChangeModal ({
     visible, 
     onClose, 
@@ -34,7 +35,7 @@ export default function PasswordChangeModal ({
         }
         setIsLoading(true)
         try {
-            const response = await fetch('https://literally-fair-lark.cloudpub.ru/api/auth/change-password', {
+            const response = await fetch(`${API_URL}/api/auth/change-password`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

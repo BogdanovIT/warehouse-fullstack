@@ -9,6 +9,7 @@ import { CustomFonts } from "../shared/tokens";
 import { ErrorNotification } from "../shared/ErrorNotifications/ErrorNotification";
 import axios from "axios";
 
+const API_URL = process.env.HOME_URL
 export default function RestorePassword() {
     const [email, setEmail] = useState<string>('')
     const [code, setCode] = useState('')
@@ -66,7 +67,7 @@ export default function RestorePassword() {
     const sendCode = async () => {
         if (!validateStep1()) return
         try {
-            await axios.post('https://literally-fair-lark.cloudpub.ru/api/auth/restore-password', {email})
+            await axios.post(`${API_URL}/api/auth/restore-password`, {email})
             setStep(2)
             setError('')
         } catch {
@@ -76,7 +77,7 @@ export default function RestorePassword() {
     const resetPassword = async () => {
         if (!validateStep2()) return
         try {
-            await axios.post('https://literally-fair-lark.cloudpub.ru/api/auth/reset-password', {
+            await axios.post(`${API_URL}/api/auth/reset-password`, {
                 email, 
                 code,
                 newPassword
