@@ -1,0 +1,57 @@
+import { Image, StyleSheet, Text, View } from "react-native";
+import { Colors } from "../shared/tokens";
+import { Button } from "../button/button";
+import { useRouter } from "expo-router";
+
+export default function Welcome() {
+    const router = useRouter()
+    const handleLoginPress = () => {
+        router.push('/login')
+    }
+    const handRegisterPress =() => {
+        router.push('/register')
+    }
+    return (
+        <View style={styles.container}>
+            <View style={styles.content}></View>
+            <Image style={styles.logo} source={require('./../assets/line-05.png')}/>
+            <View style={styles.form}>
+            <Button text="ВОЙТИ"  onPress={handleLoginPress}/>
+            <Text style={{ textAlign: 'center', color: Colors.lightBlue, fontSize:16}}>или</Text>
+            <Button text="ЗАРЕГИСТРИРОВАТЬСЯ" onPress={handRegisterPress}/>
+            </View>
+        </View>
+    )
+}
+
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+      padding: 55,
+      gap: 15,
+      backgroundColor: "#0b3784",
+    },
+    logo: {
+      width: 130,
+      height: 130,
+      resizeMode: 'contain',
+      marginBottom: 90,
+      marginTop:45
+    },
+    text: {
+      color: '#0b3784',
+      fontSize: 16,
+      
+    },
+    content:{
+        alignItems: 'center',
+      },
+    form: {
+        alignSelf: 'stretch',
+        gap: 25
+      },
+  });
+  

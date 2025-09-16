@@ -1,0 +1,84 @@
+{
+  "expo": {
+    "name": "Мобильный кладовщик",
+    "slug": "mobilnyj-kladovshik",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/iconlogo.png",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "backgroundColor": "#1A488E",
+    "splash": {
+      "image": "./assets/SplashScreen_1080х1920.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#1A488E"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Приложению нужен доступ к камере, чтобы делать фотографии и сканировать QR-коды.",
+        "NSMicrophoneUsageDescription": "Приложению нужен доступ к микрофону, если вы хотите записывать видео со звуком.",
+        "NSPhotoLibraryUsageDescription": "Приложению нужен доступ к вашей галерее, чтобы сохранять и выбирать фотографии.",
+        "NSFaceIDUsageDescription": "Для входа в приложение с помощью Face ID"
+      },
+      "bundleIdentifier": "com.yourcompany.kladovshik"
+    },
+    "android": {
+      "usesCleartextTraffic": true,
+      "networkSecurityConfig": "./network_security_config.xml",
+      "permissions": [
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT",
+        "android.permission.INTERNET",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/iconlogo.png",
+        "backgroundColor": "#0b3784"
+      },
+      "package": "com.yourcompany.kladovshik"
+    },
+    "web": {
+      "favicon": "./assets/iconlogo.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Разрешите доступ к камере для съёмки фото и видео.",
+          "microphonePermission": "Разрешите доступ к микрофону для записи звука в видео."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Разрешите доступ к галерее, чтобы выбирать изображения.",
+          "cameraPermission": "Разрешите доступ к камере, если хотите сделать новое фото."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/iconlogo.png",
+          "color": "#ffffff"
+        }
+      ]
+    ],
+    "scheme": "mobilnyj-kladovshik",
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "c4ece87d-eb9c-45bd-b814-d449d11c5404"
+      }
+    },
+    "owner": "bogdanov_andrey"
+  }
+}
