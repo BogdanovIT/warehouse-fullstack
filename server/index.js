@@ -36,7 +36,7 @@ const transporter = createTransport({
 })
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const uploadDir = path.join(__dirname, 'temp_uploads')
+        const uploadDir = path.join('/home/abogdanov/Mobile_Storekeeper/temp_uploads')
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir)
         }
@@ -49,6 +49,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage })
 const sendEmailWithAttachments = async (options) => {
     const {to, subject, text, attachments} = options
+    console.log("Что вообще пришло?", options)
     try {
         const recipients = Array.isArray(to) ? to : [to].filter(Boolean)
         if (recipients.length === 0) {
@@ -69,7 +70,7 @@ const sendEmailWithAttachments = async (options) => {
 }
 
 async function generateExcelFromTemplate(parsedData) {
-    const templatePath =path.join(__dirname, 'assets/template.xlsx')
+    const templatePath =path.join('/home/abogdanov/Mobile_Storekeeper', 'assets/template.xlsx')
         const workbook = new ExcelJS.Workbook()
         await workbook.xlsx.readFile(templatePath)
         const worksheet = workbook.getWorksheet(1)
@@ -99,7 +100,7 @@ app.use(cors({
     credentials: true,
     exposedHeaders: ['Authorization']
 }))
-app.use('/static', express.static('public'))
+app.use('/static', express.static('/home/abogdanov/Mobile_Storekeeper/public'))
 app.get('/api/courses', async (req, res) => {
     try {
         console.log('Fetching courses from database')
@@ -148,16 +149,17 @@ app.post('/api/brakodel/send', upload.array('photos'), async (req, res) => {
             return res.status(400).json({ error: "Отсутствуют данные"})
         }
         const { data, recipients } = req.body
+        console.log("В бракодел пришло:", data, recipients)
         const parsedData = typeof data === 'string' ? JSON.parse(data) : data
         if (parsedData.photoPaths.length > 0) {
             parsedData.photoPaths = parsedData.photoPaths.map(relativePath => {
-                const fullPath = path.join(__dirname, relativePath)
+                const fullPath = path.join('/home/abogdanov/Mobile_Storekeeper', relativePath)
                 tempFilesToDelete.push(fullPath)
                 return fullPath
             })
         }
         const excelBuffer = await generateExcelFromTemplate(parsedData)
-        excelPath = path.join(__dirname, `defect_${Date.now()}.xlsx`)
+        excelPath = path.join('/home/abogdanov/Mobile_Storekeeper/generated', `defect_${Date.now()}.xlsx`)
         await fs.promises.writeFile(excelPath, excelBuffer)
         tempFilesToDelete.push(excelPath)
 
@@ -181,7 +183,7 @@ app.post('/api/brakodel/send', upload.array('photos'), async (req, res) => {
             }
         }        
         
-        const generateDir = path.join(__dirname, 'generated')
+        const generateDir = path.join('/home/abogdanov/Mobile_Storekeeper/generated')
         if (!fs.existsSync(generateDir)) {
             await fs.promises.mkdir(generateDir, {recursive: true})
         }
@@ -349,9 +351,9 @@ app.post('/api/generate-excel', async (req, res) => {
         const recipients = Array.isArray(email) ? email.join(', ') : email
         
         const fileName = `defect_${Date.now()}.xlsx`
-        const filePath = path.join(__dirname, 'generated', fileName)
-        if (!fs.existsSync(path.join(__dirname, 'generated'))) {
-            fs.mkdirSync(path.join(__dirname, 'generated'))
+        const filePath = path.join('/home/abogdanov/Mobile_Storekeeper/generated', fileName)
+        if (!fs.existsSync(path.join('/home/abogdanov/Mobile_Storekeeper/generated'))) {
+            fs.mkdirSync(path.join('/home/abogdanov/Mobile_Storekeeper/generated'))
         }
         await fs.promises.writeFile(filePath, buffer)
         await transporter.sendMail({
@@ -379,7 +381,7 @@ app.post('/api/generate-excel', async (req, res) => {
 })
 
 const cleanOldFiles = async () => {
-    const dir = path.join(__dirname, 'generated')
+    const dir = path.join('/home/abogdanov/Mobile_Storekeeper/generated')
     if (!fs.existsSync(dir)) return
     const files = await fs.promises.readdir(dir)
     const now = Date.now()
@@ -476,7 +478,7 @@ app.post('/api/upload-temp-photos', upload.array('photos'), async (req,res) => {
             return res.status(400).json({ success: false, message: " No files uploaded"})
         }
         const savedPaths = []
-        const tempDir = path.join(__dirname, 'temp_uploads')
+        const tempDir = path.join('/home/abogdanov/Mobile_Storekeeper/temp_uploads')
         if (!fs.existsSync(tempDir)) {
             fs.mkdirSync(tempDir, {recursive: true})
         }
@@ -512,7 +514,7 @@ app.post('/api/shipment/send', async (req, res) => {
         }
         const attachments = []
         for (const relativePath of photoPaths) {
-            const fullPath = path.join(__dirname, relativePath)
+            const fullPath = path.join('/home/abogdanov/Mobile_Storekeeper', relativePath)
             if(!fs.existsSync(fullPath)) {
                 console.warn(`Файл не найден:, ${fullPath}`)
                 continue
@@ -552,7 +554,7 @@ app.post('/api/receiving/send', async (req, res) => {
         const allPhotoPaths = [...(processPhotos || []), ...(defectivePhotos || [])]
         const attachments = []
         for (const relativePath of allPhotoPaths) {
-            const fullPath = path.join(__dirname, relativePath)
+            const fullPath = path.join('/home/abogdanov/Mobile_Storekeeper', relativePath)
             if(!fs.existsSync(fullPath)) {
                 console.warn(`Файл не найден:, ${fullPath}`)
                 continue
