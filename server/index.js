@@ -49,7 +49,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage })
 const sendEmailWithAttachments = async (options) => {
     const {to, subject, text, attachments} = options
-    console.log("Что вообще пришло?", options)
     try {
         const recipients = Array.isArray(to) ? to : [to].filter(Boolean)
         if (recipients.length === 0) {
@@ -103,7 +102,6 @@ app.use(cors({
 app.use('/static', express.static('/home/abogdanov/Mobile_Storekeeper/public'))
 app.get('/api/courses', async (req, res) => {
     try {
-        console.log('Fetching courses from database')
         const courses = await Course.findAll({
             where: {
                 type: 'course',
@@ -112,7 +110,6 @@ app.get('/api/courses', async (req, res) => {
             order: [['order_index', 'ASC']],
             raw: true
         })
-        console.log(`Found ${courses.length} courses`)
         res.json(courses)
     } catch(error) {
         console.error('Database error', error)
@@ -122,7 +119,6 @@ app.get('/api/courses', async (req, res) => {
 
 app.get('/api/tests', async (req, res) => {
     try {
-        console.log('Fetching tests from database')
         const tests = await Course.findAll({
             where: {
                 type: 'test',
@@ -131,7 +127,6 @@ app.get('/api/tests', async (req, res) => {
             order: [['order_index', 'ASC']],
             raw: true
         })
-        console.log(`Found ${tests.length} tests`)
         res.json(tests)
     } catch(error) {
         console.error('Database error', error)
@@ -149,7 +144,6 @@ app.post('/api/brakodel/send', upload.array('photos'), async (req, res) => {
             return res.status(400).json({ error: "Отсутствуют данные"})
         }
         const { data, recipients } = req.body
-        console.log("В бракодел пришло:", data, recipients)
         const parsedData = typeof data === 'string' ? JSON.parse(data) : data
         if (parsedData.photoPaths.length > 0) {
             parsedData.photoPaths = parsedData.photoPaths.map(relativePath => {
