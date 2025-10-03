@@ -8,6 +8,7 @@ import { loginAtom } from '@/entities/auth/model/auth.state';
 import { CustomFonts, SystemColors } from '@/shared/tokens';
 import { isBiometricAvailable, saveCredentials, tryAutoLogin, authenticateWithBiometry, getCredentials } from '@/utils/biometryUtils';
 import { Ionicons } from "@expo/vector-icons"
+import { Config } from '@/config';
 
 export default function Login() {
   interface AppError {
@@ -153,7 +154,7 @@ export default function Login() {
 
   const checkBlockStatus = async (email: string): Promise<boolean> => {
     try {
-      const API_URL = process.env.HOME_URL
+      const API_URL = Config.HOME_URL
       const response = await fetch(`${API_URL}/api/auth/check-block-status`, {
         method: 'POST',
         headers: {

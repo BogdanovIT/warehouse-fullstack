@@ -5,8 +5,9 @@ import { IAuthResponse, ILoginRequest, AuthState } from "./auth.interfaces"
 import axios, { AxiosError } from "axios"
 import { API } from "../api/api"
 import * as SecureStore from 'expo-secure-store'
+import { Config } from "@/config"
 
-const API_URL = process.env.HOME_URL
+const API_URL = Config.HOME_URL
 const storage = createJSONStorage<AuthState>(()=> AsyncStorage)
 const INITIAL_STATE: AuthState = {
     access_token: null,

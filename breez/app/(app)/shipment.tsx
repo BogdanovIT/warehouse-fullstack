@@ -11,8 +11,9 @@ import { getUserProfile } from "../../api/user";
 import { userProfileAtom } from "../../entities/user/model/user.state";
 import { authAtom } from "../../entities/auth/model/auth.state";
 import { useAtom } from "jotai";
+import { Config } from "@/config";
 
-const API_URL = process.env.HOME_URL
+const API_URL = Config.HOME_URL
 interface ImageUploaderProps {
     onUpload: (uri:string) => void
     onError? : (error: string) => void
@@ -41,7 +42,19 @@ export default function Shipment ({onUpload}: ImageUploaderProps) {
     const [gateNumber, setGateNumber] = useState('')
     const [auth] = useAtom(authAtom)
     const [userProfile, setUserProfile] = useAtom(userProfileAtom)
-    useEffect(()=> {loadProfileDebounced()}, [auth?.access_token])
+    useEffect(()=> {
+        const loadProfile = async () => {
+            if (auth?.access_token && !userProfile) {
+                try {
+                    const profile = await getUserProfile(auth.access_token!)
+                    setUserProfile(profile)
+                } catch(error) {
+                    console.error("Ошибка загрузки профиля:", error)
+                }
+            }
+        }
+        loadProfile()
+    }, [auth?.access_token, userProfile])
 
     const buttonScale = useRef( new Animated.Value(1)).current
     const animateButton = () => {
@@ -69,16 +82,6 @@ export default function Shipment ({onUpload}: ImageUploaderProps) {
         }) as F
     }
 
-    const loadProfileDebounced = debounce(async () => {
-        if (auth?.access_token && !userProfile) {
-            try {
-                const profile = await getUserProfile(auth.access_token!)
-                setUserProfile(profile)
-            } catch (error) {
-                console.error("Ошибка загрузки профиля", error)
-            }
-        }
-    }, 500)
     const verifyCameraPermission = async () => {
         const cameraPermissionInfo = await requestCameraPermissionsAsync()
         if (cameraPermissionInfo?.status === PermissionStatus.UNDETERMINED) {

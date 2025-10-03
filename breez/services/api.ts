@@ -1,4 +1,6 @@
-const API_BASE_URL = process.env.HOME_URL
+import { Config } from "@/config"
+
+const API_BASE_URL = Config.HOME_URL
 
 export interface CourseItem {
     id: number

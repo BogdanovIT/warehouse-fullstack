@@ -16,8 +16,9 @@ import { getUserProfile } from "../../api/user";
 import { userProfileAtom } from "../../entities/user/model/user.state";
 import { authAtom } from "../../entities/auth/model/auth.state";
 import { Input } from "../../shared/input/input";
+import { Config } from "@/config";
 
-const API_URL = process.env.HOME_URL
+const API_URL = Config.HOME_URL
 const DEFAULT_IMAGES = [
     require('../../assets/images/recieving/face.jpg'),
     require('../../assets/images/recieving/zakryto.jpg'),
@@ -71,7 +72,7 @@ export default function Receiving () {
             }
         }
         loadProfile()
-    }, [auth?.access_token])
+    }, [auth?.access_token, userProfile])
 
     const verifyCameraPermission = async () => {
         const cameraPermissionInfo = await requestCameraPermissionsAsync()

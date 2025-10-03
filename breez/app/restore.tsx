@@ -8,8 +8,9 @@ import { SystemColors } from "../shared/tokens";
 import { CustomFonts } from "../shared/tokens";
 import { ErrorNotification } from "../shared/ErrorNotifications/ErrorNotification";
 import axios from "axios";
+import { Config } from "@/config";
 
-const API_URL = process.env.HOME_URL
+const API_URL = Config.HOME_URL
 export default function RestorePassword() {
     const [email, setEmail] = useState<string>('')
     const [code, setCode] = useState('')

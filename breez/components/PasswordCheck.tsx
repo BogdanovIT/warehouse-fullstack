@@ -3,8 +3,9 @@ import { useAtom } from "jotai";
 import React, { useEffect, useState } from "react";
 import { Alert } from "react-native";
 import  PasswordChangeModal  from "@/components/PasswordChangeModal"
+import { Config } from "@/config";
 
-const API_URL = process.env.HOME_URL
+const API_URL = Config.HOME_URL
 export default function PasswordCheck({ children }: {children: React.ReactNode}) {
     const [auth] = useAtom(authAtom)
     const [showPasswordModal, setShowPasswordModal] = useState(false)

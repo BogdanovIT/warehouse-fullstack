@@ -2,9 +2,10 @@ import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { CustomFonts, SystemColors } from "../../shared/tokens";
 import Telegram from "../../assets/icons/telegram";
 import Whatsapp from "../../assets/icons/whatsapp";
+import { Config } from "@/config";
 
-const T_MAIL = process.env.T_URL
-const WA_MAIL = process.env.WA_URL
+const T_MAIL = Config.T_URL
+const WA_MAIL = Config.WA_URL
 
 export default function About () {
     const handlePress = () => {

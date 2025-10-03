@@ -1,6 +1,8 @@
+import { Config } from "@/config";
 import axios from "axios"
 
-const API_URL = process.env.HOME_URL;
+
+const API_URL = Config.HOME_URL;
 
 interface UserProfile {
   id: number;

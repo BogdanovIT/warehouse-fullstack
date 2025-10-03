@@ -6,8 +6,9 @@ import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
 import { Button } from "@/button/button";
 import { router } from "expo-router";
+import { Config } from "@/config";
 
-const API_URL = process.env.HOME_URL
+const API_URL = Config.HOME_URL
 export default function Register() {
     const [formData, setFormData] = useState({
         firstName: '',

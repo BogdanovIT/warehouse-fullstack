@@ -5,8 +5,9 @@ import { CustomFonts, SystemColors } from "../shared/tokens";
 import { Button } from "../button/button"
 import { useAtom } from "jotai";
 import { authAtom } from "@/entities/auth/model/auth.state";
+import { Config } from "@/config";
 
-const API_URL = process.env.HOME_URL
+const API_URL = Config.HOME_URL
 export default function PasswordChangeModal ({
     visible, 
     onClose, 

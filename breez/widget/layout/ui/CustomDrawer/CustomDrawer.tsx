@@ -1,4 +1,4 @@
-import { DrawerContentComponentProps, DrawerContentScrollView } from "@/node_modules/@react-navigation/drawer/lib/typescript/src";
+import { DrawerContentComponentProps, DrawerContentScrollView } from "@react-navigation/drawer";
 import { StyleSheet, View } from "react-native";
 import { CustomFonts, SystemColors } from "../../../../shared/tokens";
 import { Link } from "expo-router";

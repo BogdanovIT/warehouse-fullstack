@@ -10,8 +10,9 @@ import { getUserProfile } from "../../api/user";
 import { authAtom } from "../../entities/auth/model/auth.state";
 import { DOCUMENT_PREFIXES, LocationKeys, WarehouseKeys } from "../../shared/documentPrefixes";
 import { DefectivePhotosHandler } from "../../components/DefectivePhotosHandler";
+import { Config } from "@/config";
 
-const API_URL = process.env.HOME_URL
+const API_URL = Config.HOME_URL
 export default function brakodel() {
     const [auth] = useAtom(authAtom)
     const [userProfile, setUserProfile] = useAtom(userProfileAtom)
@@ -35,6 +36,20 @@ export default function brakodel() {
     const [defectivePhotos, setDefectivePhotos] = useState<string[]>([])
     const [resetPhotos, setResetPhotos] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
+
+    useEffect(()=> {
+        const loadProfile = async () => {
+            if (auth?.access_token && !userProfile) {
+                try {
+                    const profile = await getUserProfile(auth.access_token!)
+                    setUserProfile(profile)
+                } catch(error) {
+                    console.error("Ошибка загрузки профиля:", error)
+                }
+            }
+        }
+        loadProfile()
+    }, [auth?.access_token, userProfile])
 
     const buttonScale = useRef( new Animated.Value(1)).current
     const animateButton = () => {
@@ -77,33 +92,6 @@ export default function brakodel() {
         comment: '',
         setCell: ''
     })
-
-    function debounce<F extends (...args: any[]) => any>(func: F, wait: number): F {
-        let timeout: ReturnType<typeof setTimeout> | null = null
-        return ((...args: Parameters<F>) => {
-            if (timeout !== null)
-            {clearTimeout(timeout)}
-            timeout = setTimeout(()=>func(...args), wait)
-        }) as F
-    }
-
-    const loadProfileDebounced = debounce(async () => {
-        if (auth?.access_token && !userProfile) {
-            try {
-                const profile = await getUserProfile(auth.access_token!)
-                setUserProfile(profile)
-            } catch (error) {
-                console.error("Ошибка загрузки профиля", error)
-            }
-        }
-    }, 500)
-
-    const handleSSCCChange = (text: string) => {
-        setNumberSSCC(text)
-        if (text.length > 2 ) {
-            loadProfileDebounced()
-        }
-    }
 
     const uploadPhotoToServer = async (photos: string[]) => {
         try {
@@ -287,7 +275,7 @@ export default function brakodel() {
             <Text style={styles.text}>Введите номер палета SSCC</Text>
             <Input style={styles.inputText}
             value = {numberSSCC}
-            onChangeText ={(text) => handleSSCCChange(text)}
+            onChangeText ={(text) => setNumberSSCC(text)}
             placeholder="*"/>
             <Text style={styles.text}>Укажите номер документа прихода</Text>
             <Input style={{...styles.inputText}} autoCapitalize="characters"
