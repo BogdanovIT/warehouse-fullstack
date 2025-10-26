@@ -81,19 +81,10 @@ export default function HomePage() {
             progressBackgroundColor="#ffffff" />
         }>
             <View style={{paddingLeft:5}}>
-                <Text style={styles.TitleStyle}>КУРСЫ</Text>
                 <ScrollView horizontal
                 showsHorizontalScrollIndicator={false}
                 style={styles.scrollImage}>
                     {courses.map(renderItem)}
-                </ScrollView>
-            </View>
-            <View style={{paddingLeft:5}}>
-                <Text style={styles.TitleStyle}>ТЕСТЫ</Text>
-                <ScrollView horizontal
-                showsHorizontalScrollIndicator={false}
-                style={styles.scrollImage}>
-                    {tests.map(renderItem)}
                 </ScrollView>
             </View>
         </ScrollView>

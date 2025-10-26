@@ -11,7 +11,13 @@
     },
     "production": {
       "android": {
-        "buildType": "apk"
+        "buildType": "apk",
+        "gradleCommand": ":app:bundleRelease",
+        "config": {
+          "shrinkRecources": true,
+          "minifyEnabled": true,
+          "proguardFiles": ["proguard-rules.pro"]
+        }
       }
     }
   },

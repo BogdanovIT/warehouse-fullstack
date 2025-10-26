@@ -41,6 +41,7 @@
         "foregroundImage": "./assets/iconlogo.png",
         "backgroundColor": "#0b3784"
       },
+      "enableProguardInReleaseBuilds": true,
       "package": "com.yourcompany.kladovshik"
     },
     "web": {
