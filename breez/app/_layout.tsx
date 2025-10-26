@@ -2,11 +2,13 @@ import { SplashScreen, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useFonts } from 'expo-font'
 import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAtom } from "jotai";
 import { loginAtom } from "@/entities/auth/model/auth.state";
 import PasswordCheck from "@/components/PasswordCheck";
+import SecurityManager from "@/security/SecurityManager"
 
+const securityManager =new SecurityManager()
 
 SplashScreen.preventAutoHideAsync()
 export default function RootLayout() {
@@ -18,6 +20,8 @@ export default function RootLayout() {
         HelveticaMedium: require('../assets/fonts/HelveticaMedium.ttf'),
         HelveticaRegular: require('../assets/fonts/HelveticaRegular.ttf'),
     })
+
+    const [isSecurityInitialized, setIsSecurityInitialized] = useState(false)
 
     useEffect(()=> {
         if (loaded) {

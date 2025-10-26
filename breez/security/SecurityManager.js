@@ -44,3 +44,4 @@ class SecurityManager {
         return encrypted ? this.dataEncryption.decryptData(encrypted) : null
     }
 }
+export default SecurityManager
