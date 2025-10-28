@@ -45,7 +45,6 @@
     "react-native-barcode-builder": "^2.0.0",
     "react-native-biometrics": "^3.0.1",
     "react-native-blob-util": "^0.22.2",
-    "react-native-cert-pinner": "^0.4.1",
     "react-native-edge-to-edge": "^1.6.2",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "~2.24.0",

@@ -22,17 +22,39 @@ export default function RootLayout() {
     })
 
     const [isSecurityInitialized, setIsSecurityInitialized] = useState(false)
+    const [securityError, setSecurityError] = useState<string | null>(null)
 
-    useEffect(()=> {
-        if (loaded) {
-            SplashScreen.hideAsync()
+        useEffect(() => {
+            const initializeSecurity = async () => {
+                try {
+                    await securityManager.initialize()
+                    setIsSecurityInitialized(true)
+                    console.log('Security initialized successfully')
+                } catch (error) {
+                    console.error('Security initialization failed:', error)
+                    const errorMessage = error instanceof Error ? error.message : "Unknown Security Error"
+                    setSecurityError(errorMessage)
+                    setIsSecurityInitialized(true)
+                }
+            }
+
+            if (loaded) {
+                initializeSecurity()
+            }
+        }, [loaded])
+
+        useEffect(() => {
+            if (loaded && isSecurityInitialized) {
+                SplashScreen.hideAsync()
+            }
+        }, [loaded, isSecurityInitialized])
+
+        const insets = useSafeAreaInsets()
+        
+        if (!loaded || !isSecurityInitialized) {
+            return null
         }
-    }, [loaded])
 
-    const insets = useSafeAreaInsets()
-    if (!loaded) {
-        return null
-    }
     return (
         <SafeAreaProvider>
             <StatusBar style='dark'/>

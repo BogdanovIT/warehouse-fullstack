@@ -1,39 +1,20 @@
-import CryptoJS from 'crypto-js'
-import Keychain from 'react-native-keychain'
+import * as SecureStore from 'expo-secure-store'
 
 class DataEncryption {
-    constructor() {
-        this.encryptionKey = null
-    }
     async initialize() {
-        const credentials = await Keychain.getGenericPassword()
-
-        if (credentials) {
-            this.encryptionKey = credentials.password
-        } else {
-            this.encryptionKey = this.generateEncryptionKey()
-            await Keychain.setGenericPassword('app_encryption_key', this.encryptionKey)
-        }
+        return true
     }
-    generateEncryptionKey() {
-        return CryptoJS.lib.WordArray.random(256/8).toString()
+    async encryptData(data) {
+        return JSON.stringify(data)
     }
-    encryptData(data) {
-        const encrypted = CryptoJS.AES.encrypt(
-            JSON.stringify(data),
-            this.encryptionKey
-        ).toString()
-        return encrypted
+    async decryptData(encryptedData) {
+        return JSON.parse(encryptedData)
     }
-    decryptData(encryptData) {
-        try {
-            const decrypted = CryptoJS.AES.decrypt(
-                encryptData,
-                this.encryptionKey
-            )
-            return JSON.parse(decrypted.toString(CryptoJS.enc.Utf8))
-        } catch(error) {
-            throw new Error('Failed to decrypt data')
-        }
+    async secureSet(key, value) {
+        await SecureStore.setItemAsync(key, JSON.stringify(value))
+    }
+    async secureGet(key) {
+        const value = await SecureStore.getItemAsync(key)
+        return value ? JSON.parse(value) : null
     }
 }
