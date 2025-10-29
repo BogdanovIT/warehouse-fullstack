@@ -18,3 +18,4 @@ class DataEncryption {
         return value ? JSON.parse(value) : null
     }
 }
+export default DataEncryption

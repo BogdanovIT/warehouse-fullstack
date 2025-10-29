@@ -12,9 +12,12 @@ class CertificateSecurity {
     async initializePinning() {
         try {
             await SslPinning.initialize(this.pins)
+            console.log('SSL Pinning initialized')
+            return true
         } catch (error) {
             console.error('Certificate pinning failed:', error)
-            throw new Error('Security initialization failed')
+            return false
         }
     }
 }
+export default CertificateSecurity

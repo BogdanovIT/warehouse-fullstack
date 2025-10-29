@@ -2,13 +2,12 @@ import { SplashScreen, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useFonts } from 'expo-font'
 import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAtom } from "jotai";
 import { loginAtom } from "@/entities/auth/model/auth.state";
 import PasswordCheck from "@/components/PasswordCheck";
 import SecurityManager from "@/security/SecurityManager"
 
-const securityManager =new SecurityManager()
 
 SplashScreen.preventAutoHideAsync()
 export default function RootLayout() {
@@ -23,11 +22,15 @@ export default function RootLayout() {
 
     const [isSecurityInitialized, setIsSecurityInitialized] = useState(false)
     const [securityError, setSecurityError] = useState<string | null>(null)
+    const securityManagerRef = useRef<SecurityManager | null> (null)
 
         useEffect(() => {
             const initializeSecurity = async () => {
                 try {
-                    await securityManager.initialize()
+                    if (!securityManagerRef.current) {
+                        securityManagerRef.current = new SecurityManager()
+                    }
+                    await securityManagerRef.current.initialize()
                     setIsSecurityInitialized(true)
                     console.log('Security initialized successfully')
                 } catch (error) {

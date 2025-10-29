@@ -34,6 +34,18 @@ const transporter = createTransport({
         pass: process.env.EMAIL_PASS
     }
 })
+try {
+    console.log("Testing SMTP connection...")
+    await transporter.verify()
+    console.log("SMTP connection successfull")
+} catch(error) {
+    console.error("SMTP connection failed:", error)
+    console.log("Error details:", {
+        code: error.code,
+        command: error.command,
+        response: error.response
+    })
+}
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         const uploadDir = path.join('/home/abogdanov/Mobile_Storekeeper/temp_uploads')
