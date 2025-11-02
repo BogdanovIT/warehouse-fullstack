@@ -2,56 +2,38 @@ import 'dotenv/config'
 import express, { text } from 'express'
 import cors from 'cors'
 import sequelize from './config/db.js'
+import jwt from 'jsonwebtoken'
+import multer from 'multer'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import fs from 'fs/promises'
+
+import emailService from './services/emailService.js'
+import templateService from './services/templateService.js'
+import fileService from './services/fileService.js'
+
 import userRoutes from './routes/userRoutes.js'
 import authRoutes from './routes/authRoutes.js'
 import MeRoute from './routes/MeRoute.js'
-import jwt from 'jsonwebtoken'
 import productRout from './routes/products.js'
-import ExcelJS from 'exceljs'
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url'
-import { createTransport } from 'nodemailer'
 import restorePass from './routes/restorePass.js'
-import multer from 'multer'
+
 import User from './models/User.js'
 import VerificationCode from './models/VerificationCode.js'
+import Course from './models/Courses.js'
 import { Op } from 'sequelize'
 import { cleanupOldRecords } from './utils/authSecurity.js'
 import { checkPasswordExpiration } from './middlewares/passwordExpiration.js'
-import Course from './models/Courses.js'
 import checkBlocked from './middlewares/checkBlocked.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
 const PORT = 8081
-const transporter = createTransport({
-    host: process.env.EMAIL_HOST,
-    port: 443,
-    secure: true,
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-})
-try {
-    console.log("Testing SMTP connection...")
-    await transporter.verify()
-    console.log("SMTP connection successfull")
-} catch(error) {
-    console.error("SMTP connection failed:", error)
-    console.log("Error details:", {
-        code: error.code,
-        command: error.command,
-        response: error.response
-    })
-}
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const uploadDir = path.join('/home/abogdanov/Mobile_Storekeeper/temp_uploads')
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir)
-        }
+        const uploadDir = '/home/abogdanov/Mobile_Storekeeper/temp_uploads'
+        fileService.ensureDirectoryExists(uploadDir)
         cb(null, uploadDir)
     },
     filename: (req, file, cb) => {
@@ -59,51 +41,7 @@ const storage = multer.diskStorage({
     }
 })
 const upload = multer({ storage })
-const sendEmailWithAttachments = async (options) => {
-    const {to, subject, text, attachments} = options
-    try {
-        const recipients = Array.isArray(to) ? to : [to].filter(Boolean)
-        if (recipients.length === 0) {
-            throw new Error("Нет получателей")
-        }
-        await transporter.sendMail({
-            from: `"Мобильный кладовщик" <${process.env.EMAIL_USER}>`,
-            to: recipients.join(', '),
-            subject,
-            text,
-            attachments
-        })
-        return true
-    } catch (error) {
-        console.error("Ошибка отправки письма:", error)
-        return false
-    }
-}
 
-async function generateExcelFromTemplate(parsedData) {
-    const templatePath =path.join('/home/abogdanov/Mobile_Storekeeper', 'assets/template.xlsx')
-        const workbook = new ExcelJS.Workbook()
-        await workbook.xlsx.readFile(templatePath)
-        const worksheet = workbook.getWorksheet(1)
-        worksheet.getCell('A4').value = parsedData.currentDate
-        worksheet.getCell('A33').value = parsedData.numberSSCC
-        worksheet.getCell('BD123').value = parsedData.numberSSCC
-        worksheet.getCell('BD3').value = parsedData.place
-        worksheet.getCell('AV26').value = parsedData.docNumber
-        worksheet.getCell('A38').value = [parsedData.inputValuePrefix,parsedData.articleCode].join('')
-        worksheet.getCell('X33').value = parsedData.productName
-        worksheet.getCell('R51').value = parsedData.comment
-        worksheet.getCell('D44').value = parsedData.serialNumber
-        worksheet.getCell('A51').value = parsedData.sortValue
-        worksheet.getCell('AH11').value = parsedData.docPrefix
-        worksheet.getCell('AH11').alignment ={horizontal: 'left'}
-        worksheet.getCell('B65').value = parsedData.cell
-
-        return workbook.xlsx.writeBuffer()
-}
-app.get('/api/test', (req, res) => {
-    res.json({ status: 'API работает!' });
-  });
 app.use(express.json({limit: '50mb'}))
 app.use(express.urlencoded({extended: true}))
 app.use(cors({
@@ -112,132 +50,7 @@ app.use(cors({
     exposedHeaders: ['Authorization']
 }))
 app.use('/static', express.static('/home/abogdanov/Mobile_Storekeeper/public'))
-app.get('/api/courses', async (req, res) => {
-    try {
-        const courses = await Course.findAll({
-            where: {
-                type: 'course',
-                is_active: true
-            },
-            order: [['order_index', 'ASC']],
-            raw: true
-        })
-        res.json(courses)
-    } catch(error) {
-        console.error('Database error', error)
-        res.status(500).json({error: "Internal server error"})
-    }
-})
 
-app.get('/api/tests', async (req, res) => {
-    try {
-        const tests = await Course.findAll({
-            where: {
-                type: 'test',
-                is_active: true
-            },
-            order: [['order_index', 'ASC']],
-            raw: true
-        })
-        res.json(tests)
-    } catch(error) {
-        console.error('Database error', error)
-        res.status(500).json({error: "Internal server error"})
-    }
-})
-
-app.post('/api/brakodel/send', upload.array('photos'), async (req, res) => {
-    let excelPath = ''
-    const files = req.files || []
-    const tempFilesToDelete = []
-
-    try {
-        if (!req.body.data) {
-            return res.status(400).json({ error: "Отсутствуют данные"})
-        }
-        const { data, recipients } = req.body
-        const parsedData = typeof data === 'string' ? JSON.parse(data) : data
-        if (parsedData.photoPaths.length > 0) {
-            parsedData.photoPaths = parsedData.photoPaths.map(relativePath => {
-                const fullPath = path.join('/home/abogdanov/Mobile_Storekeeper', relativePath)
-                tempFilesToDelete.push(fullPath)
-                return fullPath
-            })
-        }
-        const excelBuffer = await generateExcelFromTemplate(parsedData)
-        excelPath = path.join('/home/abogdanov/Mobile_Storekeeper/generated', `defect_${Date.now()}.xlsx`)
-        await fs.promises.writeFile(excelPath, excelBuffer)
-        tempFilesToDelete.push(excelPath)
-
-        let emails = []        
-        
-        try {
-            emails = Array.isArray(recipients) ? recipients : JSON.parse(recipients || '[]')
-            if (!Array.isArray(emails) || emails.length === 0) {
-                throw new Error("Нет валидных получателей")
-            }
-        } catch (error) {
-            throw new Error("Нет валидных получателей")
-        }
-        if (files.length > 0) {
-            const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif']
-            for (const file of files) {
-                if (!allowedMimeTypes.includes(file.mimetype)) {
-                    throw new Error(`Недопустимый тип файла: ${file.originalname}`)
-                }
-                tempFilesToDelete.push(file.path)
-            }
-        }        
-        
-        const generateDir = path.join('/home/abogdanov/Mobile_Storekeeper/generated')
-        if (!fs.existsSync(generateDir)) {
-            await fs.promises.mkdir(generateDir, {recursive: true})
-        }
-                
-        const attachments = [
-            {
-                filename: "Акт дефектовки.xlsx",
-                path: excelPath
-            },
-            ...files.map(file => ({
-                filename: file.originalname,
-                path: file.path,
-                contentType: file.mimetype
-            }))
-        ]
-        const emailSent = await sendEmailWithAttachments({
-            from: `"Мобильный кладовщик"<${process.env.EMAIL_USER}>`,
-            to: emails,
-            subject: `Акт дефектовки ${data.docNumber || ''}`,
-            text: "Акт дефектовки во вложении",
-            attachments
-        })
-        if (!emailSent) {
-            throw new Error("Не удалось отправить письмо")
-        }
-        res.json({
-            success: true,
-            message: "Письмо отправлено"
-        })
-        
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            error: error.message || "Внутренняя ошибка сервера"
-        })
-    } finally {
-        try {
-            await Promise.all (
-                tempFilesToDelete.map(filePath =>
-                    fs.promises.unlink(filePath).catch(e =>
-                        console.error(`Ошибка удаления файла ${filePath}:`, e))
-                )
-            )
-        } catch (cleanupError) {
-            console.error("Ошибка при удалении файлов", cleanupError)
-        }
-    }
-})
 const validateEmails = (emails) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     const addresses = Array.isArray(emails) ? emails :  String(emails).split(',')
@@ -260,6 +73,7 @@ app.get('/api/verify-test', (req,res) => {
 app.use('/api/auth', restorePass)
 app.use(checkPasswordExpiration)
 app.use(checkBlocked)
+
 app.post('/api/users/send-verification', async (req,res) => {
     try {
         const email = req.body.email
@@ -286,17 +100,7 @@ app.post('/api/users/send-verification', async (req,res) => {
             code,
             expiresAt
         })
-        const emailSent = await sendEmailWithAttachments({
-            to: email,
-            subject: "Код подтверждения регистрации",
-            text: `Ваш код подтверждения: ${code}\nКод действителен в течение 15 минут.`
-        })
-        if (!emailSent) {
-            return res.status(500).json({
-                success: false,
-                error: "Не удалось отправить код подтверждения"
-            })
-        }
+        await emailService.sendConfirmationCode(email, code)
         res.json({
             success: true,
             message: "Код подтверждения отправлен на указанный email"
@@ -347,42 +151,169 @@ app.post('/api/users/verify-code', async (req, res) => {
     }
 })
 
-app.post('/api/generate-excel', async (req, res) => {
-    let filePath = ''
+app.post('/api/brakodel/send', upload.array('photos'), async (req, res) => {
+    const tempFilesToDelete = []
+
     try {
-        const { data, email } = req.body
-        if (!email || !validateEmails(email)) {
-            throw new Error("Не указаны или не валидны адреса получателей")
+        if (!req.body.data) {
+            return res.status(400).json({ error: "Отсутствуют данные"})
         }
-        const recipients = Array.isArray(email) ? email.join(', ') : email
+        const { data, recipients } = req.body
+        const parsedData = typeof data === 'string' ? JSON.parse(data) : data
         
-        const fileName = `defect_${Date.now()}.xlsx`
-        const filePath = path.join('/home/abogdanov/Mobile_Storekeeper/generated', fileName)
-        if (!fs.existsSync(path.join('/home/abogdanov/Mobile_Storekeeper/generated'))) {
-            fs.mkdirSync(path.join('/home/abogdanov/Mobile_Storekeeper/generated'))
+        const excelBuffer = await templateService.generateDefectExcel(parsedData)
+        
+        const attachments = [{
+            filename: "Акт дефектовки.xlsx",
+            content: excelBuffer,
+            contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        }]
+
+        if (req.files && req.files.length >0) {
+            for (const file of req.files) {
+                const fileBuffer = await fileService.readFile(file.path)
+                attachments.push({
+                    filename: file.originalname,
+                    content: fileBuffer,
+                    contentType: file.mimetype
+                })
+                tempFilesToDelete.push(file.path)
+            }
         }
-        await fs.promises.writeFile(filePath, buffer)
-        await transporter.sendMail({
-            from: `"Мобильный кладовщик"<${process.env.EMAIL_USER}>`,
-            to: email,
-            subject: "Акт дефектовки",
-            text: "Это письмо создано автоматически. Если вы не запрашивали его создание, или оно попало к вам случайно, просто удалите его",
-            attachments: [{
-                filename: "Акт дефектовки.xlsx",
-                path: filePath
-            }]
-        })
-        await fs.promises.unlink(filePath)
+        let emails = []
+        try {
+            emails = Array.isArray(recipients) ? recipients : JSON.parse(recipients || '[]')
+            if (!Array.isArray(emails) || emails.length === 0) {
+                throw new Error ("Нет валидных получателей")
+            }
+        } catch(error) {
+            throw new Error ("Нет валидных получателей")
+        }
+        await emailService.sendDefectAkt(emails, parsedData, attachments)
         res.json({
             success: true,
-            message: "Файл отправлен"
+            message: "Письмо отправлено"
         })
     } catch (error) {
-        if (filePath && fs.existsSync(filePath)) {
-            await fs.promises.unlink(filePath).catch(console.error)
+        res.status(500).json({
+            success: false,
+            error: error.message || "Внутренняя ошибка сервера"
+        })
+    } finally {
+            await Promise.all (
+                tempFilesToDelete.map(filePath =>
+                    fs.promises.unlink(filePath).catch(e =>
+                        console.error(`Ошибка удаления файла ${filePath}:`, e))
+                )
+            )
+    }
+})
+app.post('/api/shipment/send', async (req, res) => {
+    try {
+        const { photoPaths, gateNumber, recipients} = req.body
+        if (!photoPaths?.length) {
+            return res.status(400).json({error: "Нет фотографий для отправки"})
         }
-        console.error('[Index.js 73] Error', error)
-        res.status(500).send('Generation failed')
+        const attachments = []
+        for (const relativePath of photoPaths) {
+            const fullPath = path.join('/home/abogdanov/Mobile_Storekeeper', relativePath)
+            if(!fs.existsSync(fullPath)) {
+                console.warn(`Файл не найден:, ${fullPath}`)
+                continue
+            }
+            const fileBuffer = await fileService.readFile(fullPath)
+            attachments.push({
+                filename: `Отгрузка_${path.basename(relativePath)}`,
+                content: fileBuffer,
+                contentType: 'image/jpeg'
+            })
+        }
+        if (attachments.length === 0) {
+            return res.status(400).json({error: 'Нет доступных файлов для отправки'})
+        }
+        await emailService.sendShipmentReport(recipients, gateNumber, attachments)
+        for (const relativePath of photoPaths) {
+            const fullPath = path.join('/home/abogdanov/Mobile_Storekeeper', relativePath)
+            await fileService.deleteFile(fullPath)
+        }
+            res.json({success: true})
+    } catch (error) {
+        res.status(500).json({ error: error.message})
+    }
+})
+app.post('/api/receiving/send', async (req, res) => {    
+    try {
+        const { gateNumber, recipients, processPhotos, defectivePhotos } = req.body
+        const processAttachments = []
+        const defectiveAttachments = []
+        
+        for (const relativePath of processPhotos || []) {
+            const fullPath = path.join('/home/abogdanov/Mobile_Storekeeper', relativePath)
+            if(await fileService.fileExists(fullPath)) {
+                const fileBuffer = await fileService.readFile(fullPath)
+                processAttachments.push({
+                    filename: `Приемка процесс ${path.basename(relativePath)}`,
+                    content: fileBuffer,
+                    contentType: 'image/jpeg'
+                })
+            }
+        }
+        for (const relativePath of defectivePhotos || []) {
+            const fullPath = path.join('/home/abogdanov/Mobile_Storekeeper', relativePath)
+            if(await fileService.fileExists(fullPath)) {
+                const fileBuffer = await fileService.readFile(fullPath)
+                defectiveAttachments.push({
+                    filename: `Приемка брак ${path.basename(relativePath)}`,
+                    content: fileBuffer,
+                    contentType: 'image/jpeg'
+                })
+            }
+        }
+        if (processAttachments.length === 0 && defectiveAttachments.length === 0) {
+            return res.status(400).json({error: 'Нет доступных файлов для отправки'})
+        }
+        await emailService.sendReceivingReport(recipients, gateNumber, processAttachments, defectiveAttachments)
+        const allPhotos = [...processPhotos, ...defectivePhotos]
+        for (const relativePath of allPhotos) {
+            const fullPath = path.join('/home/abogdanov/Mobile_Storekeeper', relativePath)
+            await fileService.deleteFile(fullPath)
+        }
+        res.json({success: true, emailSent: true})
+    } catch (error) {
+        res.status(500).json({ error: error.message})
+    }
+})
+
+app.get('/api/courses', async (req, res) => {
+    try {
+        const courses = await Course.findAll({
+            where: {
+                type: 'course',
+                is_active: true
+            },
+            order: [['order_index', 'ASC']],
+            raw: true
+        })
+        res.json(courses)
+    } catch(error) {
+        console.error('Database error', error)
+        res.status(500).json({error: "Internal server error"})
+    }
+})
+app.get('/api/tests', async (req, res) => {
+    try {
+        const tests = await Course.findAll({
+            where: {
+                type: 'test',
+                is_active: true
+            },
+            order: [['order_index', 'ASC']],
+            raw: true
+        })
+        res.json(tests)
+    } catch(error) {
+        console.error('Database error', error)
+        res.status(500).json({error: "Internal server error"})
     }
 })
 
@@ -488,117 +419,18 @@ app.post('/api/upload-temp-photos', upload.array('photos'), async (req,res) => {
         if (!fs.existsSync(tempDir)) {
             fs.mkdirSync(tempDir, {recursive: true})
         }
-        req.files.forEach((file, index) => {
-            const formatDate = (d) => [
-                'Photo_',
-                d.getDate().toString().padStart(2, '0'), '.',
-                (d.getMonth()+1).toString().padStart(2, '0'), '.',
-                d.getFullYear(), '_',
-                d.getHours().toString().padStart(2, '0'), '-',
-                d.getMinutes().toString().padStart(2, '0'), '-',
-                d.getSeconds().toString().padStart(2, '0'),
-                `_${index.toString().padStart(3, '0')}`,
-                path.extname(file.originalname).toLowerCase()
-            ].join('')
-            const filename = formatDate(new Date())
-            const filePath = path.join(tempDir, filename)
-            fs.promises.rename(file.path, filePath)
+        for (const file of req.files) {
+            const filename = `Photo_${Date.now()}_${Math.random().toString(36).substring(7)}${path.extname(file.originalname)}`
+            const newPath = path.join('/home/abogdanov/Mobile_Storekeeper/temp_uploads', filename)
+            await fileService.moveFile(file.path, newPath)
             savedPaths.push(`/temp_uploads/${filename}`)
-        })
+        }
         res.json({success: true, savedPaths})
     } catch (error) {
         console.error("Ошибка загрузки:", error)
         res.status(500).json({success: false, message: "Ошибка загрузки файла"})
     }
 })
-
-app.post('/api/shipment/send', async (req, res) => {
-    try {
-        const { photoPaths, gateNumber, recipients} = req.body
-        if (!photoPaths?.length) {
-            return res.status(400).json({error: "Нет фотографий для отправки"})
-        }
-        const attachments = []
-        for (const relativePath of photoPaths) {
-            const fullPath = path.join('/home/abogdanov/Mobile_Storekeeper', relativePath)
-            if(!fs.existsSync(fullPath)) {
-                console.warn(`Файл не найден:, ${fullPath}`)
-                continue
-            }
-            attachments.push({
-                filename: `Отгрузка_${path.basename(relativePath)}`,
-                path: fullPath
-            })
-        }
-        if (attachments.length === 0) {
-            return res.status(400).json({error: 'Нет доступных файлов для отправки'})
-        }
-        const emailSent = await sendEmailWithAttachments({
-            to: recipients,
-            subject: `Фотоотчет отгрузка - Ворота ${gateNumber}`,
-            text: "Фотоотчет во вложении",
-            attachments
-        })
-        if (!emailSent) throw new Error("Не удалось отправить письмо")
-        
-        for (const attachment of attachments) {
-            try {
-                await fs.promises.unlink(attachment.path)
-            } catch(cleanupError) {
-                console.error(`Ошибка удаления файла ${attachment.path}:`, cleanupError)
-            }
-        }
-            res.json({success: true})
-    } catch (error) {
-        res.status(500).json({ error: error.message})
-    }
-})
-
-app.post('/api/receiving/send', async (req, res) => {    
-    try {
-        const { gateNumber, recipients, processPhotos, defectivePhotos } = req.body
-        const allPhotoPaths = [...(processPhotos || []), ...(defectivePhotos || [])]
-        const attachments = []
-        for (const relativePath of allPhotoPaths) {
-            const fullPath = path.join('/home/abogdanov/Mobile_Storekeeper', relativePath)
-            if(!fs.existsSync(fullPath)) {
-                console.warn(`Файл не найден:, ${fullPath}`)
-                continue
-            }
-            attachments.push({
-                filename: `Приемка_${path.basename(relativePath)}`,
-                path: fullPath
-            })
-        }
-        if (attachments.length === 0) {
-            return res.status(400).json({error: 'Нет доступных файлов для отправки'})
-        }
-        const emailText = `Фотоотчет по приемке (Ворота ${gateNumber})\n\n` +
-        (defectivePhotos.length > 0
-            ? 'ВНИМАНИЕ! Выявлен брак'
-            : 'Брак не обнаружен')
-
-        
-        const emailSent = await sendEmailWithAttachments({
-            to: recipients,
-            subject: `Приемка, ворота ${gateNumber} ${defectivePhotos.length > 0 ? 'БРАК' : ''} `,
-            text: emailText,
-            attachments
-        })
-        if (!emailSent) throw new Error("Ошибка отправки письма сервер")
-        for (const attachment of attachments) {
-            try {
-                await fs.promises.unlink(attachment.path)
-            } catch(cleanupError) {
-                console.error(`Ошибка удаления файла ${attachment.path}:`, cleanupError)
-            }
-        }
-        res.json({success: true, emailSent: true})
-    } catch (error) {
-        res.status(500).json({ error: error.message})
-    }
-})
-
 
 const cleanExpiredVerificationCodes = async () => {
     try {
