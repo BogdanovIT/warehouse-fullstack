@@ -4,12 +4,13 @@ const ewsConfig = {
     username: process.env.EMAIL_USER,
     password: process.env.EMAIL_PASS,
     host: 'https"//mail.breez.ru',
-    auth: 'basic'
+    auth: 'ntlm'
 }
 
 class EmailService {
     constructor() {
         this.ews = new EWS(ewsConfig)
+        this.isConnected = false
         this.testConnection()
     }
     async testConnection() {
