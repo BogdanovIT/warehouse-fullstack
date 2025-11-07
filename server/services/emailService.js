@@ -1,31 +1,25 @@
-import EWS from 'node-ews'
-
-const ewsConfig = {
-    username: process.env.EMAIL_USER,
-    password: process.env.EMAIL_PASS,
-    host: 'https"//mail.breez.ru',
-    auth: 'ntlm'
-}
+import nodemailer from 'nodemailer'
 
 class EmailService {
     constructor() {
-        this.ews = new EWS(ewsConfig)
-        this.isConnected = false
+        this.transporter = nodemailer.createTransport({
+            host: 'mail.breez.ru',
+            port: 587,
+            secure: false,
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
+            },
+            tls: {
+                rejectUnauthorized: false
+            }
+        })
         this.testConnection()
     }
     async testConnection() {
         try {
             console.log('Testing EWS Connection...')
-            await this.ews.run('GetFolder', {
-                FolderShape: {
-                    BaseShape: 'Default'
-                },
-                FoldefIds: {
-                    DistinguishedFolderId: {
-                        Id: 'Inbox'
-                    }
-                }
-            })
+            await this.transporter.verify()
             console.log('EWS Connection Successful')
         } catch(error) {
             console.error('EWS Connection failed', error.message)
@@ -33,40 +27,23 @@ class EmailService {
     }
     async sendEmail(to, subject, htmlBody, attachments = []) {
         try {
-            const ewsFunction = 'CreateItem'
-            const ewsArgs = {
-                attributes: {
-                    MessageDispositions: 'SendOnly'
-                },
-                Items: {
-                    Message: {
-                        ItemClass: 'IPM.Note',
-                        Subject: subject,
-                        Body: {
-                            attributes: { BodyType: 'HTML'},
-                            $value: htmlBody
-                        },
-                        ToRecipients: {
-                            Mailbox: {
-                                EmailAddress: to
-                            }
-                        }
-                    }
-                }
-            }
-            if (attachments.length >0 ) {
-                ewsArgs.Items.Message.Attachments = {
-                    FileAttachment: attachments.map(attachment =>({
-                        Name: attachment.filename,
-                        Content: attachment.content.toString('base64'),
-                        ContentType: attachment.contentType || 'application/octet-stream'
-                    }))
-                }
-            }
-            const result = await this.ews.run(ewsFunction, ewsArgs) 
+            console.log(`sending email to ${to} via SMTP...` )
+            const mailOptions = {
+                from: "Мобильный кладовщик <mobile_storekeeper@breez.ru>",
+                to: to,
+                subject: subject,
+                html: htmlBody,
+                attachments: attachments.map(attachment => ({
+                    filename: attachment.filename,
+                    content: attachment.content,
+                    contentType: attachment.contentType
+                }))
+            } 
+            const result = await this.transporter.sendMail(mailOptions)
+            console.log(`email to ${to} sent successfully via SMTP`)
             return true
         } catch(error) {
-            console.error('EWS Email Sending Failed:', error)
+            console.error('SMTP Email Sending Failed:', error)
             throw new Error(`failed to send email: ${error.message}`)
         }
     }
