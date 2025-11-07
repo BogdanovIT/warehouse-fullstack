@@ -415,10 +415,7 @@ app.post('/api/upload-temp-photos', upload.array('photos'), async (req,res) => {
             return res.status(400).json({ success: false, message: " No files uploaded"})
         }
         const savedPaths = []
-        const tempDir = path.join('/home/abogdanov/Mobile_Storekeeper/temp_uploads')
-        if (!fs.existsSync(tempDir)) {
-            fs.mkdirSync(tempDir, {recursive: true})
-        }
+
         for (const file of req.files) {
             const filename = `Photo_${Date.now()}_${Math.random().toString(36).substring(7)}${path.extname(file.originalname)}`
             const newPath = path.join('/home/abogdanov/Mobile_Storekeeper/temp_uploads', filename)
