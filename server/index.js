@@ -416,6 +416,7 @@ app.get('/api/user/operators', async (req, res) => {
 })
 
 app.post('/api/upload-temp-photos', upload.array('photos'), async (req,res) => {
+    console.log('Upload temp photos called, files:', req.files?.length)
     try {
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({ success: false, message: " No files uploaded"})
