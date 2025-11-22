@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "13d5a99e-7b8c-414b-a219-c7307e180121"
+      }
+    },
+    "android": {
+      "package": "com.bogdanov_andrey.warehouseappbreez"
+    }
+  }
+}

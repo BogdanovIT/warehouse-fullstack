@@ -2,6 +2,7 @@
   "expo": {
     "name": "Мобильный кладовщик",
     "slug": "mobilnyj-kladovshik",
+    "sdkVersion": "50.0.0",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/iconlogo.png",
@@ -69,7 +70,9 @@
           "icon": "./assets/iconlogo.png",
           "color": "#ffffff"
         }
-      ]
+      ],
+      "expo-secure-store",
+      "react-native-edge-to-edge"
     ],
     "scheme": "mobilnyj-kladovshik",
     "extra": {

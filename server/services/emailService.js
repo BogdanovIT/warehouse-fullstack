@@ -4,7 +4,7 @@ class EmailService {
     constructor() {
         this.transporter = nodemailer.createTransport({
             host: 'mail.breez.ru',
-            port: 587,
+            port: 443,
             secure: false,
             auth: {
                 user: process.env.EMAIL_USER,
@@ -18,11 +18,11 @@ class EmailService {
     }
     async testConnection() {
         try {
-            console.log('Testing EWS Connection...')
+            console.log('Testing SMTP Connection...')
             await this.transporter.verify()
-            console.log('EWS Connection Successful')
+            console.log('SMTP Connection Successful')
         } catch(error) {
-            console.error('EWS Connection failed', error.message)
+            console.error('SMTP Connection failed', error.message)
         }
     }
     async sendEmail(to, subject, htmlBody, attachments = []) {

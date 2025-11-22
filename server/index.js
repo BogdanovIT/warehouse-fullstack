@@ -210,7 +210,7 @@ app.post('/api/brakodel/send', upload.array('photos'), async (req, res) => {
 })
 app.post('/api/shipment/send', async (req, res) => {
     try {
-        console.log('Receiving send called with:', {
+        console.log('Shipment send called with:', {
             gateNumber: req.body.gateNumber,
             recipients: req.body.recipients,
             processPhotosCount: req.body.processPhotos?.length,
@@ -249,6 +249,12 @@ app.post('/api/shipment/send', async (req, res) => {
 })
 app.post('/api/receiving/send', async (req, res) => {    
     try {
+        console.log('Receiving send called with:', {
+            gateNumber: req.body.gateNumber,
+            recipients: req.body.recipients,
+            processPhotosCount: req.body.processPhotos?.length,
+            defectivePhotosCount: req.body.defectivePhotos?.length
+        })
         const { gateNumber, recipients, processPhotos, defectivePhotos } = req.body
         const processAttachments = []
         const defectiveAttachments = []
