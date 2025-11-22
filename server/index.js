@@ -210,6 +210,12 @@ app.post('/api/brakodel/send', upload.array('photos'), async (req, res) => {
 })
 app.post('/api/shipment/send', async (req, res) => {
     try {
+        console.log('Receiving send called with:', {
+            gateNumber: req.body.gateNumber,
+            recipients: req.body.recipients,
+            processPhotosCount: req.body.processPhotos?.length,
+            defectivePhotosCount: req.body.defectivePhotos?.length
+        })
         const { photoPaths, gateNumber, recipients} = req.body
         if (!photoPaths?.length) {
             return res.status(400).json({error: "Нет фотографий для отправки"})
