@@ -327,7 +327,7 @@ app.get('/api/debug-operators', async (req, res) => {
         
         const token = req.headers.authorization?.split(' ')[1];
         console.log('Token exists:', !!token);
-        console.log('Token:', token ? ${token.substring(0, 20)}... : 'none');
+        console.log('Token:', token ? `${token.substring(0, 20)}...` : 'none');
         
         if (!token) {
             return res.status(401).json({
