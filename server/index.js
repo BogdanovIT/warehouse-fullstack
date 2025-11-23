@@ -320,6 +320,98 @@ app.get('/api/write-log', (req, res) => {
     
     res.json({ success: true, message: 'Лог записан' });
 });
+
+app.get('/api/debug-operators', async (req, res) => {
+    try {
+        console.log('=== DEBUG OPERATORS START ===');
+        
+        const token = req.headers.authorization?.split(' ')[1];
+        console.log('Token exists:', !!token);
+        console.log('Token:', token ? ${token.substring(0, 20)}... : 'none');
+        
+        if (!token) {
+            return res.status(401).json({
+                success: false,
+                error: 'Требуется авторизация'
+            });
+        }
+
+        // Проверяем токен
+        let decoded;
+        try {
+            decoded = jwt.verify(token, process.env.JWT_SECRET);
+            console.log('Token decoded successfully:', {
+                userId: decoded.userId,
+                email: decoded.email
+            });
+        } catch (jwtError) {
+            console.error('JWT Error:', jwtError.message);
+            return res.status(401).json({
+                success: false,
+                error: "Неверный токен: " + jwtError.message
+            });
+        }
+
+        // Ищем пользователя
+        const user = await User.findByPk(decoded.userId, {
+            attributes: ['id', 'email', 'operators'],
+            raw: true
+        });
+        
+        console.log('User found:', !!user);
+        if (user) {
+            console.log('User data:', {
+                id: user.id,
+                email: user.email,
+                operatorsRaw: user.operators
+            });
+        } else {
+            return res.status(404).json({
+                success: false,
+                error: "Пользователь не найден"
+            });
+        }
+
+        // Парсим операторов
+        let operators = [];
+        try {
+            operators = typeof user.operators === 'string'
+                ? JSON.parse(user.operators)
+                : user.operators || [];
+            console.log('Parsed operators:', operators);
+        } catch(parseError) {
+            console.error('Parse operators error:', parseError);
+            operators = [];
+        }
+
+        // Валидируем email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const validOperators = operators.filter(op => emailRegex.test(op));
+        console.log('Valid operators:', validOperators);
+
+        console.log('=== DEBUG OPERATORS END ===');
+
+        res.json({
+            success: true,
+            debug: {
+                tokenValid: true,
+                userExists: true,
+                operatorsRaw: user.operators,
+                operatorsParsed: operators,
+                validOperators: validOperators
+            }
+        });
+
+    } catch (error) {
+        console.error('DEBUG OPERATORS ERROR:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal Server Error',
+            details: error.message
+        });
+    }
+});
+
 app.get('/api/debug-email', async (req, res) => {
     try {
         const logMessage = `Debug email test: ${new Date().toISOString()}\n`;
