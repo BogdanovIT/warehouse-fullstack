@@ -3,8 +3,8 @@ import nodemailer from 'nodemailer'
 class EmailService {
     constructor() {
         this.transporter = nodemailer.createTransport({
-            host: 'mail.breez.ru',
-            port: 443,
+            host: 'smtp.breez.ru',
+            port: 465,
             secure: false,
             auth: {
                 user: process.env.EMAIL_USER,
