@@ -29,7 +29,7 @@ class EmailService {
         try {
             console.log(`sending email to ${to} via SMTP...` )
             const mailOptions = {
-                from: "Мобильный кладовщик <mobile_storekeeper@breez.ru>",
+                from: "Мобильный кладовщик <aktnabrak@mail.ru>",
                 to: to,
                 subject: subject,
                 html: htmlBody,

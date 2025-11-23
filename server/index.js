@@ -309,6 +309,17 @@ app.get('/api/test-email', async (req, res) => {
         res.json({ error: error.message });
     }
 });
+app.get('/api/write-log', (req, res) => {
+    const logMessage = `Тестовый лог: ${new Date().toISOString()}\n`;
+    
+    // Записать лог в файл
+    require('fs').appendFileSync('/home/abogdanov/email-debug.log', logMessage);
+    
+    // Также попробовать отправить тестовый email
+    console.log('API write-log called - этот лог где-то есть!');
+    
+    res.json({ success: true, message: 'Лог записан' });
+});
 
 app.get('/api/courses', async (req, res) => {
     try {
