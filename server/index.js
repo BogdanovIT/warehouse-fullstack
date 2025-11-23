@@ -320,7 +320,31 @@ app.get('/api/write-log', (req, res) => {
     
     res.json({ success: true, message: 'Лог записан' });
 });
-
+app.get('/api/debug-email', async (req, res) => {
+    try {
+        const logMessage = `Debug email test: ${new Date().toISOString()}\n`;
+        
+        // 1. Записать лог
+        fs.appendFileSync('/tmp/email-debug.log', logMessage);
+        
+        // 2. Попробовать отправить тестовый email
+        console.log('DEBUG EMAIL ENDPOINT CALLED');
+        
+        await emailService.sendEmail(
+            'test@example.com', 
+            'Test Debug Email', 
+            '<h1>Test Email</h1>'
+        );
+        
+        fs.appendFileSync('/tmp/email-debug.log', 'Email sent successfully\n');
+        res.json({ success: true });
+        
+    } catch (error) {
+        const errorMessage = `Email error: ${error.message}\n`;
+        fs.appendFileSync('/tmp/email-debug.log', errorMessage);
+        res.json({ error: error.message });
+    }
+});
 app.get('/api/courses', async (req, res) => {
     try {
         const courses = await Course.findAll({
