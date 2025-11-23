@@ -10,7 +10,7 @@ import SecurityManager from "@/security/SecurityManager"
 
 
 SplashScreen.preventAutoHideAsync()
-export default function RootLayout() {
+export default function App() {
     const [{ access_token }] = useAtom(loginAtom)
     const [loaded] = useFonts({
         FiraSans: require('../assets/fonts/FiraSans-Regular.ttf'),

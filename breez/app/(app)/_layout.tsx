@@ -8,7 +8,7 @@ import { MenuButton } from "../../features/layout/UI/MenuButton/MenuButton";
 import { CustomDrawer } from "../../widget/layout/ui/CustomDrawer/CustomDrawer";
 
 
-export default function App() {
+export default function AppLayout() {
     const { access_token } = useAtomValue(authAtom)
     if (!access_token) {
         return <Redirect href="/login"/>
