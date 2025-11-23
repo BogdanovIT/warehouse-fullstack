@@ -146,24 +146,10 @@ export default function Receiving () {
         }
         setIsSubmitting(true)
         try {
-            const allPhotos = [...processPhotosToUpload, ...defectivePhotos]
-            const uploadFormData = new FormData()
-            allPhotos.forEach((uri, index) => {
-                uploadFormData.append('photos', {
-                    uri,
-                    name: `photo_${Date.now()}_${index}.jpg`,
-                    type: 'image/jpeg'
-                } as any)
-            })
-            const uploadResponse = await fetch(`${API_URL}/api/upload-temp-photos`, {
-                method: 'POST',
-                body: uploadFormData as any,
-                headers: {'Content-Type': 'multipart/form-data',}
-            })
-            if (!uploadResponse.ok) throw new Error ("Ошибка загрузки фото на сервер")
-            const { savedPaths } = await uploadResponse.json()
+            const { savedPaths } = await uploadPhotos([...processPhotosToUpload, ...defectivePhotos], 'process')
             const processPaths = savedPaths.slice(0, processPhotosToUpload.length)
             const defectPaths = savedPaths.slice(processPhotosToUpload.length)
+            
             const mailData = {
                 gateNumber,
                 recipients: userProfile?.operators || [],

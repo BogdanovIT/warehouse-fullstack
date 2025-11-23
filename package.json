@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "eas-cli": "^16.28.0",
+    "expo": "^54.0.25",
     "node-ews": "^3.5.0"
   }
 }
