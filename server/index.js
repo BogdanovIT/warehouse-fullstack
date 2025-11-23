@@ -295,6 +295,20 @@ app.post('/api/receiving/send', async (req, res) => {
         res.status(500).json({ error: error.message})
     }
 })
+app.get('/api/test-email', async (req, res) => {
+    try {
+        console.log('TEST EMAIL CALLED - это должно быть в логах!');
+        await emailService.sendEmail(
+            'test@example.com', 
+            'Test Subject', 
+            '<h1>Test</h1>'
+        );
+        res.json({ success: true });
+    } catch (error) {
+        console.error('EMAIL ERROR:', error);
+        res.json({ error: error.message });
+    }
+});
 
 app.get('/api/courses', async (req, res) => {
     try {
