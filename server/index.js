@@ -331,7 +331,7 @@ app.get('/api/debug-email', async (req, res) => {
         console.log('DEBUG EMAIL ENDPOINT CALLED');
         
         await emailService.sendEmail(
-            'test@example.com', 
+            'cheshir2006@yandex.ru', 
             'Test Debug Email', 
             '<h1>Test Email</h1>'
         );
