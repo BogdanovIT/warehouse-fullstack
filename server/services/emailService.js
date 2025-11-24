@@ -26,6 +26,18 @@ class EmailService {
         }
     }
     async sendEmail(to, subject, htmlBody, attachments = []) {
+         const logData = {
+        timestamp: new Date().toISOString(),
+        to: to,
+        subject: subject,
+        attachmentsCount: attachments.length,
+        firstAttachment: attachments[0]?.filename
+        };
+        
+        require('fs').appendFileSync(
+            '/tmp/email-crash.log', 
+            JSON.stringify(logData) + '\n'
+        );
         try {
             console.log(`sending email to ${to} via SMTP...` )
             const mailOptions = {
