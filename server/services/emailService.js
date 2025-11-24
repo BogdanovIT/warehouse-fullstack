@@ -70,12 +70,12 @@ class EmailService {
         const allAttachments = [...processPhotos, ...defectivePhotos]
         return await this.sendEmail(recipients.join(', '), subject, htmlBody, allAttachments)
     }
-    async sendShipmentReport(recipients, gateNumber, photoPaths=[]) {
+    async sendShipmentReport(recipients, gateNumber, attachments=[]) {
         const subject = `Отгрузка, ворота №${gateNumber}`
         const htmlBody = `
         <h3>Фотоотчет по отгрузке</h3>
         <p><strong>Ворота:</strong>${gateNumber}</p>
-        <p><strong>Фотографий процесса:</strong>${photoPaths.length}</p>
+        <p><strong>Фотографий процесса:</strong>${attachments.length}</p>
         <p><em>Отчет создан автоматически</em></p>`
         return await this.sendEmail(recipients.join(', '), subject, htmlBody, photoPaths)
     }

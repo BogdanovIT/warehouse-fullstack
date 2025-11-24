@@ -2,6 +2,7 @@
   "dependencies": {
     "eas-cli": "^16.28.0",
     "expo": "^54.0.25",
+    "expo-dev-client": "~6.0.18",
     "node-ews": "^3.5.0"
   }
 }
