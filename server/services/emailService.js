@@ -77,7 +77,7 @@ class EmailService {
         <p><strong>Ворота:</strong>${gateNumber}</p>
         <p><strong>Фотографий процесса:</strong>${attachments.length}</p>
         <p><em>Отчет создан автоматически</em></p>`
-        return await this.sendEmail(recipients.join(', '), subject, htmlBody, photoPaths)
+        return await this.sendEmail(recipients.join(', '), subject, htmlBody, attachments)
     }
     async sendDefectAkt(recipients, defectData, photos=[]) {
         const subject = 'Акт отбраковки'
