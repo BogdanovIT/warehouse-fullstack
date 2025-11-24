@@ -42,20 +42,7 @@ export default function Shipment ({onUpload}: ImageUploaderProps) {
     const [gateNumber, setGateNumber] = useState('')
     const [auth] = useAtom(authAtom)
     const [userProfile, setUserProfile] = useAtom(userProfileAtom)
-    useEffect(()=> {
-        const loadProfile = async () => {
-            if (auth?.access_token && !userProfile) {
-                try {
-                    const profile = await getUserProfile(auth.access_token!)
-                    setUserProfile(profile)
-                } catch(error) {
-                    console.error("Ошибка загрузки профиля:", error)
-                }
-            }
-        }
-        loadProfile()
-    }, [auth?.access_token, userProfile])
-
+    
     const buttonScale = useRef( new Animated.Value(1)).current
     const animateButton = () => {
         Animated.sequence([
@@ -71,6 +58,19 @@ export default function Shipment ({onUpload}: ImageUploaderProps) {
             })
         ]).start()
     }
+    useEffect(()=> {
+        const loadProfile = async () => {
+            if (auth?.access_token && !userProfile) {
+                try {
+                    const profile = await getUserProfile(auth.access_token!)
+                    setUserProfile(profile)
+                } catch(error) {
+                    console.error("Ошибка загрузки профиля:", error)
+                }
+            }
+        }
+        loadProfile()
+    }, [auth?.access_token, userProfile])
     const [tempPhotoUris, setTempPhotoUris] = useState<(string | null )[]>(Array(10).fill(null))
 
     function debounce<F extends (...args: any[]) => any>(func: F, wait: number): F {
