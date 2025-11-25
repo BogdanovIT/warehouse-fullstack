@@ -220,8 +220,15 @@ app.post('/api/shipment/send', async (req, res) => {
         for (const relativePath of photoPaths) {
             const fullPath = path.join('/home/abogdanov/Mobile_Storekeeper', relativePath)
             console.log('2.1 Checking file: ', fullPath)
+            console.log('2.1a Relative path: ', relativePath)
+            console.log('2.1b Base path: ', '/home/abogdanov/Mobile_Storekeeper')
+            const uploadDir = '/home/abogdanov/Mobile_Storekeeper/temp_uploads'
+            console.log('2.1c Files in upload dir: ', fs.readdir(uploadDir))
             if(!fs.existsSync(fullPath)) {
                 console.log('2.2 File not found:', fullPath)
+                const parentDir = path.dirname(fullPath)
+                console.log('2.2a Parent dir exists: ', fs.existsSync(parentDir))
+                console.log('2.2b Files in parent dir: ', fs.readdir(parentDir))
                 console.warn(`Файл не найден:, ${fullPath}`)
                 continue
             }
