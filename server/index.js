@@ -223,7 +223,20 @@ app.post('/api/shipment/send', async (req, res) => {
             console.log('2.1a Relative path: ', relativePath)
             console.log('2.1b Base path: ', '/home/abogdanov/Mobile_Storekeeper')
             const uploadDir = '/home/abogdanov/Mobile_Storekeeper/temp_uploads'
-            console.log('2.1c Files in upload dir: ', fs.readdir(uploadDir))
+            console.log('2.1c Files in upload dir: ',await fs.readdirSync(uploadDir))
+            console.log('2.1d Full path exists: ', fs.existsSync(fullPath))
+            console.log('2.1e Can access file:', await fs.access(fullPath).then(() => 'YES').catch(() => 'NO'))
+            try {
+                const stats = await fs.stat(fullPath)
+                console.log('2.1f File stats:', {
+                    size: stats.size,
+                    mode: stats.mode,
+                    uid: stats.uid,
+                    gid: stats.gid
+                })
+            } catch(error) {
+                console.log('2.1f Stat error: ', error.message)
+            }
             if(!fs.existsSync(fullPath)) {
                 console.log('2.2 File not found:', fullPath)
                 const parentDir = path.dirname(fullPath)
