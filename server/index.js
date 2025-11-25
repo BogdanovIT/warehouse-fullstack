@@ -215,14 +215,17 @@ app.post('/api/shipment/send', async (req, res) => {
         if (!photoPaths?.length) {
             return res.status(400).json({error: "Нет фотографий для отправки"})
         }
-        console.log('2. Creating attachmentsfrom', photoPaths?.length, 'photos')
+        console.log('2. Creating attachments from', photoPaths?.length, 'photos')
         const attachments = []
         for (const relativePath of photoPaths) {
             const fullPath = path.join('/home/abogdanov/Mobile_Storekeeper', relativePath)
+            console.log('2.1 Checking file: ', fullPath)
             if(!fs.existsSync(fullPath)) {
+                console.log('2.2 File not found:', fullPath)
                 console.warn(`Файл не найден:, ${fullPath}`)
                 continue
             }
+            console.log('2.3 File exists, reading...')
             const fileBuffer = await fileService.readFile(fullPath)
             attachments.push({
                 filename: `Отгрузка_${path.basename(relativePath)}`,
@@ -230,6 +233,7 @@ app.post('/api/shipment/send', async (req, res) => {
                 contentType: 'image/jpeg'
             })
         }
+        console.log('2.4 Attachments created ', attachments.length)
         if (attachments.length === 0) {
             return res.status(400).json({error: 'Нет доступных файлов для отправки'})
         }
