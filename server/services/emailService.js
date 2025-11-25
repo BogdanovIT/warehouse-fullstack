@@ -83,12 +83,16 @@ class EmailService {
         return await this.sendEmail(recipients.join(', '), subject, htmlBody, allAttachments)
     }
     async sendShipmentReport(recipients, gateNumber, attachments=[]) {
+        console.log('5. sendShipmentReport called')
+        console.log('6. Recipients: ', recipients)
+        console.log('7. Attachments count: ', attachments.length)
         const subject = `Отгрузка, ворота №${gateNumber}`
         const htmlBody = `
         <h3>Фотоотчет по отгрузке</h3>
         <p><strong>Ворота:</strong>${gateNumber}</p>
         <p><strong>Фотографий процесса:</strong>${attachments.length}</p>
         <p><em>Отчет создан автоматически</em></p>`
+        console.log('8. Calling sendEmail')
         return await this.sendEmail(recipients.join(', '), subject, htmlBody, attachments)
     }
     async sendDefectAkt(recipients, defectData, photos=[]) {

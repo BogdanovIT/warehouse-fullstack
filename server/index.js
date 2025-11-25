@@ -210,16 +210,12 @@ app.post('/api/brakodel/send', upload.array('photos'), async (req, res) => {
 })
 app.post('/api/shipment/send', async (req, res) => {
     try {
-        console.log('Shipment send called with:', {
-            gateNumber: req.body.gateNumber,
-            recipients: req.body.recipients,
-            processPhotosCount: req.body.processPhotos?.length,
-            defectivePhotosCount: req.body.defectivePhotos?.length
-        })
+        console.log('1. Shipment send called')
         const { photoPaths, gateNumber, recipients} = req.body
         if (!photoPaths?.length) {
             return res.status(400).json({error: "Нет фотографий для отправки"})
         }
+        console.log('2. Creating attachmentsfrom', photoPaths?.length, 'photos')
         const attachments = []
         for (const relativePath of photoPaths) {
             const fullPath = path.join('/home/abogdanov/Mobile_Storekeeper', relativePath)
@@ -237,12 +233,14 @@ app.post('/api/shipment/send', async (req, res) => {
         if (attachments.length === 0) {
             return res.status(400).json({error: 'Нет доступных файлов для отправки'})
         }
+        console.log('3. Calling sendShipment report with', attachments.length, 'attachments')
         await emailService.sendShipmentReport(recipients, gateNumber, attachments)
         for (const relativePath of photoPaths) {
             const fullPath = path.join('/home/abogdanov/Mobile_Storekeeper', relativePath)
             await fileService.deleteFile(fullPath)
         }
             res.json({success: true})
+            console.log('4. Send shipment report completed')
     } catch (error) {
         res.status(500).json({ error: error.message})
     }
