@@ -40,7 +40,7 @@ class EmailService {
                     contentType: attachment.contentType
                 }))
             } 
-            //const result = await this.transporter.sendMail(mailOptions)
+            await this.transporter.sendMail(mailOptions)
             console.log(`email to ${to} sent successfully via SMTP`)
             return true
         } catch(error) {
