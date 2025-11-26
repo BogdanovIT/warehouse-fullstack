@@ -238,14 +238,14 @@ app.post('/api/shipment/send', async (req, res) => {
             } catch(error) {
                 console.log('2.1f Stat error: ', error.message)
             }
-            if(!fs.existsSync(fullPath)) {
-                console.log('2.2 File not found:', fullPath)
-                const parentDir = path.dirname(fullPath)
-                console.log('2.2a Parent dir exists: ', fs.existsSync(parentDir))
-                console.log('2.2b Files in parent dir: ', fs.readdir(parentDir))
-                console.warn(`Файл не найден:, ${fullPath}`)
-                continue
-            }
+            // if(!fs.existsSync(fullPath)) {
+            //     console.log('2.2 File not found:', fullPath)
+            //     const parentDir = path.dirname(fullPath)
+            //     console.log('2.2a Parent dir exists: ', fs.existsSync(parentDir))
+            //     console.log('2.2b Files in parent dir: ', fs.readdir(parentDir))
+            //     console.warn(`Файл не найден:, ${fullPath}`)
+            //     continue
+            // }
             console.log('2.3 File exists, reading...')
             const fileBuffer = await fileService.readFile(fullPath)
             attachments.push({
