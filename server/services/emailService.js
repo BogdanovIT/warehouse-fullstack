@@ -82,7 +82,7 @@ class EmailService {
         console.log('Send Mail!!!')
         return await this.sendEmail(recipients.join(', '), subject, htmlBody, allAttachments)
     }
-    async sendShipmentReport(recipients, gateNumber, attachments=[]) {
+    async sendShipmentReport(recipients, gateNumber, attachments) {
         console.log('5. sendShipmentReport called')
         console.log('6. Recipients: ', recipients)
         console.log('7. Attachments count: ', attachments.length)
