@@ -108,7 +108,7 @@ class EmailService {
         //     },
         //     ...photos
         // ]
-        const attachments = [...defectData, ...photos]
+        const attachments = [defectData, photos]
         return await this.sendEmail(recipients.join(', '), subject, htmlBody, attachments)
     }
 }
