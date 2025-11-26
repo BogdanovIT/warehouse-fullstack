@@ -25,7 +25,8 @@ class EmailService {
             console.error('SMTP Connection failed', error.message)
         }
     }
-    async sendEmail(to, subject, htmlBody, attachments = []) {
+    async sendEmail(to, subject, htmlBody, attachments) {
+        console.log("Функция вызвана, проверьте почту")
          const logData = {
         timestamp: new Date().toISOString(),
         to: to,
