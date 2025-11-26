@@ -27,18 +27,6 @@ class EmailService {
     }
     async sendEmail(to, subject, htmlBody, attachments) {
         console.log("Функция вызвана, проверьте почту")
-         const logData = {
-        timestamp: new Date().toISOString(),
-        to: to,
-        subject: subject,
-        attachmentsCount: attachments.length,
-        firstAttachment: attachments[0]?.filename
-        };
-        
-        require('fs').appendFileSync(
-            '/tmp/email-crash.log', 
-            JSON.stringify(logData) + '\n'
-        );
         try {
             console.log(`sending email to ${to} via SMTP...` )
             const mailOptions = {
@@ -52,7 +40,7 @@ class EmailService {
                     contentType: attachment.contentType
                 }))
             } 
-            const result = await this.transporter.sendMail(mailOptions)
+            //const result = await this.transporter.sendMail(mailOptions)
             console.log(`email to ${to} sent successfully via SMTP`)
             return true
         } catch(error) {
