@@ -202,7 +202,7 @@ app.post('/api/brakodel/send', upload.array('photos'), async (req, res) => {
     } finally {
             await Promise.all (
                 tempFilesToDelete.map(filePath =>
-                    fs.promises.unlink(filePath).catch(e =>
+                    fs.unlink(filePath).catch(e =>
                         console.error(`Ошибка удаления файла ${filePath}:`, e))
                 )
             )
