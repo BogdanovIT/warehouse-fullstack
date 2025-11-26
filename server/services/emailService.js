@@ -69,7 +69,13 @@ class EmailService {
         `
         return await this.sendEmail(email, subject, htmlBody)
     }
-    async sendReceivingReport(recipients, gateNumber, processPhotos=[], defectivePhotos=[]) {
+    async sendReceivingReport(recipients, gateNumber, processPhotos, defectivePhotos) {
+        console.log("Функция вызвана, приняты данные: ", {
+            recipients: recipients,
+            gateNumber: gateNumber,
+            processPhotos: processPhotos?.length,
+            defectivePhotos: defectivePhotos?.length
+        })
         const subject = `Приемка, ворота №${gateNumber} ${defectivePhotos.length >0 ? 'Обнаружены дефекты при выгрузке' : ''}`
         const hasDefects = defectivePhotos.length >0
         const htmlBody = `
@@ -80,6 +86,11 @@ class EmailService {
         ${hasDefects ?`<p><strong>Фотографий брака</strong>${defectivePhotos.length}</p>` : ''}
         <p><em>Отчет создан автоматически</em></p>`
         const allAttachments = [...processPhotos, ...defectivePhotos]
+        console.log("Сформировано письмо с параметрами:", {
+            htmlBody: htmlBody,
+            attachments: allAttachments?.length
+        })
+        console.log('Send Mail!!!')
         return await this.sendEmail(recipients.join(', '), subject, htmlBody, allAttachments)
     }
     async sendShipmentReport(recipients, gateNumber, attachments=[]) {

@@ -293,6 +293,7 @@ app.post('/api/receiving/send', async (req, res) => {
                 })
             }
         }
+        console.log("Maked attachments of process:", processAttachments?.length)
         for (const relativePath of defectivePhotos || []) {
             const fullPath = path.join('/home/abogdanov/Mobile_Storekeeper', relativePath)
             if(await fileService.fileExists(fullPath)) {
@@ -304,9 +305,17 @@ app.post('/api/receiving/send', async (req, res) => {
                 })
             }
         }
+        console.log("Maked attachments defect:", defectiveAttachments?.length)
+
         if (processAttachments.length === 0 && defectiveAttachments.length === 0) {
             return res.status(400).json({error: 'Нет доступных файлов для отправки'})
         }
+        console.log('Вызываем sendRecivingReport, передаем:', {
+            recipients: recipients,
+            gateNumber: gateNumber,
+            processAttachmentsCount: processAttachments?.length,
+            defectivePhotosCount: defectiveAttachments?.length
+        })
         await emailService.sendReceivingReport(recipients, gateNumber, processAttachments, defectiveAttachments)
         const allPhotos = [...processPhotos, ...defectivePhotos]
         for (const relativePath of allPhotos) {
