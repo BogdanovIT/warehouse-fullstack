@@ -95,19 +95,19 @@ class EmailService {
         console.log('8. Calling sendEmail')
         return await this.sendEmail(recipients.join(', '), subject, htmlBody, attachments)
     }
-    async sendDefectAkt(recipients, defectData, photos=[]) {
+    async sendDefectAkt(recipients, defectData, photos) {
         const subject = 'Акт отбраковки'
         const htmlBody = `
         <h3>Акт отбраковки товара</h3>
         <p><em>Отчет создан автоматически</em></p>`
-        const attachments = [
-            {
-                filename: "Акт дефектовки.xlsx",
-                content: defectData.excelBuffer,
-                contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            },
-            ...photos
-        ]
+        // const attachments = [
+        //     {
+        //         filename: "Акт дефектовки.xlsx",
+        //         content: defectData.excelBuffer,
+        //         contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        //     },
+        //     ...photos
+        // ]
         return await this.sendEmail(recipients.join(', '), subject, htmlBody, attachments)
     }
 }
