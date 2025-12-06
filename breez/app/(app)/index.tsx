@@ -131,8 +131,9 @@ const styles = StyleSheet.create({
         textAlignVertical: 'center'        
     },
     imagess: {
-        width: "90%",
-        height: 150,
+        width: 150,
+        height: undefined,
+        resizeMode: 'cover',
         marginRight: 20,
         borderRadius: 15,
     },

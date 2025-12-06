@@ -108,7 +108,7 @@ export default function Shipment ({onUpload}: ImageUploaderProps) {
             const result = await launchCameraAsync({
                 mediaTypes: ['images'],
                 allowsEditing: false,
-                quality: 1,
+                quality: 0.7,
             });            
             if (!result.canceled) {
                 const newImageUris = [...tempPhotoUris]
