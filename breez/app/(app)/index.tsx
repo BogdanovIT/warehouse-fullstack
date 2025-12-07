@@ -39,7 +39,7 @@ export default function HomePage() {
 
     const renderItem = (item: any) => (
         <Pressable key={item.id} onPress={() => router.push(item.screen)}>
-            <View style={{ alignItems: 'stretch', width: 150, marginRight: 20}}>
+            <View style={{ alignItems: 'stretch', width: 340, marginRight: 20, marginTop:20}}>
                 <Image 
                 source={{ uri: item.image_url}}
                 style={styles.imagess}
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
         textAlignVertical: 'center'        
     },
     imagess: {
-        width: 150,
+        width: 340,
         height: undefined,
         resizeMode: 'cover',
         marginRight: 20,

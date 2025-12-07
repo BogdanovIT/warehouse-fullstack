@@ -210,43 +210,14 @@ app.post('/api/brakodel/send', upload.array('photos'), async (req, res) => {
 })
 app.post('/api/shipment/send', async (req, res) => {
     try {
-        console.log('1. Shipment send called')
         const { photoPaths, gateNumber, recipients} = req.body
         if (!photoPaths?.length) {
             return res.status(400).json({error: "Нет фотографий для отправки"})
         }
-        console.log('2. Creating attachments from', photoPaths?.length, 'photos')
         const attachments = []
         for (const relativePath of photoPaths) {
             const fullPath = path.join('/home/abogdanov/Mobile_Storekeeper', relativePath)
-            console.log('2.1 Checking file: ', fullPath)
-            console.log('2.1a Relative path: ', relativePath)
-            console.log('2.1b Base path: ', '/home/abogdanov/Mobile_Storekeeper')
-            const uploadDir = '/home/abogdanov/Mobile_Storekeeper/temp_uploads'
-            console.log('2.1c Files in upload dir: ',await fs.readdir(uploadDir))
 
-            try {
-                await fs.access(fullPath)
-                console.log('2.1d Full path Exists: YES')
-                const stats = await fs.stat(fullPath)
-                console.log('2.1f File stats:', {
-                    size: stats.size,
-                    mode: stats.mode,
-                    uid: stats.uid,
-                    gid: stats.gid
-                })
-            } catch(error) {
-                console.log('2.1f Stat error: ', error.message)
-            }
-            // if(!fs.existsSync(fullPath)) {
-            //     console.log('2.2 File not found:', fullPath)
-            //     const parentDir = path.dirname(fullPath)
-            //     console.log('2.2a Parent dir exists: ', fs.existsSync(parentDir))
-            //     console.log('2.2b Files in parent dir: ', fs.readdir(parentDir))
-            //     console.warn(`Файл не найден:, ${fullPath}`)
-            //     continue
-            // }
-            console.log('2.3 File exists, reading...')
             const fileBuffer = await fileService.readFile(fullPath)
             attachments.push({
                 filename: `Отгрузка_${path.basename(relativePath)}`,
@@ -254,30 +225,21 @@ app.post('/api/shipment/send', async (req, res) => {
                 contentType: 'image/jpeg'
             })
         }
-        console.log('2.4 Attachments created ', attachments.length)
         if (attachments.length === 0) {
             return res.status(400).json({error: 'Нет доступных файлов для отправки'})
         }
-        console.log('3. Calling sendShipment report with', attachments.length, 'attachments')
         await emailService.sendShipmentReport(recipients, gateNumber, attachments)
         for (const relativePath of photoPaths) {
             const fullPath = path.join('/home/abogdanov/Mobile_Storekeeper', relativePath)
             await fileService.deleteFile(fullPath)
         }
             res.json({success: true})
-            console.log('4. Send shipment report completed')
     } catch (error) {
         res.status(500).json({ error: error.message})
     }
 })
 app.post('/api/receiving/send', async (req, res) => {    
     try {
-        console.log('Receiving send called with:', {
-            gateNumber: req.body.gateNumber,
-            recipients: req.body.recipients,
-            processPhotosCount: req.body.processPhotos?.length,
-            defectivePhotosCount: req.body.defectivePhotos?.length
-        })
         const { gateNumber, recipients, processPhotos, defectivePhotos } = req.body
         const processAttachments = []
         const defectiveAttachments = []
@@ -293,7 +255,6 @@ app.post('/api/receiving/send', async (req, res) => {
                 })
             }
         }
-        console.log("Maked attachments of process:", processAttachments?.length)
         for (const relativePath of defectivePhotos || []) {
             const fullPath = path.join('/home/abogdanov/Mobile_Storekeeper', relativePath)
             if(await fileService.fileExists(fullPath)) {
@@ -305,17 +266,10 @@ app.post('/api/receiving/send', async (req, res) => {
                 })
             }
         }
-        console.log("Maked attachments defect:", defectiveAttachments?.length)
 
         if (processAttachments.length === 0 && defectiveAttachments.length === 0) {
             return res.status(400).json({error: 'Нет доступных файлов для отправки'})
         }
-        console.log('Вызываем sendRecivingReport, передаем:', {
-            recipients: recipients,
-            gateNumber: gateNumber,
-            processAttachmentsCount: processAttachments?.length,
-            defectivePhotosCount: defectiveAttachments?.length
-        })
         await emailService.sendReceivingReport(recipients, gateNumber, processAttachments, defectiveAttachments)
         const allPhotos = [...processPhotos, ...defectivePhotos]
         for (const relativePath of allPhotos) {
@@ -327,39 +281,11 @@ app.post('/api/receiving/send', async (req, res) => {
         res.status(500).json({ error: error.message})
     }
 })
-app.get('/api/test-email', async (req, res) => {
-    try {
-        console.log('TEST EMAIL CALLED - это должно быть в логах!');
-        await emailService.sendEmail(
-            'test@example.com', 
-            'Test Subject', 
-            '<h1>Test</h1>'
-        );
-        res.json({ success: true });
-    } catch (error) {
-        console.error('EMAIL ERROR:', error);
-        res.json({ error: error.message });
-    }
-});
-app.get('/api/write-log', (req, res) => {
-    const logMessage = `Тестовый лог: ${new Date().toISOString()}\n`;
-    
-    // Записать лог в файл
-    require('fs').appendFileSync('/home/abogdanov/email-debug.log', logMessage);
-    
-    // Также попробовать отправить тестовый email
-    console.log('API write-log called - этот лог где-то есть!');
-    
-    res.json({ success: true, message: 'Лог записан' });
-});
 
 app.get('/api/debug-operators', async (req, res) => {
     try {
-        console.log('=== DEBUG OPERATORS START ===');
         
         const token = req.headers.authorization?.split(' ')[1];
-        console.log('Token exists:', !!token);
-        console.log('Token:', token ? `${token.substring(0, 20)}...` : 'none');
         
         if (!token) {
             return res.status(401).json({
@@ -372,10 +298,6 @@ app.get('/api/debug-operators', async (req, res) => {
         let decoded;
         try {
             decoded = jwt.verify(token, process.env.JWT_SECRET);
-            console.log('Token decoded successfully:', {
-                userId: decoded.userId,
-                email: decoded.email
-            });
         } catch (jwtError) {
             console.error('JWT Error:', jwtError.message);
             return res.status(401).json({
@@ -410,7 +332,6 @@ app.get('/api/debug-operators', async (req, res) => {
             operators = typeof user.operators === 'string'
                 ? JSON.parse(user.operators)
                 : user.operators || [];
-            console.log('Parsed operators:', operators);
         } catch(parseError) {
             console.error('Parse operators error:', parseError);
             operators = [];
@@ -419,9 +340,6 @@ app.get('/api/debug-operators', async (req, res) => {
         // Валидируем email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const validOperators = operators.filter(op => emailRegex.test(op));
-        console.log('Valid operators:', validOperators);
-
-        console.log('=== DEBUG OPERATORS END ===');
 
         res.json({
             success: true,
@@ -444,31 +362,6 @@ app.get('/api/debug-operators', async (req, res) => {
     }
 });
 
-app.get('/api/debug-email', async (req, res) => {
-    try {
-        const logMessage = `Debug email test: ${new Date().toISOString()}\n`;
-        
-        // 1. Записать лог
-        fs.appendFile('/tmp/email-debug.log', logMessage);
-        
-        // 2. Попробовать отправить тестовый email
-        console.log('DEBUG EMAIL ENDPOINT CALLED');
-        
-        await emailService.sendEmail(
-            'cheshir2006@yandex.ru', 
-            'Test Debug Email', 
-            '<h1>Test Email</h1>'
-        );
-        
-        fs.appendFile('/tmp/email-debug.log', 'Email sent successfully\n');
-        res.json({ success: true });
-        
-    } catch (error) {
-        const errorMessage = `Email error: ${error.message}\n`;
-        fs.appendFile('/tmp/email-debug.log', errorMessage);
-        res.json({ error: error.message });
-    }
-});
 app.get('/api/courses', async (req, res) => {
     try {
         const courses = await Course.findAll({
@@ -595,7 +488,6 @@ app.get('/api/user/operators', async (req, res) => {
 })
 
 app.post('/api/upload-temp-photos', upload.array('photos'), async (req,res) => {
-    console.log('Upload temp photos called, files:', req.files?.length)
     try {
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({ success: false, message: " No files uploaded"})
