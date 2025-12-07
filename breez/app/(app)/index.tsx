@@ -136,6 +136,7 @@ const styles = StyleSheet.create({
         resizeMode: 'cover',
         marginRight: 20,
         borderRadius: 15,
+        aspectRatio: 16/9
     },
     TitleStyle: {
         fontFamily: CustomFonts.bold,
