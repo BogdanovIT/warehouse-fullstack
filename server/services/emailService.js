@@ -44,7 +44,6 @@ class EmailService {
         }
     }
     async sendConfirmationCode(email, code) {
-        console.log("Code for", email, code)
         const subject = 'Код подтверждения'
         const htmlBody = `
         <h3>Добро пожаловать в Мобильный Кладовщик</h3>

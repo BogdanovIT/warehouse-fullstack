@@ -75,10 +75,8 @@ app.use(checkPasswordExpiration)
 app.use(checkBlocked)
 
 app.post('/api/users/send-verification', async (req,res) => {
-    console.log("Вызван эндпоинт регистрации пользователя")
     try {
         const email = req.body.email
-        console.log("регистрируем е-майл", email)
         if ( !email || !email.endsWith('@breez.ru')) {
             return res.status(400).json({
                 success: false,
@@ -86,16 +84,13 @@ app.post('/api/users/send-verification', async (req,res) => {
             })
         }
         const existingUser = await User.findOne({where: {email}})
-        console.log("Найден зарегистрированный пользователь", existingUser ? "Найден" : "Не найден")
         if (existingUser) {
             return res.status(400).json({
                 success: false,
                 message: "Пользователь с таким email уже существует"
             })
         }
-        console.log("Пользователь не существует, продолжаем")
         const code = generateVerificationCode()
-        console.log('Код регистрации', code)
         const expiresAt = new Date(Date.now()+15*60*1000)
         await VerificationCode.destroy({
             where: {email}
