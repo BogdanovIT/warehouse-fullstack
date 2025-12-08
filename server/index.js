@@ -75,8 +75,10 @@ app.use(checkPasswordExpiration)
 app.use(checkBlocked)
 
 app.post('/api/users/send-verification', async (req,res) => {
+    console.log("Вызван эндпоинт регистрации пользователя")
     try {
         const email = req.body.email
+        console.log("регистрируем е-майл", email)
         if ( !email || !email.endsWith('@breez.ru')) {
             return res.status(400).json({
                 success: false,
@@ -91,6 +93,7 @@ app.post('/api/users/send-verification', async (req,res) => {
             })
         }
         const code = generateVerificationCode()
+        console.log('Код регистрации', code)
         const expiresAt = new Date(Date.now()+15*60*1000)
         await VerificationCode.destroy({
             where: {email}
@@ -101,6 +104,7 @@ app.post('/api/users/send-verification', async (req,res) => {
             expiresAt
         })
         await emailService.sendConfirmationCode(email, code)
+        console.log("Вызываем процесс регистрации пользователя", email, code)
         res.json({
             success: true,
             message: "Код подтверждения отправлен на указанный email"
