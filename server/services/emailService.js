@@ -51,7 +51,7 @@ class EmailService {
         <p>Введите этот код в форму регистрации приложения</p>
         <p><em>Код действителен 15 минут</em></p>
         `
-        return await this.sendEmail(email, subject, htmlBody)
+        return await this.sendEmail(email, subject, htmlBody, [])
     }
     async sendReceivingReport(recipients, gateNumber, processPhotos, defectivePhotos) {
         const subject = `Приемка, ворота №${gateNumber} ${defectivePhotos.length >0 ? 'Обнаружены дефекты при выгрузке' : ''}`
