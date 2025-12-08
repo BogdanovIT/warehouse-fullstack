@@ -86,13 +86,14 @@ app.post('/api/users/send-verification', async (req,res) => {
             })
         }
         const existingUser = await User.findOne({where: {email}})
-        console.log("Найден зарегистрированный пользователь", existingUser)
+        console.log("Найден зарегистрированный пользователь", existingUser ? "Найден" : "Не найден")
         if (existingUser) {
             return res.status(400).json({
                 success: false,
                 error: "Пользователь с таким email уже существует"
             })
         }
+        console.log("Пользователь не существует, продолжаем")
         const code = generateVerificationCode()
         console.log('Код регистрации', code)
         const expiresAt = new Date(Date.now()+15*60*1000)
