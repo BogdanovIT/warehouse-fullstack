@@ -86,6 +86,7 @@ app.post('/api/users/send-verification', async (req,res) => {
             })
         }
         const existingUser = await User.findOne({where: {email}})
+        console.log("Найден зарегистрированный пользователь", existingUser)
         if (existingUser) {
             return res.status(400).json({
                 success: false,
