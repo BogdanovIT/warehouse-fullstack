@@ -3,6 +3,7 @@ import { View, StyleSheet, Image, Pressable, Alert } from 'react-native'
 import { launchCameraAsync, requestCameraPermissionsAsync, PermissionStatus } from "expo-image-picker";
 import { Button } from "../button/button";
 import axios from "axios";
+import { apiClient } from "@/entities/auth/api/client";
 
 interface ImageType {
     source: any
@@ -85,7 +86,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
             formData.append('recipients', JSON.stringify(emailRecipients))
             formData.append('operationType', operationType)
             formData.append('gateNumber', gateNumber)
-            await axios.post('/api/send-photos-direct', formData, {
+            await apiClient.post('/api/send-photos-direct', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }

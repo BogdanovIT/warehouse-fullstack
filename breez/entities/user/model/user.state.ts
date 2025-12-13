@@ -3,6 +3,7 @@ import { User } from "./user.model";
 import { authAtom } from "../../auth/model/auth.state";
 import axios, { AxiosError } from "axios";
 import { API } from "../api/api";
+import { apiClient } from "@/entities/auth/api/client";
 
 export const userProfileAtom = atom<any>(null)
 
@@ -19,7 +20,7 @@ export const updateProfileAtom = atom(
     async (get, set, {photo}: {photo?: string}) => {
         try {
             const {access_token} = await get(authAtom)
-            const { data } = await axios.patch<User>(API.profile, {
+            const { data } = await apiClient.patch<User>(API.profile, {
                 photo,
             }, {
                 headers: {
@@ -54,7 +55,7 @@ async (get, set) => {
         error: null
         })
     try {
-        const { data } = await axios.get<User>(API.profile, {
+        const { data } = await apiClient.get<User>(API.profile, {
             headers: {
                 Authorization: `Bearer ${access_token}`
             },

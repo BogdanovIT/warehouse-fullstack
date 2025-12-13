@@ -9,6 +9,7 @@ import { CustomFonts } from "../shared/tokens";
 import { ErrorNotification } from "../shared/ErrorNotifications/ErrorNotification";
 import axios from "axios";
 import { Config } from "@/config";
+import { apiClient } from "@/entities/auth/api/client";
 
 const API_URL = Config.HOME_URL
 export default function RestorePassword() {
@@ -68,7 +69,7 @@ export default function RestorePassword() {
     const sendCode = async () => {
         if (!validateStep1()) return
         try {
-            await axios.post(`${API_URL}/api/auth/restore-password`, {email})
+            await apiClient.post(`${API_URL}/api/auth/restore-password`, {email})
             setStep(2)
             setError('')
         } catch {
@@ -78,7 +79,7 @@ export default function RestorePassword() {
     const resetPassword = async () => {
         if (!validateStep2()) return
         try {
-            await axios.post(`${API_URL}/api/auth/reset-password`, {
+            await apiClient.post(`${API_URL}/api/auth/reset-password`, {
                 email, 
                 code,
                 newPassword

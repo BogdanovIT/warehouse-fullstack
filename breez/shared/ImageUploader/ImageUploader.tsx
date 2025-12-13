@@ -6,6 +6,7 @@ import FormData from "form-data";
 import axios, { AxiosError } from "axios";
 import { FILE_API } from "../api";
 import { UploadResponse } from "./imageUploader.interface";
+import { apiClient } from "@/entities/auth/api/client";
 
 
 interface ImageUploaderProps {
@@ -64,7 +65,7 @@ export function ImageUploader ({onUpload}: ImageUploaderProps) {
             name,
             type: 'image/jpeg'
         })
-        try {const { data } = await axios.post<UploadResponse>(FILE_API.uploadImage, formData, {
+        try {const { data } = await apiClient.post<UploadResponse>(FILE_API.uploadImage, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }

@@ -1,4 +1,5 @@
 import { Config } from "@/config";
+import { apiClient } from "@/entities/auth/api/client";
 import axios from "axios"
 
 
@@ -17,7 +18,7 @@ interface UserProfile {
 export const getUserProfile = async (token: string): Promise<UserProfile> => {
   try {
     
-    const response = await axios.get(`${API_URL}/api/users/me`, {
+    const response = await apiClient.get(`${API_URL}/api/users/me`, {
       headers: {
         Authorization: `Bearer ${token}`
       },

@@ -6,6 +6,7 @@ import axios, { AxiosError } from "axios"
 import { API } from "../api/api"
 import * as SecureStore from 'expo-secure-store'
 import { Config } from "@/config"
+import { apiClient } from "../api/client"
 
 const API_URL = Config.HOME_URL
 const storage = createJSONStorage<AuthState>(()=> AsyncStorage)
@@ -38,7 +39,7 @@ export const RestorePasswordAtom = atom(
     async (get, set, email:string) => {
         try {
             set(RestorePasswordStateAtom, {isLoading: true, error: null})
-            await axios.post(`${API_URL}/api/auth/restore-password`, { email })
+            await apiClient.post(`${API_URL}/api/auth/restore-password`, { email })
             set(RestorePasswordStateAtom, {isLoading: false, error: null})
         } catch (error) {
             let errorMessage = "Ошибка восстановления пароля"
@@ -56,7 +57,8 @@ export const RestorePasswordAtom = atom(
     }
 )
 
-export const logoutAtom = atom(null, (_get, set) => {
+export const logoutAtom = atom(null, async (_get, set) => {
+    await SecureStore.deleteItemAsync('access_token')
     set(authAtom, INITIAL_STATE)
 })
 
@@ -69,7 +71,7 @@ export const loginAtom = atom(
         isLoading: true        
     })
     try {
-        const { data } = await axios.post<IAuthResponse>(API.login,{
+        const { data } = await apiClient.post<IAuthResponse>(API.login,{
         email,
         password,
     }, {

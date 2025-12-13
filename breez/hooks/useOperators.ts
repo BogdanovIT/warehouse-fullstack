@@ -3,6 +3,7 @@ import axios, {AxiosError} from "axios";
 import { Alert } from "react-native";
 import { useAtom } from "jotai";
 import { authAtom } from "../entities/auth/model/auth.state";
+import { apiClient } from "@/entities/auth/api/client";
 
 interface OperatorsResponse {
     success: boolean
@@ -25,7 +26,7 @@ export const useOperators = () => {
         setError(null)
 
         try {
-            const {data} = await axios.get<OperatorsResponse>('/api/user/operators', {
+            const {data} = await apiClient.get<OperatorsResponse>('/api/user/operators', {
                 headers: {
                     Authorization: `Bearer ${auth.access_token}`
                 }
