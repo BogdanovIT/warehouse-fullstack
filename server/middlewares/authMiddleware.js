@@ -14,9 +14,24 @@ const authMiddleware = async (req, res, next) => {
         }
         req.user = {id: decoded.userId}
         next()
-    } catch (e) {
-        console.error(e)
-        return res.status(401).json({ message: "Not authorized"})
+    } catch (error) {
+        if (error.name === 'TokenExpiredError') {
+            console.error('Token expired at:', error.expiredAt)
+            return res.status(401).json({
+                message: "Token expired",
+                code: "Token Expired",
+                expiredAt: error.expiredAt
+            })
+        }
+        if (error.name === 'JsonWebTokenError') {
+            console.error('Invalid token:', error.message)
+            return res.status(401).json({
+                message: 'Invalid Token',
+                code: "Invalid token"
+            })
+        }
+        console.error("Auth middleware error:", error)
+        return res.status(500).json({message: "Internal Server Error"})
     }
 }
 export default authMiddleware
