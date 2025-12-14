@@ -14,20 +14,23 @@ export const apiClient = axios.create({
         'Content-Type': 'application/json'
     }
 })
+apiClient.interceptors.request.use(
+    async(config) => {
+        const token = await SecureStore.getItemAsync('access_token')
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`
+        }
+        return config
+    },
+    (error) => Promise.reject(error)
+)
 
 apiClient.interceptors.response.use(
     (response) => response,
     async (error) => {
-        const originalRequest = error.config
-        if (error.response?.status === 401 && !originalRequest._retry) {
-            originalRequest._retry = true
+        if (error.response?.status === 401) {
             await SecureStore.deleteItemAsync('access_token')
-            store.set(authAtom, {
-                access_token: null,
-                isLoading: false,
-                error: null,
-                user: null
-            })
+            store.set(logoutAtom)
             router.replace('/login')
         return Promise.reject(error)
         }

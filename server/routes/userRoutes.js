@@ -51,7 +51,7 @@ router.post('/register', async (req, res) => {
         const token = jwt.sign(
             { userId: user.id, email: user.email},
             process.env.JWT_SECRET,
-            { expiresIn: '15m'}
+            { expiresIn: '24h'}
         )
         let userOperators = []
         try {
