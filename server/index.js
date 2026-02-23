@@ -239,6 +239,36 @@ app.post('/api/shipment/send', async (req, res) => {
         res.status(500).json({ error: error.message})
     }
 })
+app.post('/api/firesecurity/send', async (req, res) => {
+    try {
+        const { photoPaths, recipients} = req.body
+        if (!photoPaths?.length) {
+            return res.status(400).json({error: "Нет фотографий для отправки"})
+        }
+        const attachments = []
+        for (const relativePath of photoPaths) {
+            const fullPath = path.join('/home/abogdanov/Mobile_Storekeeper', relativePath)
+
+            const fileBuffer = await fileService.readFile(fullPath)
+            attachments.push({
+                filename: `Пожарная безопасность_${path.basename(relativePath)}`,
+                content: fileBuffer,
+                contentType: 'image/jpeg'
+            })
+        }
+        if (attachments.length === 0) {
+            return res.status(400).json({error: 'Нет доступных файлов для отправки'})
+        }
+        await emailService.sendFireSaveReport(recipients, attachments)
+        for (const relativePath of photoPaths) {
+            const fullPath = path.join('/home/abogdanov/Mobile_Storekeeper', relativePath)
+            await fileService.deleteFile(fullPath)
+        }
+            res.json({success: true})
+    } catch (error) {
+        res.status(500).json({ error: error.message})
+    }
+})
 app.post('/api/receiving/send', async (req, res) => {    
     try {
         const { gateNumber, recipients, processPhotos, defectivePhotos } = req.body

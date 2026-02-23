@@ -75,6 +75,14 @@ class EmailService {
         <p><em>Отчет создан автоматически</em></p>`
         return await this.sendEmail(recipients.join(', '), subject, htmlBody, attachments)
     }
+    async sendFireSaveReport(recipients, attachments) {
+        const subject = `Отчет по пожарной безопасности`
+        const htmlBody = `
+        <h3>Фотоотчет по отгрузке</h3>
+        <p><strong>Фотографий:</strong>${attachments.length}</p>
+        <p><em>Отчет создан автоматически</em></p>`
+        return await this.sendEmail(recipients.join(', '), subject, htmlBody, attachments)
+    }
     async sendDefectAkt(recipients, defectData, photos) {
         const subject = 'Акт отбраковки'
         const htmlBody = `

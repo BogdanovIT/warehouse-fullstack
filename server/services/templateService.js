@@ -8,7 +8,7 @@ class TemplateService {
                 const worksheet = workbook.getWorksheet(1)
                 worksheet.getCell('A4').value = parsedData.currentDate
                 worksheet.getCell('A33').value = parsedData.numberSSCC
-                worksheet.getCell('BD123').value = parsedData.numberSSCC
+                worksheet.getCell('BD123').value = parsedData.defectNumber
                 worksheet.getCell('BD3').value = parsedData.place
                 worksheet.getCell('AV26').value = parsedData.docNumber
                 worksheet.getCell('A38').value = [parsedData.inputValuePrefix,parsedData.articleCode].join('')
