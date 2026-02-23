@@ -26,6 +26,7 @@ export default function brakodel() {
     const [articleCode, setArticleCode] = useState('') //NS-Code
     const [productName, setProductName] = useState('') //Product
     const [numberSSCC, setNumberSSCC] = useState('') //SSCC
+    const [defectNumber, setDefectNumber] = useState('') //Number Defect
     const [docNumber, setDocNumber] = useState('')  //Document
     const [serialNumber, setSerialNumber] = useState('') //SN
     const [sortValue, setSortValue] = useState<string>('Сорт 1') //Sort
@@ -86,6 +87,7 @@ export default function brakodel() {
         articleCode: '',
         productName: '',
         numberSSCC: '',
+        defectNumber: '',
         docNumber: '',
         serialNumber: '',
         sortValue: 'Сорт 1',
@@ -158,6 +160,7 @@ export default function brakodel() {
                 productName,
                 numberSSCC,
                 docNumber,
+                defectNumber,
                 sortValue,
                 serialNumber,
                 comment,
@@ -184,6 +187,7 @@ export default function brakodel() {
             setArticleCode('')
             setProductName('')
             setNumberSSCC('')
+            setDefectNumber('')
             setDocNumber('')
             setSerialNumber('')
             setSortValue('Сорт 1')
@@ -199,6 +203,7 @@ export default function brakodel() {
                 articleCode: '',
                 productName: '',
                 numberSSCC: '',
+                defectNumber: '',
                 docNumber: '',
                 serialNumber: '',
                 sortValue: 'Сорт 1',
@@ -276,6 +281,11 @@ export default function brakodel() {
             <Input style={styles.inputText}
             value = {numberSSCC}
             onChangeText ={(text) => setNumberSSCC(text)}
+            placeholder="*"/>
+            <Text style={styles.text}>Внутрискладской номер брака</Text>
+            <Input style={styles.inputText}
+            value = {defectNumber}
+            onChangeText ={(text) => setDefectNumber(text)}
             placeholder="*"/>
             <Text style={styles.text}>Укажите номер документа прихода</Text>
             <Input style={{...styles.inputText}} autoCapitalize="characters"
