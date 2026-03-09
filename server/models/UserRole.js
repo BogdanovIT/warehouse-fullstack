@@ -46,8 +46,8 @@ const UserRole = sequelize.define('UserRole', {
 }, {
     tableName: 'user_roles',
     timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
     indexes: [
         {
             unique: true,

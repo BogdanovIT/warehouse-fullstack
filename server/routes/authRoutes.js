@@ -2,6 +2,7 @@ import {Router} from 'express'
 import { login } from '../controllers/authController.js'
 import { getBlockInfo, addLoginAttempt, checkLoginBlock } from '../utils/authSecurity.js'
 import User from '../models/User.js'
+import Role from '../models/Role.js'
 import jwt from 'jsonwebtoken'
 import { isPasswordHistory, addToPasswordHistory, updatePasswordDates } from '../utils/passwordUtils.js'
 import bcrypt from 'bcryptjs'
@@ -16,6 +17,26 @@ const getClientIp = (req) => {
         return Array.isArray(forwarded) ? forwarded[0] : forwarded.split(',')[0]
     }
     return req.socket?.remoteAddress || 'unknown'
+}
+const prepareUserData = (user) => {
+    return {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        loginLv: user.loginLv,
+        place: user.place,
+        operators: Array.isArray(user.operators) ? user.operators : [],
+        roles: user.roles?.map(role => ({
+            code: role.code,
+            name: role.name,
+            isPrimary: role.UserRole?.is_primary || false
+        })) || [],
+        permissions: Array.from(new Set(
+            user.roles?.flatMap(role => role.permissions || []) || []
+        )),
+        primaryRole: yser.roles?.find(r => r.UserRole.is_primary)?.code || user.roles?.[0]?.code
+    }
 }
 
 router.post('/login', async (req, res) => {
@@ -33,8 +54,15 @@ router.post('/login', async (req, res) => {
                 expiresAt: blockInfo.expiresAt
             })
         }
-        const user = await User.findOne({where: {email},
-        attributes: ['id', 'email', 'password', 'firstName', 'lastName', 'loginLv', 'place', 'operators', 'is_blocked']})
+        const user = await User.findOne({
+            where: {email},
+            include: [{
+                model: Role,
+                as: 'roles',
+                attributes: ['id', 'code', 'name', 'permissions'],
+                through: { attributes: ['is_primary'] }
+            }],
+        attributes: ['id', 'email', 'password', 'firstName', 'lastName', 'loginLv', 'place', 'operators', 'is_blocked', 'block_reason', 'emailVerified']})
         if (!user) {
             await addLoginAttempt(email, ipAddress, false, userAgent)
             return res.status(401).json({
@@ -49,7 +77,16 @@ router.post('/login', async (req, res) => {
                 success: false,
                 error: "Аккаунт заблокирован",
                 reason: user.block_reason || "Причина не указана",
-                blocked: true
+                blocked: true,
+                code: "ACCOUNT_BLOCKED"
+            })
+        }
+        if (!user.emailVerified) {
+            return res.status(403).json({
+                success: false,
+                error: 'Email не подтвержден. Проверьте почту для получения кода',
+                code: 'EMAIL_NOT_VERIFIED',
+                email: user.email
             })
         }
         const isPasswordValid = await bcrypt.compare(password, user.password)
@@ -70,26 +107,88 @@ router.post('/login', async (req, res) => {
             userOperators = []
         }
         const token = jwt.sign(
-            { userId: user.id, email: user.email},
+            { userId: user.id, email: user.email, roles: user.roles?.map(role => role.code) || []},
             process.env.JWT_SECRET,
             {expiresIn: '24h'}
         )
+        const userData = prepareUserData(user)
         res.json({
             success: true,
             message: 'Вход выполнен успешно',
             accessToken: token,
-            user: {
-                id: user.id,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                email: user.email,
-                loginLv: user.loginLv,
-                place: user.place,
-                operators: userOperators
-            }
+            user: userData
         })
     } catch(error) {
         console.error('Ошибка входа:', error)
+        res.status(500).json({
+            success: false,
+            error: 'Внутренняя ошибка сервера'
+        })
+    }
+})
+
+router.get('/me', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.userId
+        const user = await User.findByPk(userId, {
+            include: [{
+                model: Role,
+                as: 'roles',
+                attributes: ['id', 'code', 'name', 'permissions'],
+                through: { attributes: ['is_primary'] }
+            }],
+            attributes: {
+                exclude: ['password', 'resetCode', 'resetCodeExpires']
+            }
+        })
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'Пользователь не найден',
+                code: 'USER_NOT_FOUND'
+            })
+        }
+        const userData = prepareUserData(user)
+        res.json({
+            success: true,
+            user: userData
+        })
+    } catch (error) {
+        console.error('Ошибка получения данных пользователя', error)
+        res.status(500).json({
+            success: false,
+            error: 'Внутренняя ошибка сервера'
+        })
+    }
+})
+
+router.get('/permissions', authMiddleware, async(req, res) => {
+    try {
+        const userId = req.user.userId
+        const user = await User.findByPk(userId, {
+            include: [{
+                model: Role,
+                as: 'roles',
+                attributes: ['permissions'],
+                through: {attributes: [] }
+            }]
+        })
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'Пользователь не найден'
+            })
+        }
+        const permissions = Array.from(new Set(
+            user.roles?.flatMap(role => role.permissions || []) || []
+        ))
+        res.json({
+            success: true,
+            permissions,
+            roles: user.roles?.map(role => role.code)
+        })
+    } catch (error) {
+        console.error('Ошибка получения разрешений:', error)
         res.status(500).json({
             success: false,
             error: 'Внутренняя ошибка сервера'
@@ -108,7 +207,13 @@ router.post('/check-user-status', async (req, res) => {
         }
         const user = await User.findOne({
             where: {email},
-            attributes: ['id', 'email','is_blocked', 'block_reason']
+            include: [{
+                model: Role,
+                as: 'roles',
+                attributes: ['code', 'name'],
+                through: { attributes: ['is_primary'] }
+            }],
+            attributes: ['id', 'email','is_blocked', 'block_reason', 'emailVerified', 'firstName', 'lastName']
         })
         if (!user) { 
             return res.json({
@@ -121,7 +226,14 @@ router.post('/check-user-status', async (req, res) => {
             success: true,
             exists: true,
             blocked: user.is_blocked,
-            blockReason: user.block_reason || "Причина не указана"
+            blockReason: user.block_reason || "Причина не указана",
+            emailVerified: user.emailVerified,
+            name: `${user.firstName} ${user.lastName || ''}`.trim(),
+            roles: user.roles?.map(role => ({
+                code: role.code,
+                name: role.name,
+                isPrimary: role.UserRole?.is_primary
+            })) || []
         })
     } catch(error) {
         console.error("Ошибка проверки статуса пользователя:", error)

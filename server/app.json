@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "a7fec7e5-c603-45e0-966a-85c08f269c34"
+      }
+    },
+    "android": {
+      "package": "com.bogdanov_andrey.server"
+    }
+  }
+}

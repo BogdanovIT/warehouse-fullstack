@@ -21,10 +21,12 @@ const User = sequelize.define('User', {
     email: {
         type: DataTypes.STRING,
         unique: true,
-        validate: { isEmail: true }
+        validate: { isEmail: true },
+        field: 'email'
     },
     password: {
         type: DataTypes.STRING,
+        field: 'password',
         set(value) {
             const hash = bcrypt.hashSync(value, 10)
             this.setDataValue('password', hash)
@@ -32,11 +34,13 @@ const User = sequelize.define('User', {
     },
     passwordChangedAt: {
         type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
+        defaultValue: DataTypes.NOW,
+        field: 'passwordChangeAt'
     },
     passwordExpiresAt: {
         type: DataTypes.DATE,
-        defaultValue: () => new Date(Date.now() + 90*24*60*60*1000)
+        defaultValue: () => new Date(Date.now() + 90*24*60*60*1000),
+        field: 'passworgExpiresAt'
     },
     loginLv: {
         type:DataTypes.STRING,
@@ -45,35 +49,44 @@ const User = sequelize.define('User', {
     resetCode: {
         type: DataTypes.STRING(6),
         allowNull: true,
-        defaultValue: null
+        defaultValue: null,
+        field: 'resetCode'
     },
     emailVerified: {
         type: DataTypes.BOOLEAN,
-        defaultValue: false
+        defaultValue: false,
+        field: 'emailVerified'
     },
     resetCodeExpires: {
         type: DataTypes.DATE,
         allowNull: true,
-        defaultValue: null
+        defaultValue: null,
+        field: 'resetCodeExpires'
     },
     is_blocked: {
         type: DataTypes.BOOLEAN,
-        defaultValue: false
+        defaultValue: false,
+        field: 'is_blocked'
     },
-    place: DataTypes.STRING,
+    place: {
+        type: DataTypes.STRING,
+        field: 'place'
+    },
     operators: {
         type: DataTypes.ARRAY(DataTypes.STRING),
-        defaultValue: []
+        defaultValue: [],
+        field: 'operators'
     },
     block_reason: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
+        field: 'block_reason'
     },
 }, {
     tableName: 'users',
     timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at'
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
 })
 User.associate = (models) => {
     User.belongsToMany(models.Role, {
@@ -87,7 +100,7 @@ User.associate = (models) => {
     })
 }
 
-User.prototype,getRolesWithDetails = async function() {
+User.prototype.getRolesWithDetails = async function() {
     return await this.getRoles({
         attributes: ['id', 'code', 'name', 'description', 'permissions', 'level'],
         through: {
