@@ -80,7 +80,7 @@ const DEFAULT_IMAGES = [
 
 export default function FireSecurity ({onUpload}: ImageUploaderProps) {
     const [isContainer, setIsContaner] = useState(false)
-    const [imageUris, setImageUris] = useState<(string | null)[]>(Array(10).fill(null))
+    const [imageUris, setImageUris] = useState<(string | null)[]>(Array(55).fill(null))
     const [cameraPermissionInfo, requestPermission] = useCameraPermissions();
     const [showDefectiveProducts, setShowDefectiveProducts] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -117,7 +117,7 @@ export default function FireSecurity ({onUpload}: ImageUploaderProps) {
         }
         loadProfile()
     }, [auth?.access_token, userProfile])
-    const [tempPhotoUris, setTempPhotoUris] = useState<(string | null )[]>(Array(10).fill(null))
+    const [tempPhotoUris, setTempPhotoUris] = useState<(string | null )[]>(Array(55).fill(null))
 
     function debounce<F extends (...args: any[]) => any>(func: F, wait: number): F {
         let timeout: ReturnType<typeof setTimeout> | null = null
