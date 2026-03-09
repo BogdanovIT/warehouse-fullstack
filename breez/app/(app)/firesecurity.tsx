@@ -245,7 +245,7 @@ export default function FireSecurity ({onUpload}: ImageUploaderProps) {
                         
             <ScrollView style={styles.scrollContainer}>
             <View style={styles.container}>
-                {DEFAULT_IMAGES.slice(0,9).map((defaultImage, index)=>(
+                {DEFAULT_IMAGES.map((defaultImage, index)=>(
                 <Pressable key={index} onPress={()=>pickAvatar(index)}>
                     <Image source={tempPhotoUris[index] ? {uri: tempPhotoUris[index]!} : defaultImage}
                     style={{ width: '90%', height: undefined, resizeMode:'cover', aspectRatio:16/9, borderRadius: 3}}/>
