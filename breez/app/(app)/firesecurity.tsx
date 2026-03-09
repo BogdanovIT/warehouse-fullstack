@@ -172,7 +172,7 @@ export default function FireSecurity ({onUpload}: ImageUploaderProps) {
             photos.forEach((uri, index) => {
                 formData.append('photos', {
                     uri,
-                    name: `Фотоотчет по пожарной безопасности${Date.now().toLocaleString}.jpg`,
+                    name: `fire_${Date.now()}_${index}`,
                     type: 'image/jpeg'
                 } as any)
             })
@@ -248,17 +248,10 @@ export default function FireSecurity ({onUpload}: ImageUploaderProps) {
                 {DEFAULT_IMAGES.map((defaultImage, index)=>(
                 <Pressable key={index} onPress={()=>pickAvatar(index)}>
                     <Image source={tempPhotoUris[index] ? {uri: tempPhotoUris[index]!} : defaultImage}
-                    style={{ width: '90%', height: undefined, resizeMode:'cover', aspectRatio:16/9, borderRadius: 3}}/>
+                    style={styles.image}/>
                 </Pressable>
                 ))}
-                { !isContainer && (
-                    <Pressable onPress={()=> pickAvatar(54)}>
-                        <Image 
-                        source={tempPhotoUris[54] ? {uri: tempPhotoUris[54]!} : DEFAULT_IMAGES[54]}
-                        style={{ width: '90%', height: undefined, resizeMode:'cover', aspectRatio:16/9, borderRadius: 3}}
-                        />
-                    </Pressable>
-                )}
+                
             </View>
             <View style={styles.buttonContainer}>
             <Animated.View style={{transform: [{ scale: buttonScale }] }}>
@@ -284,6 +277,13 @@ const styles = StyleSheet.create({
         paddingVertical: 30, 
         alignItems: 'center',
         marginBottom: 40
+    },
+    image: {
+        width: '90%', 
+        height: undefined, 
+        resizeMode:'cover', 
+        aspectRatio:16/9, 
+        borderRadius: 3
     },
     button: {
         width: 250,
