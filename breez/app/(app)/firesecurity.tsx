@@ -20,72 +20,70 @@ interface ImageUploaderProps {
 }
 
 const DEFAULT_IMAGES = [
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_1.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_2.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_3.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_4.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_5.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_6.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_7.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_8.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_9.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_10.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_11.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_12.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_13.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_14.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_15.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_16.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_17.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_18.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_19.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_20.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_21.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_22.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_23.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_24.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_25.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_26.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_27.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_28.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_29.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_30.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_31.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_32.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_33.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_34.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_35.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_36.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_37.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_38.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_39.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_40.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_41.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_42.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_43.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_44.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_45.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_46.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_47.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_в10.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_в11.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_в15.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_в17.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_в18.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_в19.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_в25.jpg'),
-    require('../../assets/images/firesecurity/app_sklad_photo_fire_safety_в26.jpg'),
+    require('../../assets/images/firesecurity/app_100.jpg'),
+    require('../../assets/images/firesecurity/app_101.jpg'),
+    require('../../assets/images/firesecurity/app_102.jpg'),
+    require('../../assets/images/firesecurity/app_103.jpg'),
+    require('../../assets/images/firesecurity/app_104.jpg'),
+    require('../../assets/images/firesecurity/app_105.jpg'),
+    require('../../assets/images/firesecurity/app_106.jpg'),
+    require('../../assets/images/firesecurity/app_107.jpg'),
+    require('../../assets/images/firesecurity/app_108.jpg'),
+    require('../../assets/images/firesecurity/app_109.jpg'),
+    require('../../assets/images/firesecurity/app_110.jpg'),
+    require('../../assets/images/firesecurity/app_111.jpg'),
+    require('../../assets/images/firesecurity/app_112.jpg'),
+    require('../../assets/images/firesecurity/app_113.jpg'),
+    require('../../assets/images/firesecurity/app_114.jpg'),
+    require('../../assets/images/firesecurity/app_115.jpg'),
+    require('../../assets/images/firesecurity/app_116.jpg'),
+    require('../../assets/images/firesecurity/app_117.jpg'),
+    require('../../assets/images/firesecurity/app_118.jpg'),
+    require('../../assets/images/firesecurity/app_119.jpg'),
+    require('../../assets/images/firesecurity/app_120.jpg'),
+    require('../../assets/images/firesecurity/app_121.jpg'),
+    require('../../assets/images/firesecurity/app_122.jpg'),
+    require('../../assets/images/firesecurity/app_123.jpg'),
+    require('../../assets/images/firesecurity/app_124.jpg'),
+    require('../../assets/images/firesecurity/app_125.jpg'),
+    require('../../assets/images/firesecurity/app_126.jpg'),
+    require('../../assets/images/firesecurity/app_127.jpg'),
+    require('../../assets/images/firesecurity/app_128.jpg'),
+    require('../../assets/images/firesecurity/app_129.jpg'),
+    require('../../assets/images/firesecurity/app_130.jpg'),
+    require('../../assets/images/firesecurity/app_131.jpg'),
+    require('../../assets/images/firesecurity/app_132.jpg'),
+    require('../../assets/images/firesecurity/app_133.jpg'),
+    require('../../assets/images/firesecurity/app_134.jpg'),
+    require('../../assets/images/firesecurity/app_135.jpg'),
+    require('../../assets/images/firesecurity/app_136.jpg'),
+    require('../../assets/images/firesecurity/app_137.jpg'),
+    require('../../assets/images/firesecurity/app_138.jpg'),
+    require('../../assets/images/firesecurity/app_139.jpg'),
+    require('../../assets/images/firesecurity/app_140.jpg'),
+    require('../../assets/images/firesecurity/app_141.jpg'),
+    require('../../assets/images/firesecurity/app_142.jpg'),
+    require('../../assets/images/firesecurity/app_143.jpg'),
+    require('../../assets/images/firesecurity/app_144.jpg'),
+    require('../../assets/images/firesecurity/app_145.jpg'),
+    require('../../assets/images/firesecurity/app_146.jpg'),
+    require('../../assets/images/firesecurity/app_147.jpg'),
+    require('../../assets/images/firesecurity/app_148.jpg'),
+    require('../../assets/images/firesecurity/app_149.jpg'),
+    require('../../assets/images/firesecurity/app_150.jpg'),
+    require('../../assets/images/firesecurity/app_151.jpg'),
+    require('../../assets/images/firesecurity/app_152.jpg'),
+    require('../../assets/images/firesecurity/app_153.jpg'),
+    require('../../assets/images/firesecurity/app_154.jpg'),
 
 ]
 
 export default function FireSecurity ({onUpload}: ImageUploaderProps) {
-    const [isContainer, setIsContaner] = useState(false)
     const [imageUris, setImageUris] = useState<(string | null)[]>(Array(55).fill(null))
     const [cameraPermissionInfo, requestPermission] = useCameraPermissions();
     const [showDefectiveProducts, setShowDefectiveProducts] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [uploadedPhotoPaths, setUploadedPhotoPaths] = useState<string[]>([])
-    const [gateNumber, setGateNumber] = useState('')
     const [auth] = useAtom(authAtom)
     const [userProfile, setUserProfile] = useAtom(userProfileAtom)
     
@@ -196,7 +194,7 @@ export default function FireSecurity ({onUpload}: ImageUploaderProps) {
     const sendFireSafetyPhoto = async () => {
         
         const photosToUpload = tempPhotoUris.filter(uri => uri) as string[]
-        if (photosToUpload.length < 55) {
+        if (photosToUpload.length < DEFAULT_IMAGES.length) {
             Alert.alert("Не все слоты заполнены")
             return
         }
@@ -219,7 +217,6 @@ export default function FireSecurity ({onUpload}: ImageUploaderProps) {
             Alert.alert("Фото успешно отправлены")
             setImageUris(Array(55).fill(null))
             setTempPhotoUris(Array(55).fill(null))
-            setGateNumber('')
         } catch (error: unknown) {
             if (error instanceof Error)
             {Alert.alert("Ошибка:", error.message)}
