@@ -170,7 +170,7 @@ export default function FireSecurity ({onUpload}: ImageUploaderProps) {
             photos.forEach((uri, index) => {
                 formData.append('photos', {
                     uri,
-                    name: `fire_${Date.now()}_${index}`,
+                    name: `fire_${Date.now()}_${index}.jpg`,
                     type: 'image/jpeg'
                 } as any)
             })
@@ -202,13 +202,13 @@ export default function FireSecurity ({onUpload}: ImageUploaderProps) {
         setIsSubmitting(true)
         try {
             const { savedPaths } = await uploadPhotoToServer(photosToUpload)
-            const response  = await fetch(`${API_URL}/api/shipment/send`, {
+            const response  = await fetch(`${API_URL}/api/firesecurity/send`, {
                 method: "POST",
                 body: JSON.stringify({
                     photoPaths: savedPaths,
                     // gateNumber: gateNumber,
                     // recipients: userProfile?.operators || []
-                    recipients: ['abogdanov@breez.ru']
+                    recipients: ['abogdanov@breez.ru', 'sivantsov@breez.ru', 'vmineichev@breez.ru']
                 }),
                 headers: { 'Content-Type': 'application/json'}
             })
