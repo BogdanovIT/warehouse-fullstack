@@ -89,9 +89,7 @@ export default function FireSecurity ({onUpload}: ImageUploaderProps) {
     const [userProfile, setUserProfile] = useAtom(userProfileAtom)
     const hasRole = useAtomValue(hasRoleAtom)
     const userPlace = useAtomValue(userProfileAtom)
-    if (!hasRole('superuser') && userProfile?.place !== 'ФРЦ БРИЗ Шереметьево') {
-        return <Redirect href="/" />
-    }
+    
     const buttonScale = useRef( new Animated.Value(1)).current
     const animateButton = () => {
         Animated.sequence([
@@ -120,6 +118,9 @@ export default function FireSecurity ({onUpload}: ImageUploaderProps) {
         }
         loadProfile()
     }, [auth?.access_token, userProfile])
+    if (!hasRole('superuser') && userProfile?.place !== 'ФРЦ БРИЗ Шереметьево') {
+        return <Redirect href="/" />
+    }
     const [tempPhotoUris, setTempPhotoUris] = useState<(string | null )[]>(Array(55).fill(null))
 
     function debounce<F extends (...args: any[]) => any>(func: F, wait: number): F {

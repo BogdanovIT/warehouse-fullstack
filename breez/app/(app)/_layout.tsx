@@ -7,15 +7,14 @@ import { CustomFonts, SystemColors } from "../../shared/tokens";
 import { MenuButton } from "../../features/layout/UI/MenuButton/MenuButton";
 import { CustomDrawer } from "../../widget/layout/ui/CustomDrawer/CustomDrawer";
 import { hasRoleAtom, userProfileAtom } from "@/entities/user/model/user.state";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getUserProfile } from "@/api/user";
 
 
 export default function AppLayout() {
     const { access_token } = useAtomValue(authAtom)
-    const userProfile = useAtomValue(userProfileAtom)
-    const hasRole = useAtomValue(hasRoleAtom)
     const [profile, setProfile] = useAtom(userProfileAtom)
+    const [isLoading, setIsLoading] = useState(true)
     useEffect(() => {
         const loadProfile = async () => {
             if (access_token && !profile) {
@@ -26,6 +25,7 @@ export default function AppLayout() {
                     console.error("Ошибка загрузки профиля пользователя:", error)
                 }
             }
+            setIsLoading(false)
         }
         loadProfile()
     }, [access_token])
@@ -33,10 +33,14 @@ export default function AppLayout() {
     if (!access_token) {
         return <Redirect href="/login" />
     }
+    if (isLoading) {
+        return null
+    }
     const hasfireSafetyAccess = (): boolean => {
-        if (hasRole('superuser')) return true
+        const isSuper = profile?.roles?.some(r => r.code === 'superuser') ?? false
+        if (isSuper) return true
         const allowedPlaces = ['ФРЦ БРИЗ Шереметьево']
-        const userPlace = profile?.place || userProfile?.place
+        const userPlace = profile?.place 
         return userPlace ? allowedPlaces.includes(userPlace) : false
     }
     return (
