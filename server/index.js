@@ -251,7 +251,7 @@ app.post('/api/firesecurity/send', async (req, res) => {
 
             const fileBuffer = await fileService.readFile(fullPath)
             attachments.push({
-                filename: `Пожарная безопасность_${path.basename(relativePath)}`,
+                filename: `fire_${timestamp}_${attachments.length + 1}.jpg`,
                 content: fileBuffer,
                 contentType: 'image/jpeg'
             })

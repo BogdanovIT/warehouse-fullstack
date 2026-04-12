@@ -35,7 +35,7 @@ const prepareUserData = (user) => {
         permissions: Array.from(new Set(
             user.roles?.flatMap(role => role.permissions || []) || []
         )),
-        primaryRole: yser.roles?.find(r => r.UserRole.is_primary)?.code || user.roles?.[0]?.code
+        primaryRole: user.roles?.find(r => r.UserRole?.is_primary)?.code || user.roles?.[0]?.code || null
     }
 }
 

@@ -78,8 +78,7 @@ class EmailService {
     async sendFireSaveReport(recipients, attachments) {
         const subject = `Отчет по пожарной безопасности`
         const htmlBody = `
-        <h3>Фотоотчет по отгрузке</h3>
-        <p><strong>Фотографий:</strong>${attachments.length}</p>
+        <p><strong>Фотографий: </strong>${attachments.length}</p>
         <p><em>Отчет создан автоматически</em></p>`
         return await this.sendEmail(recipients.join(', '), subject, htmlBody, attachments)
     }

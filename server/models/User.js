@@ -26,21 +26,17 @@ const User = sequelize.define('User', {
     },
     password: {
         type: DataTypes.STRING,
-        field: 'password',
-        set(value) {
-            const hash = bcrypt.hashSync(value, 10)
-            this.setDataValue('password', hash)
-        }
+        field: 'password'
     },
     passwordChangedAt: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
-        field: 'passwordChangeAt'
+        field: 'passwordChangedAt'
     },
     passwordExpiresAt: {
         type: DataTypes.DATE,
         defaultValue: () => new Date(Date.now() + 90*24*60*60*1000),
-        field: 'passworgExpiresAt'
+        field: 'passwordExpiresAt'
     },
     loginLv: {
         type:DataTypes.STRING,

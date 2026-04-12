@@ -11,7 +11,7 @@ const defaultRoles = [
     },
     {
         code: 'senior_storekeeper',
-        name: 'Старший клкладовщик',
+        name: 'Старший кладовщик',
         description: 'Старший кладовщик - доступ к статистике своей зоны/смены',
         permissions: ['view_oun_tasks', 'view_own_stats', 'view_team_stats', 'assign_tasks',
             'update_task_status', 'scan_barcode', 'view_schedule', 'edit_schedule', 'approve_requests',
