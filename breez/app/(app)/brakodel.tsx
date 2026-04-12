@@ -21,6 +21,7 @@ export default function brakodel() {
     const currentDate = new Date().toLocaleDateString() //Date
     const [place, setPlace] = useState('') //Place  Н- Е- Р- Б- С- 
     const [inputValuePlace, setInputValuePlace] = useState("Разгрузка")  // СК || ПР
+    const [aktNumber, setAktNumber] = useState('') // номер документа
     const [inputValuePrefix, setInputValuePrefix] = useState("NS-")
     const [prefix, setPrefix] = useState('')
     const [articleCode, setArticleCode] = useState('') //NS-Code
@@ -88,6 +89,7 @@ export default function brakodel() {
         productName: '',
         numberSSCC: '',
         defectNumber: '',
+        aktNumber: '',
         docNumber: '',
         serialNumber: '',
         sortValue: 'Сорт 1',
@@ -162,6 +164,7 @@ export default function brakodel() {
                 docNumber,
                 defectNumber,
                 sortValue,
+                aktNumber,
                 serialNumber,
                 comment,
                 docPrefix: generatedDocNunber,
@@ -194,6 +197,7 @@ export default function brakodel() {
             setComment('')
             setCell('')
             setDefectivePhotos([])
+            setAktNumber('')
             setResetPhotos(prev => !prev)
 
             setForm ({
@@ -204,6 +208,7 @@ export default function brakodel() {
                 productName: '',
                 numberSSCC: '',
                 defectNumber: '',
+                aktNumber: '',
                 docNumber: '',
                 serialNumber: '',
                 sortValue: 'Сорт 1',
@@ -277,6 +282,10 @@ export default function brakodel() {
                     )}
                 
             </View>
+            <Text style={styles.text}>Введите номер акта, если есть</Text>
+            <Input style={styles.inputText}
+            value = {aktNumber}
+            onChangeText ={(text) => setAktNumber(text)}/>
             <Text style={styles.text}>Введите номер палета SSCC</Text>
             <Input style={styles.inputText}
             value = {numberSSCC}

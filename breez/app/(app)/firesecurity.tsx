@@ -8,10 +8,11 @@ import { Button_2 } from "../../button/button_2";
 import { Button } from "../../button/button";
 import { Input } from "../../shared/input/input";
 import { getUserProfile } from "../../api/user";
-import { userProfileAtom } from "../../entities/user/model/user.state";
+import { userProfileAtom, hasRoleAtom } from "../../entities/user/model/user.state";
 import { authAtom } from "../../entities/auth/model/auth.state";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { Config } from "@/config";
+import { Redirect } from "expo-router";
 
 const API_URL = Config.HOME_URL
 interface ImageUploaderProps {
@@ -86,7 +87,11 @@ export default function FireSecurity ({onUpload}: ImageUploaderProps) {
     const [uploadedPhotoPaths, setUploadedPhotoPaths] = useState<string[]>([])
     const [auth] = useAtom(authAtom)
     const [userProfile, setUserProfile] = useAtom(userProfileAtom)
-    
+    const hasRole = useAtomValue(hasRoleAtom)
+    const userPlace = useAtomValue(userProfileAtom)
+    if (!hasRole('superuser') && userProfile?.place !== 'ФРЦ БРИЗ Шереметьево') {
+        return <Redirect href="/" />
+    }
     const buttonScale = useRef( new Animated.Value(1)).current
     const animateButton = () => {
         Animated.sequence([

@@ -28,10 +28,21 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
     (response) => response,
     async (error) => {
-        if (error.response?.status === 401) {
+        const originalRequest = error.config
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true
             await SecureStore.deleteItemAsync('access_token')
+            if (error.response?.status === 401 && !originalRequest._retry) {
+                originalRequest._retry = true
+                await SecureStore.deleteItemAsync('access_token')
+            }
             store.set(logoutAtom)
-            router.replace('/login')
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent( new Event('unathorized'))
+            }
+            setTimeout(()=> {
+                router.replace('/login')
+            }, 100)
         return Promise.reject(error)
         }
         return Promise.reject(error)

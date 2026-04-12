@@ -13,6 +13,14 @@ interface UserProfile {
   place:string;
   operators?: string[];
   photo?: string;
+  roles?: Array <{
+    code: string
+    name: string
+    isPrimary: boolean
+  }>
+  permissions?: string []
+  primaryRole?: string | null
+  name?: string
 }
 
 export const getUserProfile = async (token: string): Promise<UserProfile> => {
