@@ -158,8 +158,8 @@ const ChozRabotaScreen = () => {
                     <Text style={styles.label}>Окончание работ</Text>
                     <TextInput 
                         style={styles.timeInput}
-                        value={startTime}
-                        onChangeText={setStartTime}
+                        value={endTime}
+                        onChangeText={setEndTime}
                         placeholder="17:00"
                         placeholderTextColor={SystemColors.VeryLightBlue}
                         keyboardType='numbers-and-punctuation'
@@ -167,6 +167,12 @@ const ChozRabotaScreen = () => {
                 </View>
             </View>
             <View style={styles.switchRow}>
+                <Text style={styles.switchLabel}>
+                    {hadLunch ? 'Обед учтен (1час)' : 'Без обеда'}
+                </Text>
+                <SwitchButton value={hadLunch} onChange={setHadLunch}/>
+            </View>
+            <View style={styles.totalRow}>
                 <Text style={styles.totalLabel}>Итого: </Text>
                 <Text style={styles.totalValue}>{calcTotalTime()}</Text>
             </View>
