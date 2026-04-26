@@ -25,6 +25,9 @@ import { Op } from 'sequelize'
 import { cleanupOldRecords } from './utils/authSecurity.js'
 import { checkPasswordExpiration } from './middlewares/passwordExpiration.js'
 import checkBlocked from './middlewares/checkBlocked.js'
+import chozRabota from './models/chozRabota.js'
+import chozRabotaRoutes from './routes/chozRabota.js'
+
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -61,6 +64,7 @@ const generateVerificationCode = (length = 6) => {
     return Math.random().toString().substring(2, 2 + length)
 }
 
+app.use('/api/choz-rabota', chozRabotaRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/auth', authRoutes)
 app.use('/api/users', MeRoute)
