@@ -17,6 +17,7 @@ import Hammer from "../../../../assets/icons/hammer";
 import Letter from "../../../../assets/icons/letter";
 import HomePage from "../../../../assets/icons/homePage";
 import FireExt from "@/assets/icons/firesecurity";
+import ChozRabota from "@/assets/icons/choz";
 
 const MENU = [
     // {text: 'Статистика', icon: <DefaultProfileIcon/>, path: 'index'},
@@ -26,6 +27,7 @@ const MENU = [
     {text: 'ОТГРУЗКА', icon: <ExitOutline/>, path: 'shipment'},
     {text: 'ШТРИХ-КОД', icon: <Barcode/>, path: 'barcode'},
     {text: 'РАБОТА С БРАКОМ', icon: <Hammer/>, path: 'brakodel'},
+    {text: 'ХОЗРАБОТЫ', icon: <ChozRabota/>, path: 'choz'},
     {text: 'ПОЖАРНАЯ БЕЗОПАСНОСТЬ', icon: <FireExt/>, path: 'firesecurity'},
     {text: 'ПРОФИЛЬ', icon: <Profile/>, path: 'profile'},
     {text: 'НАПИСАТЬ РАЗРАБОТЧИКУ', icon: <Letter/>, path: 'about'},
