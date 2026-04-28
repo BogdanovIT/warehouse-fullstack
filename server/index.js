@@ -7,6 +7,7 @@ import multer from 'multer'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import fs from 'fs/promises'
+import './services/scheduller.js'
 
 import emailService from './services/emailService.js'
 import templateService from './services/templateService.js'

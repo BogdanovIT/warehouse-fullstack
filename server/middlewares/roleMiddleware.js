@@ -78,12 +78,12 @@ export const requireRole = (...requiredRoles) => {
             })
         }
         const hasRequiredRole = requiredRoles.some(role =>
-            req.user.roles.includes(role)
+            req.user.roleCodes.includes(role)
         )
         if (!hasRequiredRole) {
             return res.status(403).json({
-                error: 'Недостаточно прав. Требуемые роли: ' + requiredRoles.json(', '),
-                userRoles: req.user.roles,
+                error: 'Недостаточно прав. Требуемые роли: ' + requiredRoles.join(', '),
+                userRoles: req.user.roleCodes,
                 code: 'INSUFFICIENT_ROLE'
             })
         }
@@ -142,7 +142,7 @@ export const requireOwnershipOrRole = (resourceUserIdField = 'userId', allowedRo
 export const logAdminAction = (action) => {
     return (req, res, next) => {
         if (req.user && ['director', 'superuser'].some(role => req.user.roles.includes(role))) {
-            console.log(`[ADMIN ACTION] ${action} выполнен пользователе ${req.user.email} (${req.user.id})`)
+            console.log(`[ADMIN ACTION] ${action} выполнен пользователем ${req.user.email} (${req.user.id})`)
         }
         next()
     }

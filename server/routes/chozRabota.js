@@ -6,6 +6,6 @@ import { requireRole } from '../middlewares/roleMiddleware.js'
 const router = express.Router()
 router.use(authMiddleware)
 
-router.post('/', requireRole(['director', 'superuser']), createRecord)
+router.post('/', requireRole('director', 'superuser'), createRecord)
 
 export default router
