@@ -9,7 +9,7 @@ const getDirectorEmail = async (department) => {
         include: [{
             model: Role,
             as:'roles',
-            where: {code: 'director'},
+            where: {code: ['director', 'superuser']},
             through: { attributes: [] }
         }],
         where: {place: department},

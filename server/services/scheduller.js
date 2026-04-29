@@ -1,6 +1,6 @@
 import cron from 'node-cron'
 import { generateAndSendReports } from './reportService.js'
-cron.schedule('*/ 1 * * * *', async () => {
+cron.schedule('0 17 * * *', async () => {
     console.log('[Планировщик] Запуск по расписанию...')
     try {
         await generateAndSendReports()
