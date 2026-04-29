@@ -40,7 +40,7 @@ export const generateExcel = async (title, records) => {
             const row = sheet.addRow([
                 index + 1,
                 record.employeeName,
-                record.eorkType,
+                record.workType,
                 record.startTime?.substring(0, 5) || '',
                 record.endTime?.substring(0, 5) || '',
                 record.hadLunch ? 'Да' : 'Нет',
@@ -51,7 +51,7 @@ export const generateExcel = async (title, records) => {
                 cell.border = { top: {style: 'thin'}, bottom: {style: 'thin'}, left: {style: 'thin'}, right: {style: 'thin'} }
             })
         })
-        const totalMinutes = record.reduce((sum, r) => sum + r.totalMinutes, 0)
+        const totalMinutes = records.reduce((sum, r) => sum + r.totalMinutes, 0)
         const totalRow = sheet.addRow([ '', '', '', '', 'ВСЕГО:', '', formatMinutes(totalMinutes), '' ])
         totalRow.font = { bold: true, size: 11}
         totalRow.eachCell(cell => {
