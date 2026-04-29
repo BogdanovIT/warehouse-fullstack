@@ -2,6 +2,7 @@ import { User, Role } from "../models/index.js";
 import chozRabota from "../models/chozRabota.js";
 import { ADMINS } from "../config/department.js";
 import { generateExcel } from "./excelGenerator.js";
+import emailService from "./emailService.js";
 
 const getDirectorEmail = async (department) => {
     const director = await User.findOne({
@@ -21,7 +22,7 @@ export const generateAndSendReports = async () => {
     const prettyDate = new Date().toLocaleDateString('ru-RU')
     console.log(`[Отчет] Запуск формирования отчетов за ${prettyDate}`)
     const allRecords = await chozRabota.findAll({
-        where: { workDay: today},
+        where: { workDate: today},
         order: [['department', 'ASC'], ['createdAt', 'ASC']],
     })
     const grouped = {}
@@ -35,12 +36,12 @@ export const generateAndSendReports = async () => {
         const emptyExcel = await generateExcel(`Хозработы - ${prettyDate}`, [])
         for (const admin of ADMINS) {
             try {
-                await sendExcelReport({
-                    to: admin,
-                    subject: `Хозработы за ${prettyDate} не производились`,
-                    text: `${prettyDate} хозяйственных работ по складам не заявлено`,
-                    attachment: { filename: `Хозработы_${today}.xlsx`, content: emptyExcel}
-                })
+                await emailService.sendEmail(
+                    admin,
+                    `Хозработы за ${prettyDate} не производились`,
+                    `${prettyDate} хозяйственных работ по складам не заявлено`,
+                    [{ filename: `Хозработы_${today}.xlsx`, content: emptyExcel}]
+                )
                 console.log(`Нулевой отчет отправлен администратору ${admin}`)
             } catch (error) {
                 console.error(`Ошибка отправки отчета администратору ${admin}:`, error.message)
@@ -58,12 +59,12 @@ export const generateAndSendReports = async () => {
                 records
             )
             if (directorEmail) {
-                await sendExcelReport({
-                    to: directorEmail,
-                    subject: `Хозработы по ${department} - ${prettyDate}`,
-                    text: `Отчет по хозяйственным работам по ${department} за ${prettyDate}`,
-                    attachment: { filename: `Хозработы_${department}_${today}.xlsx`, content: excel },
-                })
+                await emailService.sendEmail(
+                    directorEmail,
+                    `Хозработы по ${department} - ${prettyDate}`,
+                    `Отчет по хозяйственным работам по ${department} за ${prettyDate}`,
+                    [{ filename: `Хозработы_${department}_${today}.xlsx`, content: excel }],
+                )
                 console.log(`[Отчет] Отправлено руководителю ${department}: ${directorEmail}`)
             } else {
                 console.warn(`[Отчет] Руководитель ${department} не найден. Отчет не был отправлен`)
@@ -75,16 +76,16 @@ export const generateAndSendReports = async () => {
     try {
         const summaryExcel = await generateExcel(
             `Хозработы, сводный отчет за ${prettyDate}`,
-            records
+            allRecords
         )
         
             try {
-                await sendExcelReport({
-                    to: ADMINS,
-                    subject: `Хозработы, сводный отчет за ${prettyDate}`,
-                    text: `Сводный отчет по хозработам по всем подразделениям за ${prettyDate}.`,
-                    attachment: { filename: `Хозработы_сводный_${today}.xlsx`, content: summaryExcel },
-                })
+                await emailService.sendEmail(
+                    ADMINS.join(', '),
+                    `Хозработы, сводный отчет за ${prettyDate}`,
+                    `Сводный отчет по хозработам по всем подразделениям за ${prettyDate}.`,
+                    [{ filename: `Хозработы_сводный_${today}.xlsx`, content: summaryExcel }],
+                )
                 console.log(`Сводный отчет отправлен администраторам`)
             } catch (error) {
                 console.error(`Ошибка отправки отчета администраторам:`, error.message)
