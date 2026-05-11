@@ -40,7 +40,7 @@ export const generateAndSendReports = async () => {
                     admin,
                     `Хозработы за ${prettyDate} не производились`,
                     `${prettyDate} хозяйственных работ по складам не заявлено`,
-                    [{ filename: `Хозработы_${today}.xlsx`, content: emptyExcel}]
+                    []
                 )
                 console.log(`Нулевой отчет отправлен администратору ${admin}`)
             } catch (error) {

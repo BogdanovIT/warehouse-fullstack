@@ -27,7 +27,12 @@ import { cleanupOldRecords } from './utils/authSecurity.js'
 import { checkPasswordExpiration } from './middlewares/passwordExpiration.js'
 import checkBlocked from './middlewares/checkBlocked.js'
 import chozRabota from './models/chozRabota.js'
+import Employee from './models/Employee.js'
+import Attendance from './models/Attendance.js'
 import chozRabotaRoutes from './routes/chozRabota.js'
+
+import employeeRoutes from './routes/employees.js'
+import attendanceRoutes from './routes/attendance.js'
 
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -54,6 +59,8 @@ app.use(cors({
     exposedHeaders: ['Authorization']
 }))
 app.use('/static', express.static('/home/abogdanov/Mobile_Storekeeper/public'))
+app.use('/api/employees', employeeRoutes)
+app.use('/api/attendance', attendanceRoutes)
 
 const validateEmails = (emails) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
