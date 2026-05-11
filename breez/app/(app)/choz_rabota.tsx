@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         padding: 12,
         fontSize: 16,
-        color: SystemColors.PrimaryBlue,
+        color: SystemColors.VeryLightBlue,
         backgroundColor: SystemColors.MutedBlue
     },
     multiline: {
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     },
     picker: {
         height: Platform.OS === 'ios' ? 180 : 50,
-        color: SystemColors.PrimaryBlue
+        color: SystemColors.VeryLightBlue
     },
     timeRow: {
         flexDirection: 'row',
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         padding: 12,
         fontSize: 16,
-        color: SystemColors.PrimaryBlue,
+        color: SystemColors.VeryLightBlue,
         backgroundColor: SystemColors.MutedBlue,
         textAlign: 'center'
     },
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
     },
     switchLabel: {
         fontSize: 16,
-        color: SystemColors.PrimaryBlue,
+        color: SystemColors.VeryLightBlue,
         fontWeight: '500'
     },
     totalRow: {
@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     totalValue: {
         fontSize: 22,
         fontWeight: '700',
-        color: SystemColors.LightBlue
+        color: SystemColors.VeryLightBlue
     },
     buttonWrapper: {
         marginTop: 24,
