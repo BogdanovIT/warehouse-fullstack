@@ -75,6 +75,12 @@ export default function AppLayout() {
                 <Drawer.Screen  name="profile" options={{
                     title: 'ПРОФИЛЬ'
                 }}/>
+                <Drawer.Screen  name="employees" options={{
+                    title: 'СОТРУДНИКИ'
+                }}/>
+                <Drawer.Screen  name="attendance" options={{
+                    title: 'ТАБЕЛЬ'
+                }}/>
                 <Drawer.Screen  name="shipment" options={{
                     title: 'ОТГРУЗКА'
                 }}/>
