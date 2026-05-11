@@ -18,11 +18,15 @@ import Letter from "../../../../assets/icons/letter";
 import HomePage from "../../../../assets/icons/homePage";
 import FireExt from "@/assets/icons/firesecurity";
 import ChozRabota from "@/assets/icons/choz";
+import Employees from "@/assets/icons/employees";
+import Attendance from "@/assets/icons/attendance";
 
 const MENU = [
     // {text: 'Статистика', icon: <DefaultProfileIcon/>, path: 'index'},
     // {text: 'Статистика', icon: <Stats/>, path: 'index'},
     {text: 'НА ГЛАВНУЮ', icon: <HomePage/>, path: 'index'},
+    {text: 'СОТРУДНИКИ', icon: <Employees/>, path: 'employees'},
+    {text: 'ТАБЕЛЬ', icon: <Attendance/>, path: 'attendance'},
     {text: 'ПРИЕМКА', icon: <EnterOutline/>, path: 'receiving'},
     {text: 'ОТГРУЗКА', icon: <ExitOutline/>, path: 'shipment'},
     {text: 'ШТРИХ-КОД', icon: <Barcode/>, path: 'barcode'},

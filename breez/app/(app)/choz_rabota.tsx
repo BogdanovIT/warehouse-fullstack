@@ -103,6 +103,7 @@ const ChozRabotaScreen = () => {
             setEndTime('')
             setHadLunch(false)
             setComment('')
+            setWorkType(WORK_TYPES[0])
             Alert.alert('Готово', 'Запись сохранена')
         } catch (error: unknown) {
             if (error instanceof Error) {
@@ -200,7 +201,7 @@ const ChozRabotaScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FFFFFF'
+        backgroundColor: SystemColors.MutedBlue
     },
     content: {
         padding: 16,
@@ -220,7 +221,7 @@ const styles = StyleSheet.create({
         padding: 12,
         fontSize: 16,
         color: SystemColors.PrimaryBlue,
-        backgroundColor: '#FFFFFF'
+        backgroundColor: SystemColors.MutedBlue
     },
     multiline: {
         minHeight: 80,
@@ -230,7 +231,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: SystemColors.VeryLightBlue,
         borderRadius: 8,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: SystemColors.MutedBlue,
         overflow: 'hidden'
     },
     picker: {
@@ -251,7 +252,7 @@ const styles = StyleSheet.create({
         padding: 12,
         fontSize: 16,
         color: SystemColors.PrimaryBlue,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: SystemColors.MutedBlue,
         textAlign: 'center'
     },
     switchRow: {
