@@ -14,11 +14,11 @@ router.get('/:date', async (req, res) => {
         const department = req.user.place
         const employees = await Employee.findAll({
             where: { department, isActive: true},
-            order: [[ 'fullname', 'ASC' ]],
+            order: [[ 'fullName', 'ASC' ]],
         })
         const existing = await Attendance.findAll({
             where: { department, date },
-            include: [{ model: Employee, attributes: ['id', 'fullname'] }],
+            include: [{ model: Employee, attributes: ['id', 'fullName'] }],
         })
         const attendanceMap = {}
         existing.forEach(a => { attendanceMap[a.employeeId] = a })
@@ -36,7 +36,7 @@ router.get('/:date', async (req, res) => {
                 businessTripHours: att.businessTripHours,
                 comment: att.comment
             } : {
-                id: att.id,
+                id: undefined,
                 employeeId: emp.id,
                 fullName: emp.fullName,
                 shortName: emp.shortName,
@@ -61,20 +61,37 @@ router.post('/:date', requireRole('director', 'superuser'), async (req, res) => 
         const createdBy = req.user.email
         const saved = []
         for (const rec of records) {
-            const [attendance] = await Attendance.upsert({
-                employeeId: rec.employeeId,
-                department,
-                date,
-                status: rec.status,
-                standartHours: rec.standartHours,
-                overtimeHours: rec.overtimeHours,
-                businessTripHours: rec.businessTripHours || 0,
-                comment: rec.comment || '',
-                createdBy,
-            }, {
-                conflictFields: ['employeeId', 'date'],
+            const existing = await Attendance.findOne({
+                where: {
+                    employeeId: rec.employeeId,
+                    date,
+                }
             })
-            saved.push(attendance)
+            if (existing) {
+                await existing.update({
+                    status: rec.status,
+                    standartHours: rec.standartHours,
+                    overtimeHours: rec.overtimeHours,
+                    businessTripHours: rec.businessTripHours || 0,
+                    comment: rec.comment || '',
+                    createdBy,
+                })
+                saved.push(existing)
+            } else {
+                const created = await Attendance.create({
+                    employeeId: rec.employeeId,
+                    department,
+                    date,
+                    status: rec.status,
+                    standartHours: rec.standartHours,
+                    overtimeHours: rec.overtimeHours,
+                    businessTripHours: rec.businessTripHours || 0,
+                    comment: rec.comment || '',
+                    createdBy,
+                })
+                saved.push(created)
+            }
+            
         }
         res.status(201).json({ message: 'Табель сохранен', count: saved.length })
     } catch (error) {

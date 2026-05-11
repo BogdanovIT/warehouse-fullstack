@@ -22,7 +22,7 @@ router.post('/', requireRole('director', 'superuser'), async (req, res) => {
     try {
         const { fullName, shortName, loginLv, position, isHourly} = req.body
         const employee = await Employee.create({
-            fullname,
+            fullName,
             shortName: shortName || null,
             loginLv: loginLv || null,
             position: position || null,

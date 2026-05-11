@@ -9,6 +9,7 @@ const Employee = sequelize.define('Employee',{
     },
     fullName: {
         type: DataTypes.STRING(200),
+        field: 'fullName',
         allowNull: false,
         comment: "ФИО сотрудника"
     },
