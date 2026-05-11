@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 14,
         fontWeight: '600',
-        color: SystemColors.PrimaryBlue,
+        color: SystemColors.VeryLightBlue,
         marginBottom: 6,
         marginTop: 16,
     },
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
     totalLabel: {
         fontSize: 18,
         fontWeight: '700',
-        color: SystemColors.PrimaryBlue,
+        color: SystemColors.VeryLightBlue,
     },
     totalValue: {
         fontSize: 22,
