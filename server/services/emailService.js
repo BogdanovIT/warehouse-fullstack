@@ -23,7 +23,7 @@ class EmailService {
             console.error('SMTP Connection failed', error.message)
         }
     }
-    async sendEmail(to, subject, htmlBody, attachments) {
+    async sendEmail(to, subject, htmlBody, attachments, replyTo = null) {
         try {
             const mailOptions = {
                 from: "Мобильный кладовщик <aktnabrak@mail.ru>",
@@ -36,6 +36,9 @@ class EmailService {
                     contentType: attachment.contentType
                 }))
             } 
+            if (replyTo) {
+                mailOptions.replyTo = replyTo
+            }
             await this.transporter.sendMail(mailOptions)
             return true
         } catch(error) {

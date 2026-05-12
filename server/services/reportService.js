@@ -78,6 +78,13 @@ export const generateAndSendReports = async () => {
             `Хозработы, сводный отчет за ${prettyDate}`,
             allRecords
         )
+        const directorEmails = []
+        for (const department of departments) {
+            const email = await getDirectorEmail(department)
+            if (email && !directorEmails.includes(email)) {
+                directorEmails.push(email)
+            }
+        }
         
             try {
                 await emailService.sendEmail(
