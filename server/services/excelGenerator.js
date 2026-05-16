@@ -62,13 +62,13 @@ export const generateExcel = async (title, records) => {
     sheet.columns = [
         { width: 6 },
         { width: 12 },
-        { width: 25 },
-        { width: 22 },
-        { width: 8 },
-        { width: 10 },
-        { width: 6 },
-        { width: 10 },
         { width: 30 },
+        { width: 28 },
+        { width: 10 },
+        { width: 12 },
+        { width: 8 },
+        { width: 12 },
+        { width: 75 },
     ]
     return workBook.xlsx.writeBuffer()
 }
