@@ -9,7 +9,7 @@ const formatMinutes = (totalMinutes) => {
 export const generateExcel = async (title, records) => {
     const workBook = new ExcelJS.Workbook()
     const sheet = workBook.addWorksheet('ХОЗРАБОТЫ')
-    sheet.mergeCells('A1:H1')
+    sheet.mergeCells('A1:I1')
     const titleCell = sheet.getCell('A1')
     titleCell.value = title
     titleCell.font = { bold: true, size: 14}
@@ -20,7 +20,7 @@ export const generateExcel = async (title, records) => {
         fgColor: {argb: 'FFD9E1F2'}
     }
     const headerRow = sheet.addRow([
-        '№', 'Сотрудник', 'Вид работ', 'Начало', 'Окончание', 'Обед', 'Итого (Ч:М)', 'Комментарии'
+        '№', 'Дата' ,'Сотрудник', 'Вид работ', 'Начало', 'Окончание', 'Обед', 'Итого (Ч:М)', 'Комментарии'
     ])
     headerRow.font = { bold: true, size: 11}
     headerRow.eachCell (cell => {
@@ -39,6 +39,7 @@ export const generateExcel = async (title, records) => {
         records.forEach((record, index) => {
             const row = sheet.addRow([
                 index + 1,
+                record.workDate,
                 record.employeeName,
                 record.workType,
                 record.startTime?.substring(0, 5) || '',
@@ -52,7 +53,7 @@ export const generateExcel = async (title, records) => {
             })
         })
         const totalMinutes = records.reduce((sum, r) => sum + r.totalMinutes, 0)
-        const totalRow = sheet.addRow([ '', '', '', '', 'ВСЕГО:', '', formatMinutes(totalMinutes), '' ])
+        const totalRow = sheet.addRow([ '', '', '', '', '', 'ВСЕГО:', '', formatMinutes(totalMinutes), '' ])
         totalRow.font = { bold: true, size: 11}
         totalRow.eachCell(cell => {
             cell.border = { top: {style: 'thin'}, bottom: {style: 'thin'}, left: {style: 'thin'}, right: {style: 'thin'} }
@@ -60,6 +61,7 @@ export const generateExcel = async (title, records) => {
     }
     sheet.columns = [
         { width: 6 },
+        { width: 12 },
         { width: 25 },
         { width: 22 },
         { width: 8 },

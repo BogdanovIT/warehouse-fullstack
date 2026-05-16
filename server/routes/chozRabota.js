@@ -39,7 +39,7 @@ router.get('/export', requireRole('director', 'superuser'), async (req, res) => 
         })
         const title = !isSuperuser
             ? `Хозработы - ${req.user.place}`
-            : (department ? `Хозработы - ${department}` : "Хозработы по всем подраздлениям")
+            : (department ? `Хозработы - ${department}` : "Все хозработы по подразделению")
         const excel = await generateExcel(
             `${title} - ${startDate} / ${endDate}`,
             records
