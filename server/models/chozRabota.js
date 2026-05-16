@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/db.js";
+import Employee from "./Employee.js";
 
 const chozRabota = sequelize.define('ChozRabota', {
     id: {
@@ -15,6 +16,12 @@ const chozRabota = sequelize.define('ChozRabota', {
     employeeName:{
         type: DataTypes.STRING(200),
         allowNull: false
+    },
+    employeeId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: { model: 'employees', key: 'id'},
+        comment: 'ID Сотрудника из справочника'
     },
     department: {
         type: DataTypes.STRING(200),
@@ -70,5 +77,5 @@ const chozRabota = sequelize.define('ChozRabota', {
     tableName: 'choz_rabota',
     timestamps: true
 })
-
+chozRabota.belongsTo(Employee, { foreignKey: 'employeeId'})
 export default chozRabota

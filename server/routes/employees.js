@@ -8,10 +8,14 @@ router.use(authMiddleware)
 import Employee from "../models/Employee.js";
 router.get('/', async (req, res) => {
     try {
-        const department = req.user.place
+        const isSuperuser = req.user.roleCodes.includes('superuser')
+        const where = { isActive: true }
+        if (!isSuperuser) {
+            where.department = req.user.place
+        }
         const employees = await Employee.findAll({
-            where: {department, isActive: true},
-            order: [['fullName', 'ASC']]
+            where,
+            order: [[ 'fullName', 'ASC' ]],
         })
         res.json(employees)
     } catch (error) {
