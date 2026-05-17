@@ -16,7 +16,7 @@ router.post('/', requireRole('director', 'superuser'), createRecord)
 
 router.get('/export', requireRole('director', 'superuser'), async (req, res) => {
     try {
-        const { startDate, endDate, department, employeeId } = req.query
+        const { startDate, endDate, department, employeeId, notifyAdmins, selectedAdmins } = req.query
         const isSuperuser = req.user.roleCodes.includes('superuser')
 
         if (!startDate || !endDate) {
