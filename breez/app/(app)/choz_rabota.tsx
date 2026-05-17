@@ -178,6 +178,11 @@ const ChozRabotaScreen = () => {
             const data = await response.json()
             if (response.ok) {
                 Alert.alert('Готово', data.message)
+                setExportStartDate('')
+                setExportEndDate('')
+                setExportEmployeeId('')
+                setNotifyAdmins(false)
+                setSelectedAdmins({})
                 setExportVisible(false)
             } else {
                 throw new Error(data.message)

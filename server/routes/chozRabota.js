@@ -30,10 +30,8 @@ router.get('/export', requireRole('director', 'superuser'), async (req, res) => 
         } else if (department) {
             where.department = department
         }
-        console.log('employeeId from query:', employeeId, typeof employeeId)
         if (employeeId && employeeId !== '') {
             const parsed = parseInt(employeeId, 10)
-            console.log('parsed employeeId:', parsed)
             where.employeeId = parsed
         }
         const records = await chozRabota.findAll({
