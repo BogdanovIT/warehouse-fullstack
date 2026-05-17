@@ -7,6 +7,7 @@ import chozRabota from '../models/chozRabota.js'
 import Employee from '../models/Employee.js'
 import { generateExcel } from '../services/excelGenerator.js'
 import emailService from '../services/emailService.js'
+import { ADMINS } from '../config/department.js'
 
 const router = express.Router()
 router.use(authMiddleware)
@@ -50,6 +51,17 @@ router.get('/export', requireRole('director', 'superuser'), async (req, res) => 
             `Запрошенная выгрузка за период`,
             [{ filename: `Хозработы_выгрузка.xlsx`, content: excel }]
         )
+        if (notifyAdmins === 'true' && selectedAdmins) {
+            const adminsToNotify = selectedAdmins.split(',').filter(a => ADMINS.includes(a.trim()))
+            for (const admin of adminsToNotify) {
+                await emailService.sendEmail(
+                    admin.trim(),
+                    `Копия: Выгрузка хозработ ${startDate} - ${endDate} (от ${req.user.email})`,
+                    `Копия выгрузки за период, запрошенный пользователем ${req.user.email}.`,
+                    [{ filename: `Хозработы_выгрузка.xlsx`, content: excel }]
+                )
+            }
+        }
         res.json({ message: 'Отчет отправлен на вашу почту' })
     } catch (error) {
         res.status(500).json({ message: 'Ошибка сервера', error: error.message })

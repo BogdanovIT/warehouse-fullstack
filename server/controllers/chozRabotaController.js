@@ -44,7 +44,7 @@ export const createRecord = async (req, res) => {
             hadLunch,
             totalMinutes,
             comment,
-            workDate: workDate || new Date(),
+            workDate: new Date().toISOString().split('T')[0],
         })
         res.status(201).json(record)
     } catch (error) {
