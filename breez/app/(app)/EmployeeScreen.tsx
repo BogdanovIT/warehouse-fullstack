@@ -75,7 +75,7 @@ const EmployeeScreen = () => {
         }
         try {
             const url = editingEmployee?.id
-                ? `${API_URL}/api/employees${editingEmployee.id}`
+                ? `${API_URL}/api/employees/${editingEmployee.id}`
                 : `${API_URL}/api/employees`
             const method = editingEmployee?.id ? 'PUT' : 'POST'
             const response = await fetch(url, {
@@ -190,7 +190,9 @@ const EmployeeScreen = () => {
                                     <Text style={styles.cancelBtnText}>Отмена</Text>
                                 </TouchableOpacity>
                                 <View style={{ width: 12 }} />
-                                <Button text="Сохранить" onPress={handleSave} />
+                                <View style={{ flex: 1}}>
+                                    <Button text="Сохранить" onPress={handleSave} />
+                                </View>
                             </View>
                         </ScrollView>
                     </View>
@@ -330,7 +332,7 @@ const styles = StyleSheet.create({
     },
     modalButtons: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        alignItems: 'stretch',
         marginTop: 24
     },
     cancelBtn: {
@@ -339,7 +341,8 @@ const styles = StyleSheet.create({
         borderRadius: 9,
         borderWidth: 1,
         borderColor: SystemColors.VeryLightBlue,
-        alignItems: 'center'
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     cancelBtnText: {
         fontSize: 16,

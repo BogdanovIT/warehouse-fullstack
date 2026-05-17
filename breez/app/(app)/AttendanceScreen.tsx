@@ -121,14 +121,14 @@ const AttendanceScreen = () => {
                     d.setDate(d.getDate() - 1)
                     setSelectedDate(d.toISOString().split('T')[0])
                 }}>
-                    <Text style={styles.dateArrow}>-1</Text>
+                    <Text style={styles.dateArrow}>◀</Text>
                 </TouchableOpacity>
                 <Text style={styles.dateText}>{prettyDate}</Text>
                 <TouchableOpacity onPress={() => {
                     const d = new Date(selectedDate)
                     d.setDate(d.getDate() + 1)
                     setSelectedDate(d.toISOString().split('T')[0]) }}>
-                    <Text style={styles.dateArrow}>+1</Text>
+                    <Text style={styles.dateArrow}>▶</Text>
                 </TouchableOpacity>
             </View>
             <ScrollView contentContainerStyle={styles.content}>
@@ -253,10 +253,11 @@ const styles = StyleSheet.create({
         borderColor: SystemColors.VeryLightBlue,
         borderRadius: 9,
         backgroundColor: '#FFFFFF',
+        justifyContent: 'center',
         width: 150
     },
     statusPicker: {
-        height: Platform.OS === 'ios' ? 120 : 40,
+        height: Platform.OS === 'ios' ? 120 : 50,
         color: SystemColors.PrimaryBlue
     },
     hoursRow: {
