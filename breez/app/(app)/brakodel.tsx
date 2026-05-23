@@ -12,6 +12,7 @@ import { DOCUMENT_PREFIXES, LocationKeys, WarehouseKeys } from "../../shared/doc
 import { DefectivePhotosHandler } from "../../components/DefectivePhotosHandler";
 import { Config } from "@/config";
 import BarcodeScanner from "@/components/BarcodeScanner";
+import Scanner from "@/assets/icons/ScannerIcon";
 
 const API_URL = Config.HOME_URL
 export default function brakodel() {
@@ -334,17 +335,12 @@ export default function brakodel() {
             </View>
 
             <Text style={styles.text}>Введите серийный номер товара</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <Input style={{ ...styles.inputText, flex: 1 }}
+            <View style={styles.scanRow}>
+                <Input style={styles.scanInput}
                     value={serialNumber}
                     onChangeText={(text) => setSerialNumber(text)}/>
-                <TouchableOpacity style={{
-                                        width: 44, height: 44, borderRadius: 9,
-                                        backgroundColor: SystemColors.LightBlue,
-                                        justifyContent: 'center',
-                                        alignItems: 'center'
-                }} onPress={ () => setScannerVisible(true) } >
-                    <Text style={{color: '#fff', fontSize: 22}}>📷</Text>
+                <TouchableOpacity style={styles.scanButton} onPress={ () => setScannerVisible(true) } >
+                    <Scanner size={22} color={SystemColors.VeryLightBlue} />
                 </TouchableOpacity>
             </View>
         <Text style={styles.text}>Выберите сорт дефекта</Text>
@@ -400,6 +396,36 @@ const styles = StyleSheet.create({
         color: SystemColors.VeryLightBlue,
         paddingTop: 20,
         paddingBottom:5
+    },
+    scanRow: {
+        flexDirection: 'row',
+        alignItems: 'stretch',
+        gap: 0
+    },
+    scanInput: {
+        flex: 1,
+        backgroundColor: SystemColors.MutedBlue,
+        borderWidth: 1.5,
+        borderColor: SystemColors.VeryLightBlue,
+        borderRightWidth: 0,
+        borderTopLeftRadius: 3,
+        borderBottomLeftRadius: 3,
+        fontFamily: CustomFonts.regular,
+        color: SystemColors.VeryLightBlue,
+        fontSize: 16,
+        paddingHorizontal: 12,
+        height: 55
+    },
+    scanButton: {
+        width: 55,
+        height: 55,
+        backgroundColor: SystemColors.MutedBlue,
+        borderWidth: 1.5,
+        borderColor: SystemColors.VeryLightBlue,
+        borderTopRightRadius: 3,
+        borderBottomRightRadius: 3,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     inputText: {
         backgroundColor: SystemColors.MutedBlue,

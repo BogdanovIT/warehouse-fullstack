@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Modal } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Dimensions } from "react-native";
 import { CameraView, useCameraPermissions } from 'expo-camera'
 import { SystemColors } from "@/shared/tokens";
+
+const { width, height } = Dimensions.get('window')
+const SCAN_FRAME_WIDTH = width * 0.7
+const SCAN_FRAME_HEIGHT = 120
 
 interface BarcodeScannerProps {
     visible: boolean
@@ -45,12 +49,12 @@ const BarcodeScanner = ({ visible, onScan, onClose}: BarcodeScannerProps) => {
                         </TouchableOpacity>
                     </View>
                 )}
-                <View style={styles.overlay}>
+                {permission?.granted && (<View style={styles.overlay} pointerEvents='none'>
                     <View style={styles.scanFrame}/>
                     <Text style={styles.hint}>
                         Наведите камеру на штрих-код
                     </Text>
-                </View>
+                </View>)}
                 <TouchableOpacity style={styles.closeButton} onPress={onClose}>
                     <Text style={styles.closeButtonText}>✖</Text>
                 </TouchableOpacity>
@@ -74,18 +78,19 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 40
+        paddingHorizontal: 40
     },
     permissionText: {
         color: '#fff',
         fontSize: 16,
         textAlign: 'center',
-        marginBottom: 20
+        marginBottom: 24,
+        lineHeight: 22
     },
     permissionButton: {
         backgroundColor: SystemColors.PrimaryBlue,
-        paddingHorizontal: 30,
-        paddingVertical: 12,
+        paddingHorizontal: 32,
+        paddingVertical: 14,
         borderRadius: 9
     },
     permissionButtonText: {
@@ -100,11 +105,11 @@ const styles = StyleSheet.create({
         right: 0,
         bottom: 0,
         justifyContent: 'center',
-        pointerEvents: 'none'
+        alignItems: 'center'
     },
     scanFrame: {
-        width: 250,
-        height: 150,
+        width: SCAN_FRAME_WIDTH,
+        height: SCAN_FRAME_HEIGHT,
         borderWidth: 2,
         borderColor: SystemColors.LightBlue,
         borderRadius: 12,
