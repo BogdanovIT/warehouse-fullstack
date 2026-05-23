@@ -387,7 +387,7 @@ export default function brakodel() {
 }
 
 const styles = StyleSheet.create({
-    avoidingView:{
+    avoidingView: {
         flex:1
     },
     text: {
@@ -400,7 +400,8 @@ const styles = StyleSheet.create({
     scanRow: {
         flexDirection: 'row',
         alignItems: 'stretch',
-        gap: 0
+        width: '90%',
+        alignSelf: 'center'
     },
     scanInput: {
         flex: 1,
