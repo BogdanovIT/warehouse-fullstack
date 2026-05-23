@@ -295,7 +295,7 @@ const ChozRabotaScreen = () => {
                     <View style={styles.modalContent}>
                         <View style={styles.modalHeader}>
                             <TouchableOpacity onPress={() => setExportVisible(false)}>
-                                <Text style={styles.closeText}>X</Text>
+                                <Text style={styles.closeText}>✖</Text>
                             </TouchableOpacity>
                             <Text style={styles.modalTitle}>Выгрузка данных</Text>
                             <View style={{ width: 24 }} />
@@ -450,11 +450,12 @@ const styles = StyleSheet.create({
         borderRadius: 9,
         borderWidth: 1,
         borderColor: SystemColors.LightBlue,
+        backgroundColor: SystemColors.LightBlue,
         alignItems: 'center'
     },
     exportButtonText: {
         fontSize: 16,
-        color: SystemColors.LightBlue,
+        color: SystemColors.PrimaryBlue,
         fontWeight: '500',
     },
     modalOverlay: {
@@ -463,7 +464,7 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         flex: 1,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: SystemColors.MutedBlue,
         marginTop: 60,
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
@@ -505,7 +506,7 @@ const styles = StyleSheet.create({
         padding: 10,
         fontSize: 15, 
         color: SystemColors.PrimaryBlue,
-        backgroundColor: '#FAFBFC',
+        backgroundColor: SystemColors.MutedBlue,
         textAlign: 'center'
     },
     adminSection: {

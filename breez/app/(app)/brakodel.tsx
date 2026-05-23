@@ -1,4 +1,4 @@
-import { Alert, KeyboardAvoidingView, Animated, Easing, LayoutAnimation, Linking, Platform, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Alert, KeyboardAvoidingView, Animated, Easing, LayoutAnimation, Linking, Platform, ScrollView, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { CustomFonts, SystemColors } from "../../shared/tokens";
 import { Input } from "../../shared/input/input";
 import { Picker } from '@react-native-picker/picker';
@@ -11,6 +11,7 @@ import { authAtom } from "../../entities/auth/model/auth.state";
 import { DOCUMENT_PREFIXES, LocationKeys, WarehouseKeys } from "../../shared/documentPrefixes";
 import { DefectivePhotosHandler } from "../../components/DefectivePhotosHandler";
 import { Config } from "@/config";
+import BarcodeScanner from "@/components/BarcodeScanner";
 
 const API_URL = Config.HOME_URL
 export default function brakodel() {
@@ -38,6 +39,7 @@ export default function brakodel() {
     const [defectivePhotos, setDefectivePhotos] = useState<string[]>([])
     const [resetPhotos, setResetPhotos] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [scannerVisible, setScannerVisible] = useState(false)
 
     useEffect(()=> {
         const loadProfile = async () => {
@@ -332,9 +334,19 @@ export default function brakodel() {
             </View>
 
             <Text style={styles.text}>Введите серийный номер товара</Text>
-            <Input style={styles.inputText}
-            value={serialNumber}
-            onChangeText={(text) => setSerialNumber(text)}/>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <Input style={{ ...styles.inputText, flex: 1 }}
+                    value={serialNumber}
+                    onChangeText={(text) => setSerialNumber(text)}/>
+                <TouchableOpacity style={{
+                                        width: 44, height: 44, borderRadius: 9,
+                                        backgroundColor: SystemColors.LightBlue,
+                                        justifyContent: 'center',
+                                        alignItems: 'center'
+                }} onPress={ () => setScannerVisible(true) } >
+                    <Text style={{color: '#fff', fontSize: 22}}>📷</Text>
+                </TouchableOpacity>
+            </View>
         <Text style={styles.text}>Выберите сорт дефекта</Text>
         <View style={{borderWidth: 1.5, borderRadius: 3, borderColor: SystemColors.VeryLightBlue, 
                 width: 193}}>
@@ -369,6 +381,9 @@ export default function brakodel() {
             onPress={!isSubmitting ? handlePress : undefined} style={{paddingTop: 13, marginBottom:0, 
                 width: "70%", alignSelf: 'center'}}/>
             </Animated.View>
+            <BarcodeScanner visible={scannerVisible} onScan={(barcode) => {
+                setSerialNumber(barcode); setScannerVisible(false)
+            }} onClose={ () => {setScannerVisible(false) }}/>
             </ScrollView>
         </KeyboardAvoidingView>
         
