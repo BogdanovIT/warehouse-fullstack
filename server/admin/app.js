@@ -32,7 +32,7 @@ async function login() {
         sessionStorage.setItem('token', token);
 
         const isSuperuser = data.user.roles.some(r => r.code === 'superuser');
-        const userPlace = data.user.place 
+        const userPlace = data.user.place ;
         const deptSelect = document.getElementById('department-select');
         if (isSuperuser) {
             const departments = await loadDepartments();
@@ -41,7 +41,7 @@ async function login() {
             ).join('');
             deptSelect.disabled = false
         } else {
-            deptSelect.innerHTML = `<option value="${userData.place}">${userData.place}</option>`;
+            deptSelect.innerHTML = `<option value="${userPlace}">${userPlace}</option>`;
             deptSelect.disabled = true; 
         }
         currentDepartment = userPlace;
