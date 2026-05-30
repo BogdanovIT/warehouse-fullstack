@@ -154,6 +154,7 @@ async function loadUsers() {
     `
 }
 function onDepartmentChange() {
+    currentDepartment = document.getElementById('department-select').value
     const activePage = document.querySelector('.nav-item.active')?.dataset?.page || 'employees'
     loadPage(activePage)
 }
