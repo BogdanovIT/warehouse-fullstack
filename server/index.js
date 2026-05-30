@@ -58,6 +58,7 @@ app.use(cors({
     credentials: true,
     exposedHeaders: ['Authorization']
 }))
+app.use('/admin', express.static(path.join(__dirname, 'admin')))
 app.use('/static', express.static('/home/abogdanov/Mobile_Storekeeper/public'))
 app.use('/api/employees', employeeRoutes)
 app.use('/api/attendance', attendanceRoutes)
@@ -71,6 +72,7 @@ const validateEmails = (emails) => {
 const generateVerificationCode = (length = 6) => {
     return Math.random().toString().substring(2, 2 + length)
 }
+
 
 app.use('/api/choz-rabota', chozRabotaRoutes)
 app.use('/api/users', userRoutes)
