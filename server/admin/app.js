@@ -51,9 +51,7 @@ async function login() {
         const isSuperuser = data.user.roles.some(r => r.code === 'superuser');
         const userPlace = data.user.place ;
         const deptSelect = document.getElementById('department-select');
-        console.log('isSuperuser:', isSuperuser);
-        console.log('userPlace:', userPlace);
-        console.log('deptSelect:', deptSelect);
+
         if (isSuperuser) {
             const departments = await loadDepartments();
             deptSelect.innerHTML = departments.map(d => 
@@ -169,5 +167,12 @@ if (sessionStorage.getItem('token')) {
     token = sessionStorage.getItem('token')
     loadPage('employees')
 } else {
+    showLogin()
+}
+function logout() {
+    token = null
+    currentDepartment = ''
+    sessionStorage.removeItem('token')
+    document.getElementById('department-select').innerHTML = ''
     showLogin()
 }
