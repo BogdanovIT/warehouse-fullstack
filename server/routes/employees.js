@@ -9,8 +9,11 @@ import Employee from "../models/Employee.js";
 router.get('/', async (req, res) => {
     try {
         const isSuperuser = req.user.roleCodes.includes('superuser')
+        const requestedDepartment = req.query.department
         const where = { isActive: true }
-        if (!isSuperuser) {
+        if (!isSuperuser && requestedDepartment) {
+            where.department = requestedDepartment
+        } else if (!isSuperuser) {
             where.department = req.user.place
         }
         const employees = await Employee.findAll({
