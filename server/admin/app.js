@@ -99,7 +99,8 @@ async function loadEmployees() {
         const url = dept 
             ? `${API}/employees?department=${encodeURIComponent(dept)}`
             : `${API}/employees`
-        const res = await fetch(`${API}/employees`, {
+            console.log('Запрос', url)
+        const res = await fetch(url, {
             headers: { 'Authorization': `Bearer ${token}`},
         })
         const employees = await res.json()
