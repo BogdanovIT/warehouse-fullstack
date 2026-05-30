@@ -51,6 +51,9 @@ async function login() {
         const isSuperuser = data.user.roles.some(r => r.code === 'superuser');
         const userPlace = data.user.place ;
         const deptSelect = document.getElementById('department-select');
+        console.log('isSuperuser:', isSuperuser);
+        console.log('userPlace:', userPlace);
+        console.log('deptSelect:', deptSelect);
         if (isSuperuser) {
             const departments = await loadDepartments();
             deptSelect.innerHTML = departments.map(d => 
