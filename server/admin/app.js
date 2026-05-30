@@ -1,4 +1,4 @@
-const API = 'http://localhost:8081/api'
+const API = '/api'
 let token = ''
 
 function showLogin() {
