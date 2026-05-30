@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
         const isSuperuser = req.user.roleCodes.includes('superuser')
         const requestedDepartment = req.query.department
         const where = { isActive: true }
-        if (!isSuperuser && requestedDepartment) {
+        if (isSuperuser && requestedDepartment) {
             where.department = requestedDepartment
         } else if (!isSuperuser) {
             where.department = req.user.place
