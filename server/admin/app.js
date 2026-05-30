@@ -31,11 +31,9 @@ async function login() {
         token = data.accessToken;
         sessionStorage.setItem('token', token);
 
-        const userRes = await fetch(`${API}/me`, {
-            headers: { 'Authorization': `Bearer ${token}` },
-        });
-        const userData = await userRes.json();
-        const isSuperuser = userData.roles?.some(r => r.code === 'superuser');
+        const roles = data.user?.roles || data.roles || []
+        const isSuperuser = roles?.some(r => r.code === 'superuser');
+        const userPlace = data.user?.place || data.place || ''
 
         const deptSelect = document.getElementById('department-select');
         if (isSuperuser) {
