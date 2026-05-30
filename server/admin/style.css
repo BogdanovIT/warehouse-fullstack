@@ -32,3 +32,6 @@ tr:hover { background: #f5f7fa; }
 }
 .login-box button:hover { background: #0d2a4a; }
 .error { color: #d32f2f; font-size: 13px; margin-bottom: 10px; }
+.dept-select { width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid #AFD3EA;
+background: #02182E; font-size: 13px; margin-bottom: 10px; cursor: pointer; }
+.dept-select:focus {outline: none; border-color: #2196F3; }

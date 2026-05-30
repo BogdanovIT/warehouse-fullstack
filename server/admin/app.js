@@ -1,5 +1,6 @@
 const API = '/api'
 let token = ''
+let currentDepartment = ''
 
 function showLogin() {
     document.getElementById('main-content').innerHTML = `
@@ -26,6 +27,9 @@ async function login() {
             token = data.accessToken
             sessionStorage.setItem('token', token)
             loadPage('employees')
+        if (data.user && data.user.place) {
+            currentDepartment = data.user.place
+        }
         } else {
             document.getElementById('login-error').textContent = data.message || "Ошибка входа"
 
@@ -42,6 +46,23 @@ document.querySelectorAll('.nav-item').forEach(item => {
         loadPage(item.dataset.page)
     })
 })
+
+async function loadDepartments() {
+    const departments = [
+        "ФРЦ БРИЗ Шереметьево",
+        "МОС БРИЗ Медведково",
+        "МОС БРИЗ Саларьево",
+        "МОС БРИЗ Рязанское",
+        "ДРЦ БРИЗ Софьино",
+        "РРЦ Бриз Екатеринбург LV",
+        "РРЦ Бриз Ростов LV",
+        "РРЦ Бриз Новосибирск LV",
+        "РРЦ Бриз Самара LV",
+        "РРЦ Бриз Краснодар LV"
+    ]
+    return departments
+}
+
 async function loadPage(page) {
     if (!token) {
         token = sessionStorage.getItem('token')
