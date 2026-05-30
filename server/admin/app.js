@@ -13,6 +13,23 @@ function showLogin() {
     </div>
     `
 }
+
+async function loadDepartments() {
+    const departments = [
+        "ФРЦ БРИЗ Шереметьево",
+        "МОС БРИЗ Медведково",
+        "МОС БРИЗ Саларьево",
+        "МОС БРИЗ Рязанское",
+        "ДРЦ БРИЗ Софьино",
+        "РРЦ Бриз Екатеринбург LV",
+        "РРЦ Бриз Ростов LV",
+        "РРЦ Бриз Новосибирск LV",
+        "РРЦ Бриз Самара LV",
+        "РРЦ Бриз Краснодар LV"
+    ]
+    return departments
+}
+
 async function login() {
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
@@ -61,21 +78,7 @@ document.querySelectorAll('.nav-item').forEach(item => {
     })
 })
 
-async function loadDepartments() {
-    const departments = [
-        "ФРЦ БРИЗ Шереметьево",
-        "МОС БРИЗ Медведково",
-        "МОС БРИЗ Саларьево",
-        "МОС БРИЗ Рязанское",
-        "ДРЦ БРИЗ Софьино",
-        "РРЦ Бриз Екатеринбург LV",
-        "РРЦ Бриз Ростов LV",
-        "РРЦ Бриз Новосибирск LV",
-        "РРЦ Бриз Самара LV",
-        "РРЦ Бриз Краснодар LV"
-    ]
-    return departments
-}
+
 
 async function loadPage(page) {
     if (!token) {
