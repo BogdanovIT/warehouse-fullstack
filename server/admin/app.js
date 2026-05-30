@@ -14,28 +14,45 @@ function showLogin() {
     `
 }
 async function login() {
-    const email = document.getElementById('login-email').value
-    const password = document.getElementById('login-password').value
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
     try {
-        const res  = await fetch(`${API}/auth/login`, {
+        const res = await fetch(`${API}/auth/login`, {
             method: 'POST',
-            headers: { 'Content-Type' : 'application/json' },
-            body: JSON.stringify({ email, password })
-        })
-        const data = await res.json()
-        if (data.accessToken) {
-            token = data.accessToken
-            sessionStorage.setItem('token', token)
-            loadPage('employees')
-        if (data.user && data.user.place) {
-            currentDepartment = data.user.place
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+        if (!data.accessToken) {
+            document.getElementById('login-error').textContent = data.message || 'Ошибка входа';
+            return;
         }
-        } else {
-            document.getElementById('login-error').textContent = data.message || "Ошибка входа"
+        
+        token = data.accessToken;
+        sessionStorage.setItem('token', token);
 
+        const userRes = await fetch(`${API}/me`, {
+            headers: { 'Authorization': `Bearer ${token}` },
+        });
+        const userData = await userRes.json();
+        const isSuperuser = userData.roles?.some(r => r.code === 'superuser');
+
+        const deptSelect = document.getElementById('department-select');
+        if (isSuperuser) {
+            const departments = await loadDepartments();
+            deptSelect.innerHTML = departments.map(d => 
+                `<option value="${d}" ${d === userData.place ? 'selected' : ''}>${d}</option>`
+            ).join('');
+        } else {
+            deptSelect.innerHTML = `<option value="${userData.place}">${userData.place}</option>`;
+            deptSelect.disabled = true; // нельзя менять
         }
-    } catch (error) {
-        document.getElementById('login-error').textContent = 'Сервер недоступен'
+        currentDepartment = userData.place;
+
+        loadPage('employees');
+        
+    } catch (e) {
+        document.getElementById('login-error').textContent = 'Сервер недоступен';
     }
 }
 document.querySelectorAll('.nav-item').forEach(item => {
@@ -77,6 +94,10 @@ async function loadPage(page) {
 }
 async function loadEmployees() {
     try {
+        const dept = document.getElementById('department-select')?.value || currentDepartment
+        const url = dept 
+            ? `${API}/employees?department=${encodeURIComponent(dept)}`
+            : `${API}/employees`
         const res = await fetch(`${API}/employees`, {
             headers: { 'Authorization': `Bearer ${token}`},
         })
@@ -84,7 +105,7 @@ async function loadEmployees() {
         if (!res.ok) throw new Error(employees.message)
         
         document.getElementById('main-content').innerHTML = `
-        <h2>Сотрудники</h2>
+        <h2>Сотрудники (${dept || 'Все подразделения'}) </h2>
         <div class="table-wrapper">
             <table>
                 <thead>
@@ -129,6 +150,10 @@ async function loadUsers() {
             <p>Загрузка...</p>
         </div>
     `
+}
+function onDepartmentChange() {
+    const activePage = document.querySelector('.nav-item.active')?.dataset?.page || 'employees'
+    loadPage(activePage)
 }
 function showPlaceholder(title, text) {
     document.getElementById('main-content').innerHTML= `
