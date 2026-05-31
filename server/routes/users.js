@@ -9,7 +9,7 @@ router.use(authMiddleware)
 router.get('/', requireRole('director', 'superuser'), async (req, res) => {
     try {
         const isSuperuser = req.user.roleCodes.includes('superuser')
-        const requestedDepartment = req.query.departnent
+        const requestedDepartment = req.query.department
         const where = {}
         if (isSuperuser && requestedDepartment) {
             where.place = requestedDepartment
