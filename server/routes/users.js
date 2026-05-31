@@ -52,7 +52,8 @@ router.get('/', requireRole('director', 'superuser'), async (req, res) => {
 router.put('/:id/roles', requireRole('superuser'), async (req, res) => {
     try {
         const { id } = req.params
-        const { roleIds } = req.body
+        const roleIds = req.body.roleIds.map(id => parseInt(id))
+        console.log('roeIds после parseInt:', roleIds)
         console.log('Смена ролей. userId:', id, 'roleIds', roleIds)
         const user = await User.findByPk(id)
         if (!user) {
