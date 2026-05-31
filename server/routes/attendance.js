@@ -11,7 +11,7 @@ router.use(authMiddleware)
 router.get('/:date', async (req, res) => {
     try {
         const { date } = req.params
-        const department = req.user.place
+        const department = req.query.department || req.user.place 
         const employees = await Employee.findAll({
             where: { department, isActive: true},
             order: [[ 'fullName', 'ASC' ]],
@@ -57,7 +57,7 @@ router.post('/:date', requireRole('director', 'superuser'), async (req, res) => 
     try {
         const { date } = req.params
         const { records } = req.body
-        const department = req.user.place
+        const department = req.query.department || req.user.place || ''
         const createdBy = req.user.email
         const saved = []
         for (const rec of records) {

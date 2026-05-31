@@ -404,8 +404,11 @@ function logout() {
 async function loadAttendance() {
     const dept = document.getElementById('department-select')?.value || currentDepartment
     const date = document.getElementById('att-date')?.value || new Date().toISOString().split('T')[0]
+    const url = dept 
+        ? `${API}/attendance/${date}?department=${encodeURIComponent(dept)}` 
+        : `${API}/attendance/${date}`;
     try {
-        const res = await fetch(`${API}/attendance/${date}`, {
+        const res = await fetch(url, {
             headers: {'Authorization': `Bearer ${token}`}
         })
         const records = await res.json()
