@@ -108,6 +108,7 @@ async function loadEmployees() {
         
         document.getElementById('main-content').innerHTML = `
         <h2>Сотрудники (${dept || 'Все подразделения'}) </h2>
+        <button class="btn-add" onclick="showEmployeeForm()">+ Добавить сотрудника</button>
         <div class="table-wrapper">
             <table>
                 <thead>
@@ -129,6 +130,10 @@ async function loadEmployees() {
                             <td>${e.loginLv || '-'}</td>
                             <td>${e.isHourly ? 'Сделка' : 'Оклад'}</td>
                             <td>${e.isActive ? '✅' : '❌'}</td>
+                            <td class="actions">
+                                <button class="btn-edit" onclick="showEmployeeForm(${JSON.stringify(e).replace(/"/g, '&quot;')})">✎</button>
+                                ${e.isActive ? `<button class="btn-delete" onclick="deactivateEmployee(${e.id})"></button>` : '✕'}
+                            </td>
                         </tr>
                     `).join('')}
                 </tbody>
@@ -145,6 +150,97 @@ async function loadEmployees() {
         }
     }
 }
+function showEmployeeForm(employee = null) {
+    const title = employee ? 'Редактировать запись' : 'Добавить запись'
+    const btnText = employee ? 'Сохранить' : 'Добавить'
+
+    document.getElementById('main-content').innerHTML = `
+        <h2>${title}</h2>
+        <div class="table-wrapper">
+            <form onsubmit="saveEmployee(event, ${employee ? employee.id : null})">
+                <div class="form-group">
+                    <label>ФИО</label>
+                    <input type="text" id="emp-fullname" value="${employee ? employee.fullName : ''}" required>
+                </div>
+                <div class="form-group">
+                    <label>Краткое имя</label>
+                    <input type="text" id="emp-shortName" value="${employee ? employee.shortName || '' : ''}">
+                </div>
+                <div class="form-group">
+                    <label>Логин</label>
+                    <input type="text" id="emp-loginLv" value="${employee ? employee.loginLv || '' : ''}">
+                </div>
+                <div class="form-group">
+                    <label>Должность</label>
+                    <input type="text" id="emp-position" value="${employee ? employee.position || '' : ''}">
+                </div>
+                <div class="form-group">
+                    <label>Тип</label>
+                    <select id="emp-isHourly">
+                        <option value="true" ${employee && employee.isHourly ? 'Selected' : ''}>Сделка</option>
+                        <option value="false" ${employee && !employee.isHourly ? 'Selected' : ''}>Оклад</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="button" class="btn-cancel" onclick="loadPage('employees')">Отмена</button>                    
+                    <button type="submit" class="btn-save"">${btnText}</button>                    
+                </div>
+            </form>
+        </div>
+    `;
+}
+
+async function saveEmployee(event, id) {
+    event.preventDefault()
+    const data = {
+        fullName: document.getElementById('emp-fullName').value.trim(),
+        shortName: document.getElementById('emp-shortName').value.trim() || null,
+        loginLv: document.getElementById('emp-loginLv').value.trim() || null,
+        position: document.getElementById('emp-position').value.trim() || null,
+        isHourly: document.getElementById('emp-isHourly').value === 'true',
+    }
+    if (!data.fullName) {
+        alert('ФИО обязательно')
+        return
+    }
+    try {
+        const url = id
+            ? `${API}/employees/${id}`
+            : `${API}/employees`
+        const method = id ? 'PUT' : 'POST'
+        const res = await fetch(url, {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(data)
+        })
+        const result = await res.json()
+        if (!res.ok) throw new Error(result.message)
+        loadPage('employees')
+    } catch (error) {
+        alert(error.message)
+    }
+}
+async function deactivateEmployee(id) {
+    if (!confirm('Деактивировать сотрудника?')) return
+    try {
+        const res = await fetch(`${API}/employees/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({ isActive: false })
+        })
+        if (!res.ok) throw new Error('Ошибка')
+            loadPage('employees')
+    } catch (error) {
+        alert(error.message)
+    }
+}
+
 async function loadUsers() {
     try {
         const dept = document.getElementById('department-select')?.value || currentDepartment
