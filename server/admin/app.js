@@ -7,8 +7,8 @@ function showLogin() {
     <div class="login-box">
         <h2>Вход в админку</h2>
         <div class="error" id="login-error"></div>
-        <input type="email" id="login-email" placeholder="Email">
-        <input type="password" id="login-password" placeholder="Пароль">
+        <input type="email" id="login-email" placeholder="Email" value="">
+        <input type="password" id="login-password" placeholder="Пароль" value="">
         <button onclick="login()">Войти</button>
     </div>
     `
