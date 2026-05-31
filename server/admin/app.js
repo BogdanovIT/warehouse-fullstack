@@ -42,14 +42,16 @@ async function login() {
             document.getElementById('login-error').textContent = data.message || 'Ошибка входа';
             return;
         }
-        
+        document.getElementById('login-email').value = '';
+        document.getElementById('login-password').value = '';
         token = data.accessToken;
         sessionStorage.setItem('token', token);
 
         const isSuperuser = data.user.roles.some(r => r.code === 'superuser');
         const userPlace = data.user.place ;
         const deptSelect = document.getElementById('department-select');
-
+        sessionStorage.setItem('isSuperuser', isSuperuser ? 'true' : 'false');
+        sessionStorage.setItem('currentDepartment', userPlace);
         if (isSuperuser) {
             const departments = await loadDepartments();
             deptSelect.innerHTML = departments.map(d => 
@@ -371,6 +373,23 @@ function showPlaceholder(title, text) {
 }
 if (sessionStorage.getItem('token')) {
     token = sessionStorage.getItem('token')
+    fetch(`${API}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: '', password: '' })
+    }).catch(() => {})
+    const savedDept = sessionStorage.getItem('currentDepartment')
+    const isSuperuser = sessionStorage.getItem('isSuperuser') === 'true'
+    if (isSuperuser) {
+        loadDepartments().then(departments => {
+            const deptSelect = document.getElementById('department-select')
+            deptSelect.innerHTML = departments.map(d =>
+                `<option value="${d}" ${d === savedDept ? 'selected' : ''}>${d}</option>`
+            ).join('')
+            deptSelect.disabled = false
+        })
+    }
+    currentDepartment = savedDept || ''
     loadPage('employees')
 } else {
     showLogin()
