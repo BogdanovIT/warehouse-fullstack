@@ -160,7 +160,7 @@ function showEmployeeForm(employee = null) {
             <form onsubmit="saveEmployee(event, ${employee ? employee.id : null})">
                 <div class="form-group">
                     <label>ФИО</label>
-                    <input type="text" id="emp-fullname" value="${employee ? employee.fullName : ''}" required>
+                    <input type="text" id="emp-fullName" value="${employee ? employee.fullName : ''}" required>
                 </div>
                 <div class="form-group">
                     <label>Краткое имя</label>
@@ -177,13 +177,13 @@ function showEmployeeForm(employee = null) {
                 <div class="form-group">
                     <label>Тип</label>
                     <select id="emp-isHourly">
-                        <option value="true" ${employee && employee.isHourly ? 'Selected' : ''}>Сделка</option>
-                        <option value="false" ${employee && !employee.isHourly ? 'Selected' : ''}>Оклад</option>
+                        <option value="true" ${employee && employee.isHourly ? 'selected' : ''}>Сделка</option>
+                        <option value="false" ${employee && !employee.isHourly ? 'selected' : ''}>Оклад</option>
                     </select>
                 </div>
                 <div>
                     <button type="button" class="btn-cancel" onclick="loadPage('employees')">Отмена</button>                    
-                    <button type="submit" class="btn-save"">${btnText}</button>                    
+                    <button type="submit" class="btn-save">${btnText}</button>                    
                 </div>
             </form>
         </div>
