@@ -30,7 +30,7 @@ import chozRabota from './models/chozRabota.js'
 import Employee from './models/Employee.js'
 import Attendance from './models/Attendance.js'
 import chozRabotaRoutes from './routes/chozRabota.js'
-
+import usersRoutes from './routes/users.js'
 import employeeRoutes from './routes/employees.js'
 import attendanceRoutes from './routes/attendance.js'
 
@@ -78,6 +78,7 @@ app.use('/api/choz-rabota', chozRabotaRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/auth', authRoutes)
 app.use('/api/users', MeRoute)
+app.use('/api/users', usersRoutes)
 app.use('/api/products', productRout)
 app.get('/api/verify-test', (req,res) => {
     const token = jwt.sign({ test: true}, process.env.JWT_SECRET)

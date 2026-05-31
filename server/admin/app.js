@@ -146,12 +146,56 @@ async function loadEmployees() {
     }
 }
 async function loadUsers() {
-    document.getElementById('main-content').innerHTML = `
-        <h2>Ползователи</h2>
+    try {
+        const dept = document.getElementById('department-select')?.value || currentDepartment
+        const url = dept 
+            ? `${API}/users?department=${encodeURIComponent(dept)}`
+            : `${API}/users`
+        const res = await fetch(url, {
+            headers: {'Authorization': `Bearer ${token}`},
+        })
+        const users = await res.json()
+        if (!res.ok) throw new Error(users.message)
+            document.getElementById('main-content').innerHTML = `
+        <h2>Пользователи</h2>
         <div class="table-wrapper">
-            <p>Загрузка...</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Email</th>
+                        <th>Имя</th>
+                        <th>Логин</th>
+                        <th>Подразделение</th>
+                        <th>Роли</th>
+                        <th>Статус</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${users.map(u => `
+                        <tr>
+                            <td>${u.id}</td>
+                            <td>${u.email}</td>
+                            <td>${u.firstName || ''} ${u.lastName || ''}</td>
+                            <td>${u.login || '-'}</td>
+                            <td>${u.place || '-'}</td>
+                            <td>${u.roles.map(r => r.name).join(', ')}</td>
+                            <td>${u.is_blocked ? '❌ Заблокирован' : '✅ Активен' }</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
         </div>
     `
+    } catch (error) {
+        if (error.message === 'Token expired' || error.message === 'Invalid token') {
+            token = null
+            sessionStorage.removeItem('token')
+            showLogin()
+        } else {
+            document.getElementById('main-content').innerHTML = `<p style="color:red">${error.message}</p>`
+        }    
+    }
 }
 function onDepartmentChange() {
     currentDepartment = document.getElementById('department-select').value
