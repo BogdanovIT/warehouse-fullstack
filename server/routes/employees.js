@@ -27,13 +27,13 @@ router.get('/', async (req, res) => {
 })
 router.post('/', requireRole('director', 'superuser'), async (req, res) => {
     try {
-        const { fullName, shortName, loginLv, position, isHourly} = req.body
+        const { fullName, shortName, loginLv, position, isHourly, department} = req.body
         const employee = await Employee.create({
             fullName,
             shortName: shortName || null,
             loginLv: loginLv || null,
             position: position || null,
-            department: req.user.place,
+            department:department || req.user.place,
             isHourly: isHourly !== undefined ? isHourly : true
         })
         res.status(201).json(employee)

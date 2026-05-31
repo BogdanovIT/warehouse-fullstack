@@ -252,12 +252,14 @@ async function toggleBlock(userId, isBlocked) {
 }
 async function saveEmployee(event, id) {
     event.preventDefault()
+    const dept = document.getElementById('department-select')?.value || currentDepartment
     const data = {
         fullName: document.getElementById('emp-fullName').value.trim(),
         shortName: document.getElementById('emp-shortName').value.trim() || null,
         loginLv: document.getElementById('emp-loginLv').value.trim() || null,
         position: document.getElementById('emp-position').value.trim() || null,
         isHourly: document.getElementById('emp-isHourly').value === 'true',
+        department: dept
     }
     if (!data.fullName) {
         alert('ФИО обязательно')
