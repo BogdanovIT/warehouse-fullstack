@@ -62,6 +62,15 @@ app.use('/admin', express.static(path.join(__dirname, 'admin')))
 app.use('/static', express.static('/home/abogdanov/Mobile_Storekeeper/public'))
 app.use('/api/employees', employeeRoutes)
 app.use('/api/attendance', attendanceRoutes)
+app.use('/api/choz-rabota', chozRabotaRoutes)
+app.use('/api/auth', userRoutes)
+app.use('/api/me', MeRoute)
+app.use('/api/users', usersRoutes)
+app.use('/api/auth', authRoutes)
+app.use('/api/products', productRout)
+app.use('/api/auth', restorePass)
+app.use(checkPasswordExpiration)
+app.use(checkBlocked)
 
 const validateEmails = (emails) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -73,21 +82,11 @@ const generateVerificationCode = (length = 6) => {
     return Math.random().toString().substring(2, 2 + length)
 }
 
-
-app.use('/api/choz-rabota', chozRabotaRoutes)
-app.use('/api/users', userRoutes)
-app.use('/api/auth', authRoutes)
-app.use('/api/users', MeRoute)
-app.use('/api/users', usersRoutes)
-app.use('/api/products', productRout)
 app.get('/api/verify-test', (req,res) => {
     const token = jwt.sign({ test: true}, process.env.JWT_SECRET)
     const valid = jwt.verify(token, process.env.JWT_SECRET)
     res.json({generated: token, verified: valid})
 })
-app.use('/api/auth', restorePass)
-app.use(checkPasswordExpiration)
-app.use(checkBlocked)
 
 app.post('/api/users/send-verification', async (req,res) => {
     try {
