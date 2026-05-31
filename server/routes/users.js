@@ -1,7 +1,7 @@
 import express from 'express'
 import authMiddleware from '../middlewares/authMiddleware.js'
 import { requireRole } from '../middlewares/roleMiddleware.js'
-import { User, Role } from '../models/index.js'
+import { User, Role, sequelize } from '../models/index.js'
 
 const router = express.Router()
 router.use(authMiddleware)
@@ -61,23 +61,17 @@ router.put('/:id/roles', requireRole('superuser'), async (req, res) => {
         }
         console.log('Пользователь найден:', user.email)
         console.log('Методы пользователя:', Object.keys(user.__proto__))
-        await user.setRoles(roleIds)
-        const updatedUser = await User.findByPk(id, {
-            include: [{
-                model: Role,
-                as: 'roles',
-                attributes: ['id', 'code', 'name'],
-                through: { attributes: ['is_primary'] },
-            }]
+        await sequelize.query('DELETE FROM user_roles WHERE user_id = ?', {
+            replacements: [id],
+            type: sequelize.QueryTypes.DELETE,
         })
-        res.json({
-            id: updatedUser.id,
-            roles: updatedUser.roles.map(r => ({
-                id: r.id,
-                code: r.code,
-                name: r.name
-            }))
-        })
+        for (const roleId of roleIds) {
+            await sequelize.query(
+                'INSERT INTO user_roles (user_id, role_id, "createdAt", "updatedAt") VALUES (?, ?, NOW(), NOW())',
+                { replacements: [id, roleId], type: sequelize.QueryTypes.INSERT }
+            )
+        }
+        res.json({ success: true })
     } catch (error) {
         res.status(500).json({ message: 'Ошибка сервера', error: error.message })
     }
