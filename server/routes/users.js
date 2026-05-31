@@ -52,6 +52,11 @@ router.get('/', requireRole('director', 'superuser'), async (req, res) => {
 router.put('/:id/roles', requireRole('superuser'), async (req, res) => {
     try {
         const { id } = req.params
+        if (parseInt(id) === 4) {
+            return res.status(403).json({
+                message: 'Нельзя изменить роли разработчика'
+            })
+        }
         const roleIds = req.body.roleIds.map(id => parseInt(id))
         const user = await User.findByPk(id)
         if (!user) {
@@ -76,6 +81,11 @@ router.put('/:id/roles', requireRole('superuser'), async (req, res) => {
 router.put('/:id/block', requireRole('superuser'), async (req, res) => {
     try {
         const { id } = req.params
+        if (parseInt(id) === 4) {
+            return res.status(403).json({
+                message: 'Нельзя заблокировать разработчика'
+            })
+        }
         const { is_blocked } = req.body
         const user = await User.findByPk(id)
         if (!user) {
