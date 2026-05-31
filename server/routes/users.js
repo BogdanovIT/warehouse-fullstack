@@ -53,14 +53,10 @@ router.put('/:id/roles', requireRole('superuser'), async (req, res) => {
     try {
         const { id } = req.params
         const roleIds = req.body.roleIds.map(id => parseInt(id))
-        console.log('roeIds после parseInt:', roleIds)
-        console.log('Смена ролей. userId:', id, 'roleIds', roleIds)
         const user = await User.findByPk(id)
         if (!user) {
             return res.status(404).json({ message: 'Пользователь не найден' })
         }
-        console.log('Пользователь найден:', user.email)
-        console.log('Методы пользователя:', Object.keys(user.__proto__))
         await sequelize.query('DELETE FROM user_roles WHERE user_id = ?', {
             replacements: [id],
             type: sequelize.QueryTypes.DELETE,
