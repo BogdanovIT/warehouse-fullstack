@@ -94,4 +94,15 @@ router.put('/:id/block', requireRole('superuser'), async (req, res) => {
     }
 })
 
+router.get('/roles', requireRole('superuser'), async (req, res) => {
+    try {
+        const roles = await Role.findAll({
+            attributes: ['id', 'code', 'name'],
+            order: [['level', 'ASC']],
+        })
+        res.json(roles)
+    } catch (error) {
+        res.status(500).json({ message: 'Ошибка сервера', error: error.message })
+    }
+})
 export default router

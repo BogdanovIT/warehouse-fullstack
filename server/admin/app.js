@@ -185,7 +185,7 @@ function showEmployeeForm(employee = null) {
     `;
 }
 async function showRoleEditor(user) {
-    const allRoles = await fetch(`${API}/roles`, {
+    const allRoles = await fetch(`${API}/users/roles`, {
         headers: { 'Authorization': `Bearer ${token}` },
     }).then(r => r.json())
     const userRoleIds = user.roles.map(r => r.id)
