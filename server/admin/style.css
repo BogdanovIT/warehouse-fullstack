@@ -54,3 +54,9 @@ color: #AFD3EA; border-radius: 6px; font-size: 14px; cursor: pointer; transition
 .btn-edit { background: #e3f2fd; color: #1976d2; margin-right: 5px; }
 .btn-delete { background: #ffebee; color: #d32f2f; }
 .actions { white-space: nowrap; }
+.att-date-row { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; }
+.btn-date {padding: 8px 16px; background: #02182E; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }
+.date-input { padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; text-align: center; }
+.att-status { padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
+.att-input { width: 80px; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; text-align: center; }
+.att-input:disabled { background: #f0f0f0; color: #999; }

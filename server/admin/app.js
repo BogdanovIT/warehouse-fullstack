@@ -86,7 +86,7 @@ async function loadPage(page) {
     switch(page) {
         case 'employees': return loadEmployees()
         case 'users': return loadUsers()
-        case 'attendance': return showPlaceholder('Табель', "Модуль в разработке")
+        case 'attendance': return loadAttendance()
         case 'chozrabota': return showPlaceholder('Хозработы', "Модуль в разработке")
     }
 }
@@ -400,4 +400,144 @@ function logout() {
     sessionStorage.removeItem('token')
     document.getElementById('department-select').innerHTML = ''
     showLogin()
+}
+async function loadAttendance() {
+    const dept = document.getElementById('department-select')?.value || currentDepartment
+    const date = document.getElementById('att-date')?.value || new Date().toISOString().split('T')[0]
+    try {
+        const res = await fetch(`${API}/attendance/${date}`, {
+            headers: {'Authorization': `Bearer ${token}`}
+        })
+        const records = await res.json()
+        if (!res.ok) throw new Error(records.message)
+        const filtered = dept 
+            ? records.filter(r => r.department === dept || !r.department)
+            : records
+        document.getElementById('main-content').innerHTML = `
+            <h2>Табель</h2>
+            <div class="att-date-row">
+                <button class="btn-date" onclick="changeDate(-1)">◀</button>
+                <input type="date" id="att-date" value="${date}" onchange="loadAttendance()" class="date-input">
+                <button class="btn-date" onclick="changeDate(1)">▶</button>
+            </div>
+            <div class="table-wrapper" style="margin-top: 20px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Сотрудник</th>
+                            <th>Должность</th>
+                            <th>Статус</th>
+                            <th>Часы (оклад)</th>
+                            <th>Переработка</th>
+                            <th>Командировка</th>
+                            <th>Примечание</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${filtered.map(r => `
+                            <tr>
+                                <td>${r.fullName}</td>
+                                <td>${r.position || ''}</td>
+                                <td>
+                                    <select class="att-status" onchange="onStatusChange(${r.employeeId}, this.value)">
+                                        <option value="present" ${r.status === 'present' ? 'selected' : ''}>Явка</option>
+                                        <option value="absent" ${r.status === 'absent' ? 'selected' : ''}>Отсутствие</option>
+                                        <option value="sick" ${r.status === 'sick' ? 'selected' : ''}>Заболевание</option>
+                                        <option value="vacation" ${r.status === 'vacation' ? 'selected' : ''}>Отпуск</option>
+                                        <option value="business_trip" ${r.status === 'business_trip' ? 'selected' : ''}>Командировка</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" step="0.5" value="${r.standartHours || 8}"
+                                        id="hours-${r.employeeId}" class="att-input"
+                                        ${!['present', 'business_trip'].includes(r.status) ? 'disabled' : ''}
+                                </td>
+                                <td>
+                                    <input type="number" step="0.5" value="${r.overtimeHours || 0}"
+                                        id="overtime-${r.employeeId}" class="att-input"
+                                        ${!['present', 'business_trip'].includes(r.status) ? 'disabled' : ''}
+                                </td>
+                                <td>
+                                    <input type="number" step="0.5" value="${r.businessTripHours || 0}"
+                                        id="trip-${r.employeeId}" class="att-input"
+                                        ${!['present', 'business_trip'].includes(r.status) ? 'disabled' : ''}
+                                </td>
+                                <td>
+                                    <input type="text" value="${r.comment || ''}"
+                                        id="comment-${r.employeeId}" class="att-input">
+                                </td>
+                            </tr>
+                            `).join('')}
+                    </tbody>
+                </table>
+            </div>
+            <button class="btn-save" style="margin-top: 20px;" onclick="saveAttendance()">Сохранить табель</button>
+        `;
+        window._attendanceRecords = filtered
+    } catch (error) {
+        if (error.message === 'Token expired' || error.message === 'Invalid token') {
+            token = null
+            sessionStorage.removeItem('token')
+            showLogin
+        } else {
+            document.getElementById('main-content').innerHTML = `<p style="color: red">${error.message}</p>`
+        }
+    }
+}
+function changeDate(delta) {
+    const input = document.getElementById('att-date')
+    const date = new Date(input.value)
+    date.setDate(date.getDate() + delta)
+    input.value = date.toISOString().split('T')[0]
+    loadAttendance
+}
+function onStatusChange(employeeId, status) {
+    const hours = document.getElementById(`hours-${employeeId}`)
+    const overtime = document.getElementById(`overtime-${employeeId}`)
+    const trip = document.getElementById(`trip-${employeeId}`)
+    if (['present', 'business_trip'].includes(status)) {
+        hours.disabled = false
+        overtime.disabled = false
+        trip.disabled = false
+        if (status === 'present' && (!hours.value || hours.value === '0')) {
+            hours.value = 8
+        } 
+    } else {
+        hours.disabled = true
+        overtime.disabled = true
+        trip.disabled = true
+        hours.value = 0
+        overtime.value = 0
+        trip.value = 0
+    }
+}
+async function saveAttendance() {
+    const date = document.getElementById('att-date').value
+    const records = window._attendanceRecords || []
+    const payload = {
+        records: records.map(r => ({
+            employeeId: r.employeeId,
+            status: document.querySelector(`[onchange="onStatusChange(${r.employeeId}, this.value)"]`)?.value || r.status,
+            standartHours: parseFloat(document.getElementById(`hours-${r.employeeId}`)?.value) || 0,
+            overtimeHours: parseFloat(document.getElementById(`overtime-${r.employeeId}`)?.value) || 0,
+            businessTripHours: parseFloat(document.getElementById(`trip-${r.employeeId}`)?.value) || 0,
+            comment: document.getElementById(`comment-${r.employeeId}`)?.value || '',
+        }))
+    }
+    try {
+        const res = await fetch(`${API}/attendance/${date}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(payload)
+        })
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.message)
+        alert('Табель сохранен')
+        loadAttendance
+    } catch (error) {
+        alert(error.message)
+    }
 }
