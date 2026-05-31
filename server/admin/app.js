@@ -338,7 +338,7 @@ async function loadUsers() {
                             <td>${u.is_blocked ? '❌ Заблокирован' : '✅ Активен' }</td>
                             <td class="action">
                                 <button class="btn-edit" onclick='showRoleEditor(${JSON.stringify(u).replace(/'/g, "&#39;")})'>👤</button>
-                                <button class="btn-delete" onclick="toggleBlock(${u.id}, ${u.is_blocked ? 'true' : 'false'}">
+                                <button class="btn-delete" onclick="toggleBlock(${u.id}, ${u.is_blocked ? 'true' : 'false'})">
                                     ${u.is_blocked ? '🔓' : '🚫'}
                                 </button>
                             </td>
