@@ -151,6 +151,8 @@ async function loadUsers() {
         const url = dept 
             ? `${API}/users?department=${encodeURIComponent(dept)}`
             : `${API}/users`
+        
+        console.log('Запрос пользователей', url)
         const res = await fetch(url, {
             headers: {'Authorization': `Bearer ${token}`},
         })
