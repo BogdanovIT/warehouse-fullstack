@@ -53,10 +53,13 @@ router.put('/:id/roles', requireRole('superuser'), async (req, res) => {
     try {
         const { id } = req.params
         const { roleIds } = req.body
+        console.log('Смена ролей. userId:', id, 'roleIds', roleIds)
         const user = await User.findByPk(id)
         if (!user) {
             return res.status(404).json({ message: 'Пользователь не найден' })
         }
+        console.log('Пользователь найден:', user.email)
+        console.log('Методы пользователя:', Object.keys(user.__proto__))
         await user.setRoles(roleIds)
         const updatedUser = await User.findByPk(id, {
             include: [{
