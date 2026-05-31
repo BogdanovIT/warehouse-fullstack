@@ -13,7 +13,6 @@ function showLogin() {
     </div>
     `
 }
-
 async function loadDepartments() {
     const departments = [
         "ФРЦ БРИЗ Шереметьево",
@@ -29,7 +28,6 @@ async function loadDepartments() {
     ]
     return departments
 }
-
 async function login() {
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
@@ -78,9 +76,6 @@ document.querySelectorAll('.nav-item').forEach(item => {
         loadPage(item.dataset.page)
     })
 })
-
-
-
 async function loadPage(page) {
     if (!token) {
         token = sessionStorage.getItem('token')
@@ -189,7 +184,70 @@ function showEmployeeForm(employee = null) {
         </div>
     `;
 }
+async function showRoleEditor(user) {
+    const allRoles = await fetch(`${API}/roles`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+    }).then(r => r.json())
+    const userRoleIds = user.roles.map(r => r.id)
+    document.getElementById('main-content').innerHTML = `
+    <h2>Роли пользователя: ${user.email}</h2>
+    <div class="table-wrapper">
+        <form onsubmit="saveRoles(event, ${user.id})">
+            ${allRoles.map(role => `
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" value="${role.id}"
+                            ${userRoleIds.includes(role.id) ? 'checked' : ''}>
+                        ${role.name} (${role.code})
+                    </label>
+                </div>
+                `).join('')}
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="loadPage('users')">Отмена</button>
+                    <button type="submit" class="btn-save">Сохранить</button>
+                </div>
+        </form>
+    </div>
+    `
+}
+async function saveRoles(event, userId) {
+    event.preventDefault()
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked')
+    const roleIds = Array.from(checkboxes).map(cb => parseInt(cb.value))
 
+    try {
+        const res = await fetch(`${API}/users/${userId}/roles`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ roleIds })
+        })
+        if (!res.ok) throw new Error('Ошибка')
+        loadPage('users')
+    } catch (error) {
+        alert(error.message)
+    }
+}
+async function toggleBlock(userId, isBlocked) {
+    const action = isBlocked ? 'разблокировать' : 'заблокировать'
+    if (!confirm(`Точно ${action} пользователя?`)) return
+    try {
+        const res = await fetch(`${API}/users/${userId}/block`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ is_blocked: !isBlocked })
+        })
+        if (!res.ok) throw new Error('Ошибка')
+        loadPage('users')
+    } catch (error) {
+        alert(error.message)
+    }
+}
 async function saveEmployee(event, id) {
     event.preventDefault()
     const data = {
@@ -240,7 +298,6 @@ async function deactivateEmployee(id) {
         alert(error.message)
     }
 }
-
 async function loadUsers() {
     try {
         const dept = document.getElementById('department-select')?.value || currentDepartment
@@ -266,6 +323,7 @@ async function loadUsers() {
                         <th>Подразделение</th>
                         <th>Роли</th>
                         <th>Статус</th>
+                        <th>Действия</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -278,6 +336,12 @@ async function loadUsers() {
                             <td>${u.place || '-'}</td>
                             <td>${u.roles.map(r => r.name).join(', ')}</td>
                             <td>${u.is_blocked ? '❌ Заблокирован' : '✅ Активен' }</td>
+                            <td class="action">
+                                <button class="btn-edit" onclick='showRoleEditor(${JSON.stringify(u).replace(/'/g, "&#39;")})'>👤</button>
+                                <button class="btn-delete" onclick="toggleBlock(${u.id}, ${u.is_blocked}">
+                                    ${u.is_blocked ? '🔓' : '🚫 '}
+                                </button>
+                            </td>
                         </tr>
                     `).join('')}
                 </tbody>
@@ -305,7 +369,6 @@ function showPlaceholder(title, text) {
         <div class="table-wrapper"><p>${text}</p></div>
     `
 }
-
 if (sessionStorage.getItem('token')) {
     token = sessionStorage.getItem('token')
     loadPage('employees')

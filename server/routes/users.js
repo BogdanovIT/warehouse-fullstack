@@ -49,4 +49,49 @@ router.get('/', requireRole('director', 'superuser'), async (req, res) => {
     }
 })
 
+router.put('/:id/roles', requireRole('superuser'), async (req, res) => {
+    try {
+        const { id } = req.params
+        const { roleIds } = req.body
+        const user = await User.findByPk(id)
+        if (!user) {
+            return res.status(404).json({ message: 'Пользователь не найден' })
+        }
+        await user.setRoles(roleIds)
+        const updatedUser = await User.findByPk(id, {
+            include: [{
+                model: Role,
+                as: 'roles',
+                attributes: ['id', 'code', 'name'],
+                through: { attributes: ['is_primary'] },
+            }]
+        })
+        res.json({
+            id: updatedUser.id,
+            roles: updatedUser.roles.map(r => ({
+                id: r.id,
+                code: r.code,
+                name: r.name
+            }))
+        })
+    } catch (error) {
+        res.status(500).json({ message: 'Ошибка сервера', error: error.message })
+    }
+})
+
+router.put('/:id/block', requireRole('superuser'), async (req, res) => {
+    try {
+        const { id } = req.params
+        const { is_blocked } = req.body
+        const user = await User.findByPk(id)
+        if (!user) {
+            return res.status(404).json({ message: 'Пользователь не найден' })
+        }
+        await user.update({ is_blocked })
+        res.json({ id: user.id, is_blocked })
+    } catch (error) {
+        res.status(500).json({ message: 'Ошибка сервера', error: error.message })
+    }
+})
+
 export default router
