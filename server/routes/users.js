@@ -43,6 +43,7 @@ router.get('/', requireRole('director', 'superuser'), async (req, res) => {
                 isPrimary: r.UserRole?.is_primary || false
             }))
         }))
+        res.json(result)
     } catch (error) {
         res.status(500).json({ message: 'Ошибка сервера', error: error.message })
     }
