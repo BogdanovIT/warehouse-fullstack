@@ -23,7 +23,7 @@ router.get('/:date', async (req, res) => {
         console.log('existing:', existing.length, 'записей')
         console.log('BE attendanceMap', attendanceMap)
         const attendanceMap = {}
-        console.log('AFT attendanceMap', attendanceMap)
+        
         existing.forEach(a => { attendanceMap[a.employeeId] = a })
         const result = employees.map(emp => {
             const att = attendanceMap[emp.id]
@@ -51,6 +51,7 @@ router.get('/:date', async (req, res) => {
                 comment: ''
             }
         })
+        console.log('AFT attendanceMap', attendanceMap)
         res.json(result)
     } catch (error) {
         res.status(500).json({ message: 'Ошибка сервера', error: error.message})
