@@ -6,7 +6,7 @@ const chozRabota = sequelize.define('ChozRabota', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoincrement: true,
+        autoIncrement: true,
     },
     createdBy: {
         type: DataTypes.STRING(100),
