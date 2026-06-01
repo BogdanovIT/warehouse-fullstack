@@ -47,7 +47,8 @@ const authMiddleware = async (req, res, next) => {
             permissions: permissions,
             primaryRole: user.roles?.find(r => r.UserRole?.is_primary)?.code || user.roles?.[0]?.code || null,
             tokenExp: decoded.exp,
-            tokenIat: decoded.iat
+            tokenIat: decoded.iat,
+            place: user.place
         }
         req.user.hasRole = (roleCode) => {
             return req.user.roleCodes.includes(roleCode)
