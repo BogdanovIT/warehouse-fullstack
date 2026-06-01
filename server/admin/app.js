@@ -524,6 +524,10 @@ function onStatusChange(employeeId, status) {
 async function saveAttendance() {
     const date = document.getElementById('att-date').value
     const records = window._attendanceRecords || []
+    const dept = document.getElementById('department-select')?.value || currentDepartment 
+    const url = dept 
+        ? `${API}/attendance/${date}?department=${encodeURIComponent(dept)}`
+        : `${API}/attendance/${date}`
     const payload = {
         records: records.map(r => ({
             employeeId: r.employeeId,
@@ -535,7 +539,7 @@ async function saveAttendance() {
         }))
     }
     try {
-        const res = await fetch(`${API}/attendance/${date}`, {
+        const res = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
