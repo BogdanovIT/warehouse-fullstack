@@ -512,6 +512,9 @@ function onStatusChange(employeeId, status) {
         if (status === 'present' && (!hours.value || hours.value === '0')) {
             hours.value = 8
         } 
+        if (status === 'business_trip' && (!trip.value || trip.value === '0')) {
+            trip.value = 8
+        }
     } else {
         hours.disabled = true
         overtime.disabled = true
