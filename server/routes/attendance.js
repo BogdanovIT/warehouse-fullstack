@@ -20,7 +20,10 @@ router.get('/:date', async (req, res) => {
             where: { department, date },
             include: [{ model: Employee, attributes: ['id', 'fullName'] }],
         })
+        console.log('existing:', existing.length, 'записей')
+        console.log('BE attendanceMap', attendanceMap)
         const attendanceMap = {}
+        console.log('AFT attendanceMap', attendanceMap)
         existing.forEach(a => { attendanceMap[a.employeeId] = a })
         const result = employees.map(emp => {
             const att = attendanceMap[emp.id]
