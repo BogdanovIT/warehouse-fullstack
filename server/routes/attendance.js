@@ -12,6 +12,7 @@ router.get('/:date', async (req, res) => {
     try {
         const { date } = req.params
         const department = req.query.department || req.user.place || ''
+        console.log('GET attendance. date:', date, 'department', department)
         const employees = await Employee.findAll({
             where: { department, isActive: true},
             order: [[ 'fullName', 'ASC' ]],
