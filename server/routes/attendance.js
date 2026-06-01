@@ -11,7 +11,7 @@ router.use(authMiddleware)
 router.get('/:date', async (req, res) => {
     try {
         const { date } = req.params
-        const department = req.query.department || req.user.place 
+        const department = req.query.department || req.user.place || ''
         const employees = await Employee.findAll({
             where: { department, isActive: true},
             order: [[ 'fullName', 'ASC' ]],
