@@ -406,6 +406,7 @@ function logout() {
 async function loadAttendance() {
     const dept = document.getElementById('department-select')?.value || currentDepartment
     const date = document.getElementById('att-date')?.value || new Date().toISOString().split('T')[0]
+    
     const url = dept 
         ? `${API}/attendance/${date}?department=${encodeURIComponent(dept)}` 
         : `${API}/attendance/${date}`;
@@ -414,12 +415,16 @@ async function loadAttendance() {
             headers: {'Authorization': `Bearer ${token}`}
         })
         const records = await res.json()
+        const isSaved = records.length > 0 && records.some(r => r.id !== undefined)
+        const savedBadge = isSaved 
+            ? '<span class="badge badge-saved">✓ Сохранен</span>'
+            : '<span class="badge badge-unsaved">Не сохранен</span>'
         if (!res.ok) throw new Error(records.message)
         const filtered = dept 
             ? records.filter(r => r.department === dept || !r.department)
             : records
         document.getElementById('main-content').innerHTML = `
-            <h2>Табель</h2>
+            <h2>Табель ${savedBadge}</h2>
             <div class="att-date-row">
                 <button class="btn-date" onclick="changeDate(-1)">◀</button>
                 <input type="date" id="att-date" value="${date}" onchange="loadAttendance()" class="date-input">
