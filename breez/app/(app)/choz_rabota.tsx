@@ -165,6 +165,14 @@ const ChozRabotaScreen = () => {
         }
         try {
             setExportLoading(true)
+            const toServerDate = (date: string) => {
+                if(!date) return ''
+                const parts = date.split('.')
+                if (parts.length ===3) {
+                    return `${parts[2]}-${parts[1]}-${parts[0]}`
+                }
+                return date
+            }
             const params = new URLSearchParams({
                 startDate: exportStartDate,
                 endDate: exportEndDate,
@@ -316,12 +324,12 @@ const ChozRabotaScreen = () => {
                                 <View style={styles.dateBlock}>
                                     <Text style={styles.dateLabel}>C</Text>
                                     <TextInput style={styles.dateInput} value={exportStartDate} onChangeText={setExportStartDate}
-                                    placeholder="YYYY-MM-DD" placeholderTextColor="#999" />
+                                    placeholder="ДД.ММ.ГГГГ" placeholderTextColor="#999" />
                                 </View>
                                 <View style={styles.dateBlock}>
                                     <Text style={styles.dateLabel}>По</Text>
                                     <TextInput style={styles.dateInput} value={exportEndDate} onChangeText={setExportEndDate}
-                                    placeholder="YYYY-MM-DD" placeholderTextColor="#999" />
+                                    placeholder="ДД.ММ.ГГГГ" placeholderTextColor="#999" />
                                 </View>
                             </View>
                             <View style={styles.adminSection}>

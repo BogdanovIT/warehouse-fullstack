@@ -63,7 +63,7 @@ export const generateAndSendReports = async () => {
                     directorEmail,
                     `Хозработы по ${department} - ${prettyDate}`,
                     `Отчет по хозяйственным работам по ${department} за ${prettyDate}`,
-                    [{ filename: `Хозработы_${department}_${today}.xlsx`, content: excel }],
+                    [{ filename: `Хозработы_${department}_${prettyDate.replace(/\./g, '-')}.xlsx`, content: excel }],
                 )
                 console.log(`[Отчет] Отправлено руководителю ${department}: ${directorEmail}`)
             } else {
@@ -91,7 +91,7 @@ export const generateAndSendReports = async () => {
                     ADMINS.join(', '),
                     `Хозработы, сводный отчет за ${prettyDate}`,
                     `Сводный отчет по хозработам по всем подразделениям за ${prettyDate}.`,
-                    [{ filename: `Хозработы_сводный_${today}.xlsx`, content: summaryExcel }],
+                    [{ filename: `Хозработы_сводный_${prettyDate.replace(/\./g, '-')}.xlsx`, content: summaryExcel }],
                 )
                 console.log(`Сводный отчет отправлен администраторам`)
             } catch (error) {

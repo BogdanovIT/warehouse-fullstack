@@ -19,7 +19,7 @@ export const createRecord = async (req, res) => {
             comment,
         } = req.body
         const createdBy = req.user.firstName + ' ' + req.user.lastName
-        const department = req.user.place || "Не указано"
+        const department = req.user.place || req.body.department || ''
         let finalEmployeeName = employeeName || ''
         if (employeeId) {
             const emp = await Employee.findByPk(employeeId)
