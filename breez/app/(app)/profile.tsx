@@ -35,7 +35,7 @@ export default function MyProfile() {
                 setLoading(true)
                 const data = await getUserProfile(auth.access_token)
                 setUserData(data)
-                setUserProfile({data, place: data.place})
+                setUserProfile(data)
             } catch (e) {
                 setError('Не удалось загрузить данные')
                 console.error(e)
