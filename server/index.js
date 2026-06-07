@@ -176,7 +176,7 @@ app.post('/api/brakodel/send', upload.array('photos'), async (req, res) => {
         }
         const { data, recipients } = req.body
         const parsedData = typeof data === 'string' ? JSON.parse(data) : data
-        
+        let excelBuffer
         try {const excelBuffer = await templateService.generateDefectExcel(parsedData)}
         catch(error) {console.error('Ошибка генерации СОХ:', error)
             res.status(500).json({success: false, message: error.message})
