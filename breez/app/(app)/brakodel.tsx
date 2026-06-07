@@ -14,6 +14,7 @@ import { Config } from "@/config";
 import BarcodeScanner from "@/components/BarcodeScanner";
 import Scanner from "@/assets/icons/ScannerIcon";
 import SwitchButton from "@/switch/switch";
+import ScanInput from "@/components/scanInput";
 
 const API_URL = Config.HOME_URL
 export default function brakodel() {
@@ -43,6 +44,8 @@ export default function brakodel() {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [scannerVisible, setScannerVisible] = useState(false)
     const [isSOH, setIsSOH] = useState(false) 
+    const [scanTarget, setScanTarget] = useState<string>('serialNumber')
+
 
     useEffect(()=> {
         const loadProfile = async () => {
@@ -253,6 +256,7 @@ export default function brakodel() {
             setProductName('Ошибка при поиске товара')
         }
     }
+    
 
     return (
         <KeyboardAvoidingView behavior={Platform.OS ==='ios' ? 'padding' : 'height'}
@@ -301,15 +305,23 @@ export default function brakodel() {
             value = {aktNumber}
             onChangeText ={(text) => setAktNumber(text)}/>
             <Text style={styles.text}>Введите номер палета SSCC</Text>
-            <Input style={styles.inputText}
-            value = {numberSSCC}
-            onChangeText ={(text) => setNumberSSCC(text)}
-            placeholder="*"/>
+            <ScanInput 
+                value={numberSSCC}
+                onChangeText={setNumberSSCC}
+                placeholder="*"
+                onScan={()=> {
+                    setScanTarget('numberSSCC')
+                    setScannerVisible(true)
+                }} />
             <Text style={styles.text}>Внутрискладской номер брака</Text>
-            <Input style={styles.inputText}
-            value = {defectNumber}
-            onChangeText ={(text) => setDefectNumber(text)}
-            placeholder="*"/>
+            <ScanInput 
+                value={defectNumber}
+                onChangeText={setDefectNumber}
+                placeholder="*"
+                onScan={() => {
+                    setScanTarget('defectNumber')
+                    setScannerVisible(true)
+                }}/>
             <Text style={styles.text}>Укажите номер документа прихода</Text>
             <Input style={{...styles.inputText}} autoCapitalize="characters"
             value={docNumber}
@@ -346,14 +358,11 @@ export default function brakodel() {
             </View>
 
             <Text style={styles.text}>Введите серийный номер товара</Text>
-            <View style={styles.scanRow}>
-                <Input style={styles.scanInput}
-                    value={serialNumber}
-                    onChangeText={(text) => setSerialNumber(text)}/>
-                <TouchableOpacity style={styles.scanButton} onPress={ () => setScannerVisible(true) } >
-                    <Scanner size={22} color={SystemColors.VeryLightBlue} />
-                </TouchableOpacity>
-            </View>
+            <ScanInput
+                value={serialNumber}
+                onChangeText={setSerialNumber}
+                placeholder="Серийный номер"
+                onScan={() => setScannerVisible(true)}/>
         {!isSOH && (
             <>
             <Text style={styles.text}>Выберите сорт дефекта</Text>
@@ -392,9 +401,15 @@ export default function brakodel() {
             onPress={!isSubmitting ? handlePress : undefined} style={{paddingTop: 13, marginBottom:0, 
                 width: "70%", alignSelf: 'center'}}/>
             </Animated.View>
-            <BarcodeScanner visible={scannerVisible} onScan={(barcode) => {
-                setSerialNumber(barcode); setScannerVisible(false)
-            }} onClose={ () => {setScannerVisible(false) }}/>
+            <BarcodeScanner 
+                visible={scannerVisible}
+                onScan={(barcode) => {
+                    switch(scanTarget){
+                    case 'numberSSCC': setNumberSSCC(barcode); break
+                    case 'defectNumber': setDefectNumber(barcode); break
+                    default: setSerialNumber(barcode)}
+                    setScannerVisible(false)
+                }} onClose={() => setScannerVisible(false)}/>
             </ScrollView>
         </KeyboardAvoidingView>
         

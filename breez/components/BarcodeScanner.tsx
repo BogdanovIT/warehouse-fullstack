@@ -16,6 +16,7 @@ interface BarcodeScannerProps {
 const BarcodeScanner = ({ visible, onScan, onClose}: BarcodeScannerProps) => {
     const [permission, requestPermission] = useCameraPermissions()
     const [scanned, setScanned] = useState(false)
+    
 
     useEffect(() => {
         if (visible && !permission?.granted) {
@@ -33,6 +34,7 @@ const BarcodeScanner = ({ visible, onScan, onClose}: BarcodeScannerProps) => {
         onScan(data)
     }
     if (!visible) return null
+    
 
     return (
         <Modal visible={visible} animationType="slide" style={styles.modal}>
