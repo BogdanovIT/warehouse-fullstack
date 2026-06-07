@@ -118,7 +118,7 @@ export default function FireSecurity ({onUpload}: ImageUploaderProps) {
         }
         loadProfile()
     }, [auth?.access_token, userProfile])
-    if (!hasRole('superuser') && userProfile?.place !== 'ФРЦ БРИЗ Шереметьево') {
+    if (!userProfile?.roles?.some(r => r.code === 'superuser') && userProfile?.place !== 'ФРЦ БРИЗ Шереметьево') {
         return <Redirect href="/" />
     }
     const [tempPhotoUris, setTempPhotoUris] = useState<(string | null )[]>(Array(55).fill(null))
