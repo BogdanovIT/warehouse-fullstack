@@ -15,7 +15,8 @@ class TemplateService {
                 worksheet.getCell('X33').value = parsedData.productName
                 worksheet.getCell('R51').value = parsedData.comment
                 worksheet.getCell('D44').value = parsedData.serialNumber
-                worksheet.getCell('A51').value = parsedData.sortValue
+                if (!parsedData.isSOH)
+                {worksheet.getCell('A51').value = parsedData.sortValue}
                 worksheet.getCell('AH11').value = [parsedData.docPrefix, parsedData.aktNumber].join('')
                 worksheet.getCell('AH11').alignment ={horizontal: 'left'}
                 worksheet.getCell('B65').value = parsedData.cell

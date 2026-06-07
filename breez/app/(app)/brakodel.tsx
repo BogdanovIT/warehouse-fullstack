@@ -13,6 +13,7 @@ import { DefectivePhotosHandler } from "../../components/DefectivePhotosHandler"
 import { Config } from "@/config";
 import BarcodeScanner from "@/components/BarcodeScanner";
 import Scanner from "@/assets/icons/ScannerIcon";
+import SwitchButton from "@/switch/switch";
 
 const API_URL = Config.HOME_URL
 export default function brakodel() {
@@ -41,6 +42,7 @@ export default function brakodel() {
     const [resetPhotos, setResetPhotos] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [scannerVisible, setScannerVisible] = useState(false)
+    const [isSOH, setIsSOH] = useState(false) 
 
     useEffect(()=> {
         const loadProfile = async () => {
@@ -158,6 +160,7 @@ export default function brakodel() {
             })
 
             formData.append('data', JSON.stringify({
+                isSOH,
                 articleCode,
                 currentDate,
                 place: currentPlace,
@@ -166,7 +169,7 @@ export default function brakodel() {
                 numberSSCC,
                 docNumber,
                 defectNumber,
-                sortValue,
+                sortValue: !isSOH ? sortValue : undefined,
                 aktNumber,
                 serialNumber,
                 comment,
@@ -202,6 +205,7 @@ export default function brakodel() {
             setDefectivePhotos([])
             setAktNumber('')
             setResetPhotos(prev => !prev)
+            setIsSOH(false)
 
             setForm ({
                 place: '',
@@ -217,6 +221,8 @@ export default function brakodel() {
                 sortValue: 'Сорт 1',
                 comment: '',
                 setCell: '',
+            
+                
             })
             Alert.alert("Письма успешно отправлены")
         } catch (error: unknown) {
@@ -260,7 +266,12 @@ export default function brakodel() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{paddingBottom:150}}
         keyboardShouldPersistTaps='handled'>
-            
+            <View style={styles.switchRow}>
+                <Text style={styles.switchLabel}>
+                    {isSOH ? 'ARISTON' : 'BREEZ'}
+                </Text>
+                <SwitchButton value={isSOH} onChange={setIsSOH} />
+            </View>
             <Text style={styles.text}>Выберите место обнаружения дефекта</Text>
                 <View style={{borderWidth: 1.5, borderRadius: 3, borderColor: SystemColors.VeryLightBlue, 
                     width: 163, flexDirection:'row'}}>
@@ -343,8 +354,10 @@ export default function brakodel() {
                     <Scanner size={22} color={SystemColors.VeryLightBlue} />
                 </TouchableOpacity>
             </View>
-        <Text style={styles.text}>Выберите сорт дефекта</Text>
-        <View style={{borderWidth: 1.5, borderRadius: 3, borderColor: SystemColors.VeryLightBlue, 
+        {!isSOH && (
+            <>
+            <Text style={styles.text}>Выберите сорт дефекта</Text>
+            <View style={{borderWidth: 1.5, borderRadius: 3, borderColor: SystemColors.VeryLightBlue, 
                 width: 193}}>
             <Picker style={{...styles.picker, width: 190, textAlign: 'center'}} 
                 dropdownIconColor={SystemColors.VeryLightBlue}
@@ -358,7 +371,9 @@ export default function brakodel() {
                 <Picker.Item style={styles.pickerItem} label="Сорт 6" value={'Сорт 6'}/>
                 <Picker.Item style={styles.pickerItem} label="На экспертизу" value={'На экспертизу'}/>
             </Picker>
-        </View>
+            </View>
+            </>
+            )}
             <Text style={styles.text}>Добавьте комментарий</Text>
             <Input multiline={true} numberOfLines={4} textAlignVertical="top" style={{...styles.inputText, marginBottom: 15}} 
             onFocus={handleFocus}
@@ -402,6 +417,22 @@ const styles = StyleSheet.create({
         alignItems: 'stretch',
         width: '90%',
         alignSelf: 'center'
+    },
+    switchRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 12,
+        marginBottom: 10,
+        marginTop: 5,
+        borderBottomWidth: 1,
+        borderBottomColor: SystemColors.VeryLightBlue
+    },
+    switchLabel: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: SystemColors.VeryLightBlue,
+        fontFamily: CustomFonts.medium
     },
     scanInput: {
         flex: 1,
