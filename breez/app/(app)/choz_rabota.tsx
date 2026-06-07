@@ -1,5 +1,5 @@
 import React, { use, useEffect, useState} from "react";
-import { View, Text, TextInput, ScrollView, Alert, StyleSheet, Platform, TouchableOpacity, Modal, Switch } from "react-native";
+import { View, Text, TextInput, ScrollView, Alert, StyleSheet, Platform, TouchableOpacity, Modal, Switch, KeyboardAvoidingView } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import SwitchButton from "@/switch/switch";
 import { Button } from "@/button/button";
@@ -206,6 +206,9 @@ const ChozRabotaScreen = () => {
         setSelectedAdmins(prev => ({ ...prev, [email]: !prev[email]}))
     }
     return (
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{flex: 1}}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
         <View style={{ flex: 1 }}>
             <ScrollView style={styles.container} contentContainerStyle={styles.content}>
                 <Text style={styles.label}>ФИО сотрудника</Text>
@@ -356,6 +359,7 @@ const ChozRabotaScreen = () => {
                 </View>
             </Modal>
         </View>
+        </KeyboardAvoidingView>
     )
 }
 

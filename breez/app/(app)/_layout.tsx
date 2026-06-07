@@ -96,11 +96,9 @@ export default function AppLayout() {
                 <Drawer.Screen  name="brakodel" options={{
                     title: 'РАБОТА С БРАКОМ'
                 }}/>
-                {hasfireSafetyAccess() && (
                 <Drawer.Screen  name="firesecurity" options={{
                     title: 'ПОЖАРНАЯ БЕЗОПАСНОСТЬ'
                 }}/>
-                )}
                 <Drawer.Screen  name="about" options={{
                     title: 'НАПИСАТЬ РАЗРАБОТЧИКУ'
                 }}/>
