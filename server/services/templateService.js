@@ -42,9 +42,12 @@ class TemplateService {
             return workbook.xlsx.writeBuffer()
     }
     async generateDefectExcel(parsedData) {
+        console.log('generateDefectExcel called, isSOH:', parsedData.isSOH)
         if (parsedData.isSOH) {
+            console.log('Using SOH template')
             return this.generateSohExcel(parsedData)
         }
+        console.log('UsingBREEZ template')
         return this.generateBreezExcel(parsedData)
     }
 }
