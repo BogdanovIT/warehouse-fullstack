@@ -23,6 +23,7 @@ class TemplateService {
                 return workbook.xlsx.writeBuffer()
     }
         async generateSohExcel (parsedData) {
+            console.log(parsedData)
             const templatePath = '/home/abogdanov/Mobile_Storekeeper/assets/template_soh.xlsx'
             const workbook = new ExcelJS.Workbook()
             await workbook.xlsx.readFile(templatePath)
