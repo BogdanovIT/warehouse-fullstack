@@ -362,7 +362,10 @@ export default function brakodel() {
                 value={serialNumber}
                 onChangeText={setSerialNumber}
                 placeholder="Серийный номер"
-                onScan={() => setScannerVisible(true)}/>
+                onScan={() => {
+                    setScanTarget('serialNumber')
+                    setScannerVisible(true)}}
+                    />
         {!isSOH && (
             <>
             <Text style={styles.text}>Выберите сорт дефекта</Text>
