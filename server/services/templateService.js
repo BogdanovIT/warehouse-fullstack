@@ -29,28 +29,28 @@ class TemplateService {
             await workbook.xlsx.readFile(templatePath)
             const worksheet = workbook.getWorksheet(1)
             worksheet.getCell('A4').value = parsedData.currentDate
-            console.log('Заполняем currentDate ', currentDate)
+            console.log('Заполняем currentDate ', parsedData.currentDate)
             worksheet.getCell('A33').value = parsedData.numberSSCC
-            console.log('Заполняем numberSSCC ', numberSSCC)
+            console.log('Заполняем numberSSCC ', parsedData.numberSSCC)
             worksheet.getCell('BD122').value = parsedData.defectNumber
-            console.log('Заполняем  defectNumber', defectNumber)
+            console.log('Заполняем  defectNumber', parsedData.defectNumber)
             worksheet.getCell('BF4').value = parsedData.place
-            console.log('Заполняем  place', place)
+            console.log('Заполняем  place', parsedData.place)
             worksheet.getCell('AY25').value = parsedData.docNumber
-            console.log('Заполняем  docNumber', docNumber)
+            console.log('Заполняем  docNumber', parsedData.docNumber)
             worksheet.getCell('A38').value = [parsedData.inputValuePrefix,parsedData.articleCode].join('')
             console.log('Заполняем  ', [parsedData.inputValuePrefix,parsedData.articleCode].join(''))
             worksheet.getCell('X33').value = parsedData.productName
-            console.log('Заполняем  productName', productName)
+            console.log('Заполняем  productName', parsedData.productName)
             worksheet.getCell('A53').value = parsedData.comment
-            console.log('Заполняем  comment', comment)
+            console.log('Заполняем  comment', parsedData.comment)
             worksheet.getCell('D44').value = parsedData.serialNumber
-            console.log('Заполняем  serialNumber', serialNumber)
+            console.log('Заполняем  serialNumber', parsedData.serialNumber)
             worksheet.getCell('AH11').value = [parsedData.docPrefix, parsedData.aktNumber].join('')
             console.log('Заполняем  ', [parsedData.docPrefix, parsedData.aktNumber].join(''))
             worksheet.getCell('AH11').alignment ={horizontal: 'left'}
             worksheet.getCell('B64').value = parsedData.cell
-            console.log('Заполняем  cell', cell)
+            console.log('Заполняем  cell', parsedData.cell)
             return workbook.xlsx.writeBuffer()
     }
     async generateDefectExcel(parsedData) {
