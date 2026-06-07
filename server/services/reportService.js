@@ -80,7 +80,9 @@ export const generateAndSendReports = async () => {
         )
         const directorEmails = []
         for (const department of departments) {
+            console.log('Ищем руководителя для ОП:', department)
             const email = await getDirectorEmail(department)
+            console.log('Результат:', email)
             if (email && !directorEmails.includes(email)) {
                 directorEmails.push(email)
             }
