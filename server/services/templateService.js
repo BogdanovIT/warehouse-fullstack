@@ -51,7 +51,10 @@ class TemplateService {
             worksheet.getCell('AH11').alignment ={horizontal: 'left'}
             worksheet.getCell('B64').value = parsedData.cell
             console.log('Заполняем  cell', parsedData.cell)
-            return workbook.xlsx.writeBuffer()
+            console.log('SOH: все ячейки заполнены, генерируем буфер...');
+            const buffer = await workbook.xlsx.writeBuffer();
+            console.log('SOH: буфер создан, размер:', buffer.length);
+            return buffer
     }
     async generateDefectExcel(parsedData) {
         if (parsedData.isSOH) {
