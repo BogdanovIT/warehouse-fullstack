@@ -32,7 +32,7 @@ class TemplateService {
             worksheet.getCell('A33').value = parsedData.numberSSCC
             worksheet.getCell('BD122').value = parsedData.defectNumber
             worksheet.getCell('BF4').value = parsedData.place
-            worksheet.getCell('AV26').value = parsedData.docNumber
+            worksheet.getCell('AY25').value = parsedData.docNumber
             worksheet.getCell('A38').value = [parsedData.inputValuePrefix,parsedData.articleCode].join('')
             worksheet.getCell('X33').value = parsedData.productName
             worksheet.getCell('A53').value = parsedData.comment
