@@ -15,6 +15,7 @@ const ADMINS_LIST = [
     { email: 'kserova@breez.ru', name: 'Серова К.А.' },
     { email: 'alarionov@breez.ru', name: 'Ларионов А.С.' },
     { email: 'mchetyrin@breez.ru', name: 'Четырин М.В.' },
+    { email: 'eatiashev@breez.ru', name: 'Атяшев Е.А.' },
 ]
 const WORK_TYPES = [
     "W001-Work,work!",
@@ -174,8 +175,8 @@ const ChozRabotaScreen = () => {
                 return date
             }
             const params = new URLSearchParams({
-                startDate: exportStartDate,
-                endDate: exportEndDate,
+                startDate: toServerDate(exportStartDate),
+                endDate: toServerDate(exportEndDate),
                 employeeId: String(exportEmployeeId || ''),
                 notifyAdmins: notifyAdmins ? 'true' : 'false',
                 selectedAdmins: Object.keys(selectedAdmins).filter(k => selectedAdmins[k]).join(','),

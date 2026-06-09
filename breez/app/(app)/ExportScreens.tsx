@@ -13,6 +13,7 @@ const ADMINS_LIST = [
     { email: 'kserova@breez.ru', name: 'Серова К.А.' },
     { email: 'alarionov@breez.ru', name: 'Ларионов А.С.' },
     { email: 'mchetyrin@breez.ru', name: 'Четырин М.В.' },
+    { email: 'eatiashev@breez.ru', name: 'Атяшев Е.А.' },
 ]
 interface EmployeeOptions {
     id: number,

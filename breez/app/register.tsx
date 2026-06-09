@@ -135,7 +135,7 @@ export default function Register() {
             if (!verifyResponse.ok) {
                 Alert.alert("Ошибка","Неверный код подтверждения")
             }
-            const response = await fetch(`${API_URL}/api/users/register`, {
+            const response = await fetch(`${API_URL}/api/new-user/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
