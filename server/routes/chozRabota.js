@@ -17,13 +17,25 @@ router.post('/', requireRole('director', 'superuser'), createRecord)
 router.get('/export', requireRole('director', 'superuser'), async (req, res) => {
     try {
         const { startDate, endDate, department, employeeId, notifyAdmins, selectedAdmins } = req.query
+        const toServerDate = (date) =>{
+            console.log('tServerDate input:', date)
+            if (!date) return date
+            const parts = date.split('.')
+            console.log('parts', parts)
+            if (parts.length === 3) {
+                const result = `${parts[2]}-${parts[1]}-${parts[0]}`
+                console.log('toServerDate output', result) 
+                return result
+            }
+            return date
+        }
         const isSuperuser = req.user.roleCodes.includes('superuser')
 
         if (!startDate || !endDate) {
             return res.status(400).json({ message: 'укажите начало и окончание периода' })
         }
         const where = {
-            workDate: { [Op.between]: [startDate, endDate] }
+            workDate: { [Op.between]: [toServerDate(startDate), toServerDate(endDate)] }
         }
         if (!isSuperuser) {
             where.department = req.user.place
