@@ -60,16 +60,52 @@ app.use(cors({
 }))
 app.use('/admin', express.static(path.join(__dirname, 'admin')))
 app.use('/static', express.static('/home/abogdanov/Mobile_Storekeeper/public'))
+app.post('/api/users/verify-code', async (req, res) => {
+    try {
+        const {email, code} = req.body
+        if (!email || !code) {
+            return res.status(400).json({
+                success: false,
+                error: 'Email и код обязательны'
+            })
+        }
+        const verificationCode = await VerificationCode.findOne({
+            where: {
+                email,
+                code,
+                used: false,
+                expiresAt: { [Op.gt]: new Date() }
+            }
+        })
+        if (!verificationCode) {
+            return res.status(400).json({
+                success: false,
+                error: "Неверный или просроченный код"
+            })
+        }
+        await verificationCode.update({used: true})
+        res.json({
+            success: true,
+            message: 'Email успешно подтвержден'
+        })
+    } catch(error) {
+        console.error('Ошибка проверки кода:', error)
+        res.status(500).json({
+            success: false,
+            error: "Внутренняя ошибка сервера"
+        })
+    }
+})
+app.use('/api/new-user', userRoutes)
+app.use('/api/auth', authRoutes)
+app.use('/api/auth', restorePass)
+app.use('/api/me', MeRoute)
 app.use('/api/employees', employeeRoutes)
 app.use('/api/attendance', attendanceRoutes)
 app.use('/api/choz-rabota', chozRabotaRoutes)
-app.use('/api/new-user', userRoutes)
-app.use('/api/me', MeRoute)
 app.use('/api/users', MeRoute)
 app.use('/api/users', usersRoutes)
-app.use('/api/auth', authRoutes)
 app.use('/api/products', productRout)
-app.use('/api/auth', restorePass)
 app.use(checkPasswordExpiration)
 app.use(checkBlocked)
 
@@ -130,42 +166,7 @@ app.post('/api/users/send-verification', async (req,res) => {
     }
 })
 
-app.post('/api/users/verify-code', async (req, res) => {
-    try {
-        const {email, code} = req.body
-        if (!email || !code) {
-            return res.status(400).json({
-                success: false,
-                error: 'Email и код обязательны'
-            })
-        }
-        const verificationCode = await VerificationCode.findOne({
-            where: {
-                email,
-                code,
-                used: false,
-                expiresAt: { [Op.gt]: new Date() }
-            }
-        })
-        if (!verificationCode) {
-            return res.status(400).json({
-                success: false,
-                error: "Неверный или просроченный код"
-            })
-        }
-        await verificationCode.update({used: true})
-        res.json({
-            success: true,
-            message: 'Email успешно подтвержден'
-        })
-    } catch(error) {
-        console.error('Ошибка проверки кода:', error)
-        res.status(500).json({
-            success: false,
-            error: "Внутренняя ошибка сервера"
-        })
-    }
-})
+
 
 app.post('/api/brakodel/send', upload.array('photos'), async (req, res) => {
     const tempFilesToDelete = []
