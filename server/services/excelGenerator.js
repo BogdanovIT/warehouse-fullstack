@@ -39,7 +39,7 @@ export const generateExcel = async (title, records) => {
         records.forEach((record, index) => {
             const row = sheet.addRow([
                 index + 1,
-                record.workDate ? record.workDate.split('-').reverse().loin('.') : '',
+                record.workDate ? record.workDate.split('-').reverse().join('.') : '',
                 record.employeeName,
                 record.workType,
                 record.startTime?.substring(0, 5) || '',
