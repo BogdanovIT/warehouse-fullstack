@@ -4,9 +4,9 @@ import { requireRole } from '../middlewares/roleMiddleware.js'
 import { User, Role, sequelize } from '../models/index.js'
 
 const router = express.Router()
-router.use(authMiddleware)
 
-router.get('/', requireRole('director', 'superuser'), async (req, res) => {
+
+router.get('/', authMiddleware, requireRole('director', 'superuser'), async (req, res) => {
     try {
         const isSuperuser = req.user.roleCodes.includes('superuser')
         const requestedDepartment = req.query.department
@@ -49,7 +49,7 @@ router.get('/', requireRole('director', 'superuser'), async (req, res) => {
     }
 })
 
-router.put('/:id/roles', requireRole('superuser'), async (req, res) => {
+router.put('/:id/roles', authMiddleware, requireRole('superuser'), async (req, res) => {
     try {
         const { id } = req.params
         if (parseInt(id) === 4) {
@@ -78,7 +78,7 @@ router.put('/:id/roles', requireRole('superuser'), async (req, res) => {
     }
 })
 
-router.put('/:id/block', requireRole('superuser'), async (req, res) => {
+router.put('/:id/block', authMiddleware, requireRole('superuser'), async (req, res) => {
     try {
         const { id } = req.params
         if (parseInt(id) === 4) {
@@ -98,7 +98,7 @@ router.put('/:id/block', requireRole('superuser'), async (req, res) => {
     }
 })
 
-router.get('/roles', requireRole('superuser'), async (req, res) => {
+router.get('/roles', authMiddleware, requireRole('superuser'), async (req, res) => {
     try {
         const roles = await Role.findAll({
             attributes: ['id', 'code', 'name'],
