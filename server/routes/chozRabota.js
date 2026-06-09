@@ -55,12 +55,12 @@ router.get('/export', requireRole('director', 'superuser'), async (req, res) => 
             ? `Хозработы - ${req.user.place}`
             : (department ? `Хозработы - ${department}` : "Все хозработы по подразделению")
         const excel = await generateExcel(
-            `${title} - ${startDate} / ${endDate}`,
+            `${title} - ${toServerDate(startDate)} / ${toServerDate(endDate)}`,
             records
         )
         await emailService.sendEmail(
             req.user.email,
-            `Выгрузка хозработ ${startDate} - ${endDate}`,
+            `Выгрузка хозработ ${toServerDate(startDate)} - ${toServerDate(endDate)}`,
             `Запрошенная выгрузка за период`,
             [{ filename: `Хозработы_выгрузка.xlsx`, content: excel }]
         )
@@ -69,7 +69,7 @@ router.get('/export', requireRole('director', 'superuser'), async (req, res) => 
             for (const admin of adminsToNotify) {
                 await emailService.sendEmail(
                     admin.trim(),
-                    `Копия: Выгрузка хозработ ${startDate} - ${endDate} (от ${req.user.email})`,
+                    `Копия: Выгрузка хозработ ${toServerDate(startDate)} - ${toServerDate(endDate)} (от ${req.user.email})`,
                     `Копия выгрузки за период, запрошенный пользователем ${req.user.email}.`,
                     [{ filename: `Хозработы_выгрузка.xlsx`, content: excel }]
                 )
