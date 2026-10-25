@@ -40,7 +40,7 @@ const BarcodeScanner = ({ visible, onScan, onClose}: BarcodeScannerProps) => {
         <Modal visible={visible} animationType="slide" style={styles.modal}>
             <View style={styles.container}>
                 {permission?.granted ? (
-                    <CameraView style={styles.camera} facing='back' barcodeScannerSettings={{ barcodeTypes: ['code128', 'code39', 'ean13', 'ean8', 'upc_a', 'upc_e']}} onBarcodeScanned={handleBarcodeScanner} />
+                    <CameraView style={styles.camera} facing='back' barcodeScannerSettings={{ barcodeTypes: ['code128', 'code39', 'ean13', 'ean8', 'upc_a', 'upc_e', 'qr', 'datamatrix']}} onBarcodeScanned={handleBarcodeScanner} />
                 ) : (
                     <View style={styles.permissionContainer}>
                         <Text style={styles.permissionText}>
