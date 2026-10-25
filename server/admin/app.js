@@ -25,6 +25,7 @@ async function loadDepartments() {
         "РРЦ Бриз Новосибирск LV",
         "РРЦ Бриз Самара LV",
         "РРЦ Бриз Краснодар LV",
+        "СЦ Тестовый",
         "БРИЗ Головной офис"
     ]
     return departments

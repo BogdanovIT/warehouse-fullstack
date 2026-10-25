@@ -38,13 +38,21 @@ lerna-debug.log*
 # ========================================
 # REACT NATIVE / FRONTEND (client/)
 # ========================================
-client/node_modules/
-client/.expo/
-client/dist/
-client/coverage/
-client/.nyc_output/
-client/.jest/
-client/.expo-shared/
+server/node_modules/
+server/.expo/
+server/dist/
+server/coverage/
+server/.nyc_output/
+server/.jest/
+server/.expo-shared/
+breez/node_modules/
+breez/.expo/
+breez/dist/
+breez/coverage/
+breez/.nyc_output/
+breez/.jest/
+breez/.expo-shared/
+node_modules/
 
 # React Native специфичные
 client/android/.gradle/

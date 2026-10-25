@@ -236,6 +236,7 @@ export default function Register() {
                             <Picker.Item style={{...styles.pickerItem, fontSize:16}} label="РРЦ Бриз Ростов LV" value="РРЦ Бриз Ростов LV" />
                             <Picker.Item style={{...styles.pickerItem, fontSize:16}} label="РРЦ Бриз Самара LV" value="РРЦ Бриз Самара LV" />
                             <Picker.Item style={{...styles.pickerItem, fontSize:16}} label="РРЦ Бриз Краснодар LV" value="РРЦ Бриз Краснодар LV" />
+                            <Picker.Item style={{...styles.pickerItem, fontSize:16}} label="СЦ Тестовый" value="СЦ Тестовый"/>
                         </Picker>
                     </View>
                     <Text style={styles.textStyle}>Укажите email оператора(ов):</Text>

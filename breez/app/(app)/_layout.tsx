@@ -93,6 +93,9 @@ export default function AppLayout() {
                 <Drawer.Screen  name="choz_rabota" options={{
                     title: 'УЧЕТ ХОЗ.РАБОТ'
                 }}/>
+                <Drawer.Screen name="movement" options={{
+                    title: 'ДВИЖЕНИЕ ЗАПЧАСТЕЙ'
+                }} />
                 <Drawer.Screen  name="brakodel" options={{
                     title: 'РАБОТА С БРАКОМ'
                 }}/>

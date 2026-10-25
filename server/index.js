@@ -34,6 +34,9 @@ import usersRoutes from './routes/users.js'
 import employeeRoutes from './routes/employees.js'
 import attendanceRoutes from './routes/attendance.js'
 
+import Movement from './models/Movement.js'
+import MovementItem from './models/MovementItem.js'
+import movementRoutes from './routes/movements.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -58,6 +61,7 @@ app.use(cors({
     credentials: true,
     exposedHeaders: ['Authorization']
 }))
+app.use('/api/movements', movementRoutes)
 app.use('/admin', express.static(path.join(__dirname, 'admin')))
 app.use('/static', express.static('/home/abogdanov/Mobile_Storekeeper/public'))
 app.post('/api/users/verify-code', async (req, res) => {
