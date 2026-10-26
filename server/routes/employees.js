@@ -9,7 +9,7 @@ import Employee from "../models/Employee.js";
 router.get('/', async (req, res) => {
     try {
         const isSuperuser = req.user.roleCodes.includes('superuser')
-        const requestedDepartment = req.query.department
+        const requestedDepartment = req.query.department || req.user.place
         const where = { isActive: true }
         if (!requestedDepartment) {
             return res.json([])
