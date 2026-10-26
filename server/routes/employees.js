@@ -8,26 +8,32 @@ router.use(authMiddleware)
 import Employee from "../models/Employee.js";
 router.get('/', async (req, res) => {
     try {
-        const isSuperuser = req.user.roleCodes.includes('superuser')
-        const requestedDepartment = req.query.department || req.user.place
-        const where = { isActive: true }
-        if (!requestedDepartment) {
-            return res.json([])
+        const isSuperuser = req.user.roleCodes.includes('superuser');
+        const requestedDepartment = req.query.department || req.user.place;
+        
+        // Если подразделение не определилось (и это не суперюзер) — отдаем пустой массив
+        if (!requestedDepartment && !isSuperuser) {
+            return res.json([]);
         }
-        if (isSuperuser && requestedDepartment) {
-            where.department = requestedDepartment
-        } else if (!isSuperuser) {
-            where.department = req.user.place
+
+        const where = { isActive: true };
+
+        if (isSuperuser && req.query.department) {
+            where.department = req.query.department;
+        } else if (!isSuperuser || (!req.query.department && req.user.place)) {
+            where.department = requestedDepartment;
         }
+        // Если суперюзер без параметра — отдаем всех (where без department)
+
         const employees = await Employee.findAll({
             where,
-            order: [[ 'fullName', 'ASC' ]],
-        })
-        res.json(employees)
+            order: [['fullName', 'ASC']],
+        });
+        res.json(employees);
     } catch (error) {
-        res.status(500).json({ message: 'Ошибка сервера', error: error.message})
+        res.status(500).json({ message: 'Ошибка сервера', error: error.message });
     }
-})
+});
 router.post('/', requireRole('director', 'superuser'), async (req, res) => {
     try {
         const { fullName, shortName, loginLv, position, isHourly, department} = req.body
