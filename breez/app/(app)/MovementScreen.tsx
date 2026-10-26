@@ -39,7 +39,7 @@ const MovementScreen = () => {
     const [auth] = useAtom(authAtom)
     const [userProfile] = useAtom(userProfileAtom)
     const [operationType, setOperationType] = useState<'issued' | 'returned'>('issued')
-    const [department, setDepartment] = useState(DEPARTMENTS[0])
+    const [department, setDepartment] = useState<string>('')
     const [employees, setEmployees] = useState<EmployeeOption[]>([])
     const [employeeId, setEmployeeId] = useState<number | null>(null)
     const [document, setDocument] = useState('')
@@ -48,6 +48,15 @@ const MovementScreen = () => {
     const [loading, setLoading] = useState(false)
     useEffect(() => {
         fetchEmployees()
+    }, [department])
+
+    useEffect(() => {
+        if (department) {
+            fetchEmployees()
+        } else {
+            setEmployees([])
+            setEmployeeId(null)
+        }
     }, [department])
 
     const fetchEmployees = async () => {
@@ -66,8 +75,9 @@ const MovementScreen = () => {
         }
     }
     const handleScan = (barcode: string) => {
-    // Разбиваем строку по невидимому разделителю GS (0x1D) или переносу строки
-        const codes = barcode.split(/[\x1D\n\r]+/).map(c => c.trim()).filter(Boolean);
+        // Если камера вернула несколько кодов через перенос строки — разбиваем.
+        // Внутренние разделители DataMatrix (\x1D) НЕ трогаем.
+        const codes = barcode.split(/\n/).map(c => c.trim()).filter(Boolean);
         
         if (codes.length === 0) return;
         
@@ -119,16 +129,17 @@ const MovementScreen = () => {
             <Text style={styles.label}>Тип операции</Text>
             <View style={styles.pickWrapper}>
                 <Picker selectedValue={operationType} onValueChange={(v) => setOperationType(v)} style={styles.picker}>
-                    <Picker.Item label="Выдача" value='issued' color={SystemColors.PrimaryBlue}/>
-                    <Picker.Item label="Возврат" value='returned' color={SystemColors.PrimaryBlue}/>
+                    <Picker.Item label="Выдача" value='issued' color={SystemColors.VeryLightBlue}/>
+                    <Picker.Item label="Возврат" value='returned' color={SystemColors.VeryLightBlue}/>
                 </Picker>
             </View>
             {/* Подразделение */}
             <Text style={styles.label}>Подразделение</Text>
             <View style={styles.pickWrapper}>
                 <Picker selectedValue={department} onValueChange={setDepartment} style={styles.picker}>
+                    <Picker.Item label="-Выберите подразделение-" value="" color="#999"/>
                     {DEPARTMENTS.map(d => (
-                        <Picker.Item key={d} label={d} value={d} color={SystemColors.PrimaryBlue} />
+                        <Picker.Item key={d} label={d} value={d} color={SystemColors.VeryLightBlue} />
                     ))}
                 </Picker>
             </View>
@@ -138,7 +149,7 @@ const MovementScreen = () => {
                 <Picker selectedValue={employeeId} onValueChange={setEmployeeId} style={styles.picker}>
                     <Picker.Item label="— Выберите сотрудника —" value={null} color="#999" />
                     {employees.map(e => (
-                        <Picker.Item key={e.id} label={e.fullName} value={e.id} color={SystemColors.PrimaryBlue} />
+                        <Picker.Item key={e.id} label={e.fullName} value={e.id} color={SystemColors.VeryLightBlue} />
                     ))}
                 </Picker>
             </View>
