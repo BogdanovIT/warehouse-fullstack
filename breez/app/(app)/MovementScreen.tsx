@@ -166,7 +166,7 @@ const MovementScreen = () => {
             {/* Список отсканированного */}
             {qrCodes.length > 0 && (
                 <View style={styles.qrList}>
-                    <Text style={styles.qrListTitle}>Отсканировано ({setQrCodes.length}):</Text>
+                    <Text style={styles.qrListTitle}>Отсканировано ({qrCodes.length}):</Text>
                     {qrCodes.map((code, index) => (
                         <View key={index} style={styles.qrRow}>
                             <Text style={styles.qrText}>{code}</Text>
