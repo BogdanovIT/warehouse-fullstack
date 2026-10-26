@@ -46,9 +46,6 @@ const MovementScreen = () => {
     const [qrCodes, setQrCodes] = useState<string[]>([])
     const [scannerVisible, setScannerVisible] = useState(false)
     const [loading, setLoading] = useState(false)
-    useEffect(() => {
-        fetchEmployees()
-    }, [department])
 
     useEffect(() => {
         if (department) {
