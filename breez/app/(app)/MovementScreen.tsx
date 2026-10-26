@@ -8,12 +8,28 @@ import { SystemColors, CustomFonts } from "@/shared/tokens";
 import { Config } from "@/config";
 import { Button } from "@/button/button";
 import BarcodeScanner from "@/components/BarcodeScanner";
+import symbolicateStackTrace from "react-native/Libraries/Core/Devtools/symbolicateStackTrace";
 
 const API_URL = Config.HOME_URL
 
 const DEPARTMENTS = [
-    'СЦ Тестовый',
-]
+    'Бриз Крым Сервис (АСЦ)',
+    'Бриз Ростов Сервис',
+    'Бриз Краснодар Сервис',
+    'Бриз Воронеж Сервис',
+    'Бриз Казань Сервис',
+    'Бриз Н-Новгород Сервис',
+    'Бриз Санкт-Петербург Сервис',
+    'Бриз Самара Сервис',
+    'Бриз Екатеринбург Сервис',
+    'Бриз Красноярск Сервис',
+    'Бриз Новосибирск Сервис',
+    'Сервис Шерризон',
+    'Сервис Шерризон Клиентская техника',
+    'Сервис Шерризон НТК',
+    'Сервис Шерризон Ремонтные з/ч',
+    'Сервис Шерризон ТЕСТ',
+];
 interface EmployeeOption {
     id: number
     fullName: string
@@ -43,16 +59,21 @@ const MovementScreen = () => {
             const data = await response.json()
             if (response.ok && Array.isArray(data)) {
                 setEmployees(data)
-                setEmployeeId(data.length > 0 ? data[0].id : null)
+                setEmployeeId(null)
             }
         } catch (error) {
             console.error('Ошибка загрузки сотрудников:', error)
         }
     }
     const handleScan = (barcode: string) => {
-        setQrCodes(prev => [...prev, barcode])
-        setScannerVisible(false)
-    }
+    // Разбиваем строку по невидимому разделителю GS (0x1D) или переносу строки
+        const codes = barcode.split(/[\x1D\n\r]+/).map(c => c.trim()).filter(Boolean);
+        
+        if (codes.length === 0) return;
+        
+        setQrCodes(prev => [...prev, ...codes]);
+        setScannerVisible(false);
+    };
     const removeQrCode = (index: number) => {
         setQrCodes(prev => prev.filter((_, i) => i !== index))
     }
@@ -115,6 +136,7 @@ const MovementScreen = () => {
             <Text style={styles.label}>Сотрудник</Text>
             <View style={styles.pickWrapper}>
                 <Picker selectedValue={employeeId} onValueChange={setEmployeeId} style={styles.picker}>
+                    <Picker.Item label="— Выберите сотрудника —" value={null} color="#999" />
                     {employees.map(e => (
                         <Picker.Item key={e.id} label={e.fullName} value={e.id} color={SystemColors.PrimaryBlue} />
                     ))}
@@ -127,13 +149,12 @@ const MovementScreen = () => {
                 value={document}
                 onChangeText={setDocument}
                 placeholder="Номер документа"
-                placeholderTextColor={SystemColors.VeryLightBlue}
             />
             {/* Сканер */}
-            <TouchableOpacity style={styles.scanButton} onPress={() => setScannerVisible(true)}>
-                <Text style={styles.scanButtonText}>📷 Сканировать QR</Text>
-            </TouchableOpacity>
-
+            <View style={{ marginTop: 20}}>
+                <Button text="📷 Сканировать QR" onPress={()=> setScannerVisible(true)}/>
+            </View>
+            
             {/* Список отсканированного */}
             {qrCodes.length > 0 && (
                 <View style={styles.qrList}>
@@ -168,7 +189,7 @@ const MovementScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FFFFFF'
+        backgroundColor: SystemColors.MutedBlue
     },
     content: {
         padding: 16,
@@ -179,7 +200,8 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         color: SystemColors.PrimaryBlue,
         marginBottom: 6,
-        marginTop: 16
+        marginTop: 16,
+        fontFamily: CustomFonts.medium
     },
     input: {
         borderWidth: 1,
@@ -187,55 +209,64 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         padding: 12,
         fontSize: 16,
-        color: SystemColors.PrimaryBlue,
-        backgroundColor: '#FFFFFF'
+        color: SystemColors.VeryLightBlue,
+        backgroundColor: SystemColors.MutedBlue,
+        fontFamily: CustomFonts.regular
     },
     pickWrapper: {
         borderWidth: 1,
         borderColor: SystemColors.VeryLightBlue,
         borderRadius: 8,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: SystemColors.MutedBlue,
         overflow: 'hidden',
     },
     picker: {
         height: Platform.OS === 'ios' ? 180 : 50,
-        color: SystemColors.PrimaryBlue,
+        color: SystemColors.VeryLightBlue,
+    },
+    pickerItem: {
+        fontFamily: CustomFonts.regular,
+        color: SystemColors.VeryLightBlue,
+        fontSize: 16,
     },
     scanButton: {
         marginTop: 20,
         padding: 16,
         backgroundColor: SystemColors.LightBlue, 
-        borderRadius: 8,
+        borderRadius: 3,
         alignItems: 'center'
     },
     scanButtonText: {
-        color: '#FFFFFF',
+        color: SystemColors.PrimaryBlue,
         fontSize: 16,
-        fontWeight: '600',
+        fontFamily: CustomFonts.medium,
     },
     qrList: {
         marginTop: 20,
         padding: 12,
-        backgroundColor: '#F8F9FC',
-        borderRadius: 8,
+        backgroundColor: 'rgba(255,255,255,0.05)',
+        borderRadius: 3,
+        borderWidth: 1.5,
+        borderColor: SystemColors.VeryLightBlue,
     },
     qrListTitle: {
         fontSize: 14,
-        fontWeight: '600',
-        color: SystemColors.PrimaryBlue,
+        fontFamily: CustomFonts.medium,
+        color: SystemColors.VeryLightBlue,
         marginBottom: 8
     },
     qrRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingVertical: 6,
+        paddingVertical: 8,
         borderBottomWidth: 1,
-        borderBottomColor: '#E0E0E0',
+        borderBottomColor: 'rgba(175,211,234,0.3)',
     },
     qrText: {
         fontSize: 13,
-        color: '#333',
+        fontFamily: CustomFonts.regular,
+        color: SystemColors.VeryLightBlue,
         flex: 1,
     },
     qrRemove: {

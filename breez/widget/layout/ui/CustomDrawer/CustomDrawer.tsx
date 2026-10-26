@@ -20,7 +20,7 @@ import FireExt from "@/assets/icons/firesecurity";
 import ChozRabota from "@/assets/icons/choz";
 import Employees from "@/assets/icons/employees";
 import Attendance from "@/assets/icons/attendance";
-import Scanner from "@/assets/icons/ScannerIcon";
+import Gears from "@/assets/icons/gear";
 
 const MENU = [
     // {text: 'Статистика', icon: <DefaultProfileIcon/>, path: 'index'},
@@ -33,7 +33,7 @@ const MENU = [
     {text: 'ШТРИХ-КОД', icon: <Barcode/>, path: 'barcode'},
     {text: 'РАБОТА С БРАКОМ', icon: <Hammer/>, path: 'brakodel'},
     {text: 'ХОЗРАБОТЫ', icon: <ChozRabota/>, path: 'choz_rabota'},
-    {text: 'ДВИЖЕНИЕ ЗАПЧАСТЕЙ', icon: <Scanner/>, path: 'movement'},
+    {text: 'ДВИЖЕНИЕ ЗАПЧАСТЕЙ', icon: <Gears/>, path: 'movement'},
     //{text: 'ПОЖАРНАЯ БЕЗОПАСНОСТЬ', icon: <FireExt/>, path: 'firesecurity'},
     {text: 'ПРОФИЛЬ', icon: <Profile/>, path: 'profile'},
     {text: 'НАПИСАТЬ РАЗРАБОТЧИКУ', icon: <Letter/>, path: 'about'},

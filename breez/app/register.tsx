@@ -236,7 +236,22 @@ export default function Register() {
                             <Picker.Item style={{...styles.pickerItem, fontSize:16}} label="РРЦ Бриз Ростов LV" value="РРЦ Бриз Ростов LV" />
                             <Picker.Item style={{...styles.pickerItem, fontSize:16}} label="РРЦ Бриз Самара LV" value="РРЦ Бриз Самара LV" />
                             <Picker.Item style={{...styles.pickerItem, fontSize:16}} label="РРЦ Бриз Краснодар LV" value="РРЦ Бриз Краснодар LV" />
-                            <Picker.Item style={{...styles.pickerItem, fontSize:16}} label="СЦ Тестовый" value="СЦ Тестовый"/>
+                            <Picker.Item style={{...styles.pickerItem, fontSize:16}} label="Бриз Крым Сервис (АСЦ)" value="Бриз Крым Сервис (АСЦ)" />
+                            <Picker.Item style={{...styles.pickerItem, fontSize:16}} label="Бриз Ростов Сервис" value="Бриз Ростов Сервис" />
+                            <Picker.Item style={{...styles.pickerItem, fontSize:16}} label="Бриз Краснодар Сервис" value="Бриз Краснодар Сервис" />
+                            <Picker.Item style={{...styles.pickerItem, fontSize:16}} label="Бриз Воронеж Сервис" value="Бриз Воронеж Сервис" />
+                            <Picker.Item style={{...styles.pickerItem, fontSize:16}} label="Бриз Казань Сервис" value="Бриз Казань Сервис" />
+                            <Picker.Item style={{...styles.pickerItem, fontSize:16}} label="Бриз Н-Новгород Сервис" value="Бриз Н-Новгород Сервис" />
+                            <Picker.Item style={{...styles.pickerItem, fontSize:16}} label="Бриз Санкт-Петербург Сервис" value="Бриз Санкт-Петербург Сервис" />
+                            <Picker.Item style={{...styles.pickerItem, fontSize:16}} label="Бриз Самара Сервис" value="Бриз Самара Сервис" />
+                            <Picker.Item style={{...styles.pickerItem, fontSize:16}} label="Бриз Екатеринбург Сервис" value="Бриз Екатеринбург Сервис" />
+                            <Picker.Item style={{...styles.pickerItem, fontSize:16}} label="Бриз Красноярск Сервис" value="Бриз Красноярск Сервис" />
+                            <Picker.Item style={{...styles.pickerItem, fontSize:16}} label="Бриз Новосибирск Сервис" value="Бриз Новосибирск Сервис" />
+                            <Picker.Item style={{...styles.pickerItem, fontSize:16}} label="Сервис Шерризон" value="Сервис Шерризон" />
+                            <Picker.Item style={{...styles.pickerItem, fontSize:16}} label="Сервис Шерризон Клиентская техника" value="Сервис Шерризон Клиентская техника" />
+                            <Picker.Item style={{...styles.pickerItem, fontSize:16}} label="Сервис Шерризон НТК" value="Сервис Шерризон НТК" />
+                            <Picker.Item style={{...styles.pickerItem, fontSize:16}} label="Сервис Шерризон Ремонтные з/ч" value="Сервис Шерризон Ремонтные з/ч" />
+                            <Picker.Item style={{...styles.pickerItem, fontSize:16}} label="Сервис Шерризон ТЕСТ" value="Сервис Шерризон ТЕСТ" />
                         </Picker>
                     </View>
                     <Text style={styles.textStyle}>Укажите email оператора(ов):</Text>
