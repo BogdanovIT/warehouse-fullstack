@@ -11,7 +11,7 @@ router.use(authMiddleware)
 router.post('/', async (req, res) => {
     try {
         const { operationType, department, employeeId, document, qrCodes } = req.body
-        if (!operationType || !department || !employeeId || !qrCodes?.length) {
+        if (!operationType || !department || !employeeId || !qrCodes?.length || !document) {
             return res.status(400).json({ message: 'Не все поля заполнены' })
         }
         const employee = await Employee.findByPk(employeeId)

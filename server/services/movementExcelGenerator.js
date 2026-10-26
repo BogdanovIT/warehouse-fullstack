@@ -10,31 +10,52 @@ export const generateMovementExcel = async (department, date, movements) => {
     titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: {argb: 'FFD9E1F2' } }
 
     const headerRow = sheet.addRow([
-        '№', "Дата", "Выдал", "Получил", "Данные из QR", "Документ", "Статус",
+        '№', "Дата", "Склад", "Получил", "Данные из QR", "Документ", "Статус",
     ])
-    headerRow.font = { bold: true }
+    headerRow.font = { bold: true, size: 11 }
+    headerRow.alignment = {horizontal: 'center', vertical: 'middle'}
     headerRow.eachCell(cell => {
         cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD9E1F2' } }
         cell.border = { top: {style: 'thin'}, bottom: {style: 'thin'}, left: {style: 'thin'}, right: {style: 'thin'} }
-        cell.alignment = { horizontal: 'center' }
     })
+    let displayIndex = 1
+
     movements.forEach((m, index) => {
         const dateStr = new Date(m.createdAt).toLocaleDateString('ru-RU')
-        const qrData = m.items.map(i => i.qrData).join(', ')
+        const qrCodes = m.items.map(i => i.qrData)
         const status = m.operationType === 'issued' ? 'Выдано' : 'Возвращено'
 
-        const row = sheet.addRow([
-            index + 1,
-            dateStr,
-            m.issuedBy,
-            m.Employee?.fullName || '-',
-            qrData,
-            m.document || '-',
-            status,
-        ])
-        row.eachCell(cell => {
-            cell.border = { top: {style: 'thin'}, bottom: {style: 'thin'}, left: {style: 'thin'}, right: {style: 'thin'} }
+        if (qrCodes.length === 0) {
+            qrCodes.push('-')
+        }
+        const bgColor = index % 2 === 0 ? 'FFFFFFF' : 'FFF2F2F2'
+
+        qrCodes.forEach((qr, idx) => {
+            const row = sheet.addRow([
+                idx === 0 ? displayIndex : '',
+                idx === 0 ? dateStr : '',
+                idx === 0 ? m.department : '',
+                idx === 0 ? (m.Employee?.fullName || '-') : '',
+                qr,
+                idx === 0 ? (m.document || '-') : '',
+                status,
+            ])
+            row.eachCell({ includeEmpty: true }, (cell) => {
+                cell.alignment = { vertical: 'middle', wrapText: true}
+                cell.border = {
+                    top: {style: 'thin'},
+                    left: {style: 'thin'},
+                    right: {style: 'thin'},
+                    bottom: {style: 'thin'},
+                }
+                cell.fill = {
+                    type: 'pattern',
+                    pattern: 'solid',
+                    fgColor: { argb: bgColor }
+                }
+            })
         })
+        displayIndex++
     })
     sheet.columns = [
         { width: 5 },

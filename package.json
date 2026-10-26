@@ -6,5 +6,10 @@
     "node-ews": "^3.5.0",
     "react": "19.1.0",
     "react-native": "0.81.5"
+  },
+  "devDependencies": {
+    "@types/react": "~19.1.10",
+    "baseline-browser-mapping": "^2.11.32",
+    "typescript": "~5.9.2"
   }
 }
