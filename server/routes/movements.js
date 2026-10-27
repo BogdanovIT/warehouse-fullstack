@@ -2,27 +2,22 @@ import express from 'express'
 import authMiddleware from '../middlewares/authMiddleware.js'
 import Movement from '../models/Movement.js'
 import MovementItem from '../models/MovementItem.js'
-import Employee from '../models/Employee.js'
-import { Op } from 'sequelize'
+import { Op, sequelize } from 'sequelize'
 
 const router = express.Router()
 router.use(authMiddleware)
 
 router.post('/', async (req, res) => {
     try {
-        const { operationType, department, employeeId, document, qrCodes } = req.body
-        if (!operationType || !department || !employeeId || !qrCodes?.length || !document) {
+        const { operationType, department, employeeName, document, qrCodes } = req.body
+        if (!operationType || !department || !employeeName || !qrCodes?.length || !document) {
             return res.status(400).json({ message: 'Не все поля заполнены' })
-        }
-        const employee = await Employee.findByPk(employeeId)
-        if (!employee) {
-            return res.status(404).json({ message: 'Сотрудник не найден' })
         }
         const issuedBy = `${req.user.firstName} ${req.user.lastName}`
         const movement = await Movement.create({
             operationType,
             department,
-            employeeId,
+            employeeName,
             issuedBy,
             document: document || null,
         })
@@ -53,7 +48,6 @@ router.get('/', async (req, res) => {
         const movements = await Movement.findAll({
             where,
             include: [
-                { model: Employee, attributes: ['id', 'fullName'] },
                 { model: MovementItem, as: 'items', attributes: ['id', 'qrData'] },
             ],
             order: [['createdAt', 'DESC']],
@@ -61,6 +55,28 @@ router.get('/', async (req, res) => {
         res.json(movements)
     } catch (error) {
         res.status(500).json({ message: 'Ошибка сервера', error: error.message })
+    }
+})
+
+router.get('/seqrch-employees', async (req, res) => {
+    try {
+        const { query } = req.query
+        if (!query || query.length < 2) {
+            return res.json([])
+        }
+        const employees = await Movement.findAll({
+            attributes: [[sequelize.fn('DISTINCT', sequelize.col('employeeName')), 'employeeName']],
+            where: {
+                employeeName: {
+                    [Op.iLike]: `${query}%`
+                }
+            },
+            limit: 5,
+            raw: true
+        })
+        res.json(employees.map(e => e.employeeName).filter(Boolean))
+    } catch (error) {
+        res.status(500).json({ message: 'Ошибка поиска', error: error.message})
     }
 })
 

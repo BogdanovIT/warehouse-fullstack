@@ -1,6 +1,5 @@
 import { DataTypes } from 'sequelize'
 import sequelize from '../config/db.js'
-import Employee from './Employee.js'
 
 const Movement = sequelize.define('Movement', {
     id: {
@@ -17,11 +16,10 @@ const Movement = sequelize.define('Movement', {
         type: DataTypes.STRING(200),
         allowNull: false
     },
-    employeeId: {
-        type: DataTypes.INTEGER,
+    employeeName: {
+        type: DataTypes.STRING(200),
         allowNull: false,
-        references: { model: 'employees', key: 'id'},
-        comment: "Кому выдали или от кого приняли"
+        comment: "ФИО сотрудника, веденное вручную"
     },
     issuedBy: {
         type: DataTypes.STRING(200),
@@ -37,7 +35,5 @@ const Movement = sequelize.define('Movement', {
     tableName: 'movements',
     timestamps: true,
 })
-
-Movement.belongsTo(Employee, { foreignKey: 'employeeId' })
 
 export default Movement
