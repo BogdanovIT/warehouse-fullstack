@@ -3,7 +3,7 @@ import authMiddleware from '../middlewares/authMiddleware.js'
 import Movement from '../models/Movement.js'
 import MovementItem from '../models/MovementItem.js'
 import { Op } from 'sequelize'
-import { sequelize } from '../config/db.js'
+import sequelize from '../config/db.js'
 
 const router = express.Router()
 router.use(authMiddleware)
