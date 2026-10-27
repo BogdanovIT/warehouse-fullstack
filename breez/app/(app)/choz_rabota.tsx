@@ -9,6 +9,7 @@ import { useAtom } from "jotai";
 import { userProfileAtom } from "@/entities/user/model/user.state";
 import { getUserProfile } from "@/api/user";
 import { authAtom } from "@/entities/auth/model/auth.state";
+import { apiFetch } from "@/shared/apiFetch";
 
 const API_URL = Config.HOME_URL
 const ADMINS_LIST = [
@@ -77,9 +78,7 @@ const ChozRabotaScreen = () => {
 
     const fethEmployees = async () => {
         try {
-            const response = await fetch(`${API_URL}/api/employees`, {
-                headers: {'Authorization': `Bearer ${auth.access_token}`}
-            })
+            const response = await apiFetch(`${API_URL}/api/employees`)
             const data = await response.json()
             if (response.ok && Array.isArray(data)) {
                 setEmployees(data)
@@ -130,11 +129,10 @@ const ChozRabotaScreen = () => {
         }
         try {
             setLoading(true)
-            const response = await fetch(`${API_URL}/api/choz-rabota`, {
+            const response = await apiFetch(`${API_URL}/api/choz-rabota`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${auth.access_token}`,
                 },
                 body: JSON.stringify(payload),
             })
@@ -181,9 +179,7 @@ const ChozRabotaScreen = () => {
                 notifyAdmins: notifyAdmins ? 'true' : 'false',
                 selectedAdmins: Object.keys(selectedAdmins).filter(k => selectedAdmins[k]).join(','),
             })
-            const response = await fetch(`${API_URL}/api/choz-rabota/export?${params.toString()}`, {
-                headers: { 'Authorization': `Bearer ${auth.access_token}` },
-            })
+            const response = await apiFetch(`${API_URL}/api/choz-rabota/export?${params.toString()}`)
             const data = await response.json()
             if (response.ok) {
                 Alert.alert('Готово', data.message)

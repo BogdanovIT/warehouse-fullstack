@@ -9,6 +9,7 @@ import { Config } from "@/config";
 import { Button } from "@/button/button";
 import BarcodeScanner from "@/components/BarcodeScanner";
 import symbolicateStackTrace from "react-native/Libraries/Core/Devtools/symbolicateStackTrace";
+import { apiFetch } from "@/shared/apiFetch";
 
 const API_URL = Config.HOME_URL
 
@@ -40,37 +41,33 @@ const MovementScreen = () => {
     const [userProfile] = useAtom(userProfileAtom)
     const [operationType, setOperationType] = useState<'issued' | 'returned'>('issued')
     const [department, setDepartment] = useState<string>('')
-    const [employees, setEmployees] = useState<EmployeeOption[]>([])
-    const [employeeId, setEmployeeId] = useState<number | null>(null)
     const [document, setDocument] = useState('')
     const [qrCodes, setQrCodes] = useState<string[]>([])
     const [scannerVisible, setScannerVisible] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [employeeName, setEmployeeName] = useState('')
+    const [suggestions, setSuggestions] = useState<string[]>([])
 
     useEffect(() => {
-        if (department) {
-            fetchEmployees()
-        } else {
-            setEmployees([])
-            setEmployeeId(null)
+        if (employeeName.trim().length < 2) {
+            setSuggestions([])
+            return
         }
-    }, [department])
-
-    const fetchEmployees = async () => {
-        try {
-            const response = await fetch(
-                `${API_URL}/api/employees?department=${encodeURIComponent(department)}`,
-                {headers: { 'Authorization': `Bearer ${auth.access_token}` } }
-            )
-            const data = await response.json()
-            if (response.ok && Array.isArray(data)) {
-                setEmployees(data)
-                setEmployeeId(null)
+        const timer = setTimeout(async () => {
+            try {
+                const response = await apiFetch(
+                    `${API_URL}/api/movements/search-employees?query=${encodeURIComponent(employeeName)}`,
+                    {headers: { 'Authorization': `Bearer ${auth.access_token}` } }
+                )
+                const data = await response.json()
+                if (response.ok) setSuggestions(data)
+            } catch (error) {
+                console.error('Ошибка поиска ФИО:', error)
             }
-        } catch (error) {
-            console.error('Ошибка загрузки сотрудников:', error)
-        }
-    }
+        }, 300)
+        return () => clearTimeout(timer)
+    }, [employeeName])
+
     const handleScan = (barcode: string) => {
         // Если камера вернула несколько кодов через перенос строки — разбиваем.
         // Внутренние разделители DataMatrix (\x1D) НЕ трогаем.
@@ -85,41 +82,49 @@ const MovementScreen = () => {
         setQrCodes(prev => prev.filter((_, i) => i !== index))
     }
     const handleSave = async () => {
-        if (!employeeId) {
-            Alert.alert('Ошибка', 'Выберите сотрудника')
-            return
+        if (!department) {
+            Alert.alert('Ошибка', 'Выберите подразделение');
+            return;
+        }
+        if (!employeeName.trim()) {
+            Alert.alert('Ошибка', 'Введите ФИО сотрудника');
+            return;
+        }
+        if (!document.trim()) {
+            Alert.alert('Ошибка', 'Укажите номер документа-основания');
+            return;
         }
         if (qrCodes.length === 0) {
-            Alert.alert('Ошибка', 'Отсканируйте хотя бы одну деталь')
-            return
+            Alert.alert('Ошибка', 'Отсканируйте хотя бы одну деталь');
+            return;
         }
+
         try {
-            setLoading(true)
-            const response = await fetch(`${API_URL}/api/movements`, {
+            setLoading(true);
+            const response = await apiFetch(`${API_URL}/api/movements`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${auth.access_token}`
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     operationType,
                     department,
-                    employeeId,
+                    employeeName: employeeName.trim(),
                     document: document.trim(),
                     qrCodes,
                 })
-            })
-            const data = await response.json()
-            if (!response.ok) throw new Error(data.message || 'Ошибка сохранения')
-            Alert.alert('Готово', data.message)
-            setQrCodes([])
-            setDocument('')
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Ошибка сохранения');
+            
+            Alert.alert('Готово', data.message);
+            setQrCodes([]);
+            setDocument('');
+            setEmployeeName('');
         } catch (error: unknown) {
-            if (error instanceof Error) Alert.alert('Ошибка', error.message)
+            if (error instanceof Error) Alert.alert('Ошибка', error.message);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-    }
+    };
     return (
         <ScrollView style={styles.container} contentContainerStyle = {styles.content}>
             {/* тип операции*/}
@@ -142,14 +147,21 @@ const MovementScreen = () => {
             </View>
             {/* Сотрудник */}
             <Text style={styles.label}>Сотрудник</Text>
-            <View style={styles.pickWrapper}>
-                <Picker selectedValue={employeeId} onValueChange={setEmployeeId} style={styles.picker}>
-                    <Picker.Item label="— Выберите сотрудника —" value={null} color="#999" />
-                    {employees.map(e => (
-                        <Picker.Item key={e.id} label={e.fullName} value={e.id} color={SystemColors.VeryLightBlue} />
+            <TextInput style = {styles.input} value={employeeName} onChangeText={setEmployeeName} placeholder="Введите ФИО сотрудника"
+            placeholderTextColor={SystemColors.VeryLightBlue}/>
+            {suggestions.length > 0 && (
+                <View style={styles.suggestionsBox}>
+                    {suggestions.map((name, index) => (
+                        <TouchableOpacity key={index} 
+                        style={styles.suggestionItem} 
+                        onPress={() => {setEmployeeName(name); setSuggestions([])
+                        }}
+                    >
+                        <Text style={styles.suggestionsText}>{name}</Text>
+                    </TouchableOpacity>
                     ))}
-                </Picker>
-            </View>
+                </View>
+            )}
             {/* Документ */}
             <Text style={styles.label}>Документ-основание</Text>
             <TextInput 
@@ -284,6 +296,24 @@ const styles = StyleSheet.create({
     },
     buttonWrapper: {
         marginTop: 24
+    },
+    suggestionsBox: {
+        borderWidth: 1.5,
+        borderColor: SystemColors.VeryLightBlue,
+        borderRadius: 3,
+        backgroundColor: SystemColors.MutedBlue,
+        marginTop: -2,
+        maxHeight: 150
+    },
+    suggestionItem: {
+        padding: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: 'rgba(175, 211, 234, 0.2)'
+    },
+    suggestionsText: {
+        color: SystemColors.VeryLightBlue,
+        fontFamily: CustomFonts.regular,
+        fontSize: 16
     },
 })
 
