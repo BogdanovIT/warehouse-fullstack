@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 14,
         fontWeight: '600',
-        color: SystemColors.PrimaryBlue,
+        color: SystemColors.VeryLightBlue,
         marginBottom: 6,
         marginTop: 16,
         fontFamily: CustomFonts.medium
