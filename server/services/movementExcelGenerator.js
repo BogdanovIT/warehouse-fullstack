@@ -35,7 +35,7 @@ export const generateMovementExcel = async (department, date, movements) => {
                 idx === 0 ? displayIndex : '',
                 idx === 0 ? dateStr : '',
                 idx === 0 ? m.department : '',
-                idx === 0 ? (m.Employee?.fullName || '-') : '',
+                idx === 0 ? (m.employeeName || '-') : '',
                 qr,
                 idx === 0 ? (m.document || '-') : '',
                 status,

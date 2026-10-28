@@ -1,7 +1,6 @@
 import { Op } from "sequelize";
 import Movement from "../models/Movement.js";
 import MovementItem from "../models/MovementItem.js";
-import Employee from "../models/Employee.js";
 import { generateMovementExcel } from "./movementExcelGenerator.js";
 import emailService from "./emailService.js";
 import { MOVEMENT_REPORT_EMAILS } from "../config/department.js";
@@ -17,7 +16,6 @@ export const generateAndSendMovementReports = async () => {
             },
         },
         include: [
-            { model: Employee, attributes: ['fullName'] },
             { model: MovementItem, as: 'items', attributes: ['qrData'] },            
         ],
         order: [['createdAt', 'ASC']],
