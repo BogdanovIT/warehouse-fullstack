@@ -8,6 +8,7 @@ import { authAtom, loginAtom } from "@/entities/auth/model/auth.state";
 import PasswordCheck from "@/components/PasswordCheck";
 import SecurityManager from "@/security/SecurityManager"
 import * as SecureStore from 'expo-secure-store'
+import { isTokenExpired } from "@/shared/tokenUtils";
 
 SplashScreen.preventAutoHideAsync()
 
@@ -28,8 +29,11 @@ export default function RootLayout() {
     useEffect(() => {
         const checkTokenAndRedirect = async () => {
             const token = await SecureStore.getItemAsync('access_token')
-            const currentRoute = router.canGoBack()
-            if (!token && !window.location?.pathname?.includes('login') && !window.location?.pathname?.includes('register')) {
+            const isLoginOrRegister = window.location?.pathname?.includes('login') || window.location?.pathname?.includes('register')
+
+            if ((!token || isTokenExpired(token)) && !isLoginOrRegister) {
+                await SecureStore.deleteItemAsync('access_token')
+                setAuthState({ access_token: null, isLoading: false, error: null, user: null})
                 setTimeout(() => {
                     router.replace('/login')
                 }, 100)

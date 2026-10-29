@@ -27,7 +27,7 @@ router.post('/', async (req, res) => {
         )
         res.status(201).json({
             success: true,
-            message: operationType === 'issued' ? 'Выдача сохранена' : 'Возврат сохранен',
+            message: 'Данные сохранены',
             movementId: movement.id
         })
     } catch (error) {

@@ -8,7 +8,7 @@ const Movement = sequelize.define('Movement', {
         autoIncrement: true,
     },
     operationType: {
-        type: DataTypes.ENUM('issued', 'returned'),
+        type: DataTypes.ENUM('issued', 'returned', 'installed'),
         allowNull: false,
         comment: "Выдача или возврат",
     },

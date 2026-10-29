@@ -1,5 +1,5 @@
 import { Redirect } from "expo-router";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { authAtom } from "../../entities/auth/model/auth.state";
 import { Drawer } from 'expo-router/drawer'
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -9,12 +9,30 @@ import { CustomDrawer } from "../../widget/layout/ui/CustomDrawer/CustomDrawer";
 import { hasRoleAtom, userProfileAtom } from "@/entities/user/model/user.state";
 import { useEffect, useState } from "react";
 import { getUserProfile } from "@/api/user";
+import { isTokenExpired } from "@/shared/tokenUtils";
+import * as SecureStore from 'expo-secure-store'
+import { logoutAtom } from "../../entities/auth/model/auth.state";
+import { router } from "expo-router";
+
 
 
 export default function AppLayout() {
     const { access_token } = useAtomValue(authAtom)
     const [profile, setProfile] = useAtom(userProfileAtom)
     const [isLoading, setIsLoading] = useState(true)
+
+    const logout = useSetAtom(logoutAtom)
+    useEffect(() => {
+        const verify = async () => {
+            const token = await SecureStore.getItemAsync('access_token')
+            if (isTokenExpired(token)) {
+                logout()
+                router.replace('/login')
+            }
+        }
+        verify()
+    }, [])
+
     useEffect(() => {
         const loadProfile = async () => {
             if (access_token && !profile) {

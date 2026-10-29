@@ -74,8 +74,14 @@ const MovementScreen = () => {
         const codes = barcode.split(/\n/).map(c => c.trim()).filter(Boolean);
         
         if (codes.length === 0) return;
-        
-        setQrCodes(prev => [...prev, ...codes]);
+        for (const code of codes) {
+            if (qrCodes.includes(code)) {
+                Alert.alert("Внимание", `Код ${code.slice(1, 15)}...  уже отсканирован`)
+                continue
+            }
+            setQrCodes(prev => [...prev, ...codes]);
+        }
+                
         setScannerVisible(false);
     };
     const removeQrCode = (index: number) => {
@@ -97,6 +103,11 @@ const MovementScreen = () => {
         if (qrCodes.length === 0) {
             Alert.alert('Ошибка', 'Отсканируйте хотя бы одну деталь');
             return;
+        }
+        const uniqueCodes = new Set(qrCodes)
+        if (uniqueCodes.size !== qrCodes.length) {
+            Alert.alert("Ошибка","В списке есть дубликаты. Удалите лишнее")
+            return
         }
 
         try {
@@ -133,6 +144,7 @@ const MovementScreen = () => {
                 <Picker selectedValue={operationType} onValueChange={(v) => setOperationType(v)} style={styles.picker}>
                     <Picker.Item label="Выдача" value='issued' color={SystemColors.VeryLightBlue}/>
                     <Picker.Item label="Возврат" value='returned' color={SystemColors.VeryLightBlue}/>
+                    <Picker.Item label="Установлено" value='installed' color={SystemColors.VeryLightBlue}/>
                 </Picker>
             </View>
             {/* Подразделение */}
