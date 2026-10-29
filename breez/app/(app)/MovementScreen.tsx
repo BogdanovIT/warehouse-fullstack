@@ -204,7 +204,7 @@ const MovementScreen = () => {
             {/* Кнопка */}
             <View style={styles.buttonWrapper}>
                 <Button 
-                    text={operationType === 'issued' ? "Выдать" : "Вернуть"}
+                    text="СОХРАНИТЬ"
                     isLoading={loading}
                     onPress={handleSave}
                     disabled={loading}
