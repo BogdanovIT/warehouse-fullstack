@@ -57,7 +57,6 @@ const MovementScreen = () => {
             try {
                 const response = await apiFetch(
                     `${API_URL}/api/movements/search-employees?query=${encodeURIComponent(employeeName)}`,
-                    {headers: { 'Authorization': `Bearer ${auth.access_token}` } }
                 )
                 const data = await response.json()
                 if (response.ok) setSuggestions(data)
@@ -181,6 +180,7 @@ const MovementScreen = () => {
                 value={document}
                 onChangeText={setDocument}
                 placeholder="Номер документа"
+                placeholderTextColor={SystemColors.VeryLightBlue}
             />
             {/* Сканер */}
             <View style={{ marginTop: 20}}>
