@@ -38,6 +38,7 @@
     "jail-monkey": "^2.8.4",
     "jotai": "^2.12.5",
     "jsbarcode": "^3.12.1",
+    "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",
     "lodash.debounce": "^4.0.8",
     "react": "19.0.0",

@@ -31,16 +31,16 @@ export const generateMovementExcel = async (department, date, movements) => {
         if (qrCodes.length === 0) {
             qrCodes.push('-')
         }
-        const bgColor = index % 2 === 0 ? 'FFFFFFF' : 'FFF2F2F2'
+        const bgColor = index % 2 === 0 ? 'FFFFFFF' : 'FFE0E0E0'
 
         qrCodes.forEach((qr, idx) => {
             const row = sheet.addRow([
-                idx === 0 ? displayIndex : '',
-                idx === 0 ? dateStr : '',
-                idx === 0 ? m.department : '',
-                idx === 0 ? (m.employeeName || '-') : '',
+                displayIndex,
+                dateStr,
+                m.department,
+                m.employeeName || '-',
                 qr,
-                idx === 0 ? (m.document || '-') : '',
+                m.document || '-',
                 status,
             ])
             row.eachCell({ includeEmpty: true }, (cell) => {
