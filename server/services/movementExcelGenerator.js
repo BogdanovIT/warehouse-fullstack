@@ -65,7 +65,7 @@ export const generateMovementExcel = async (department, date, movements) => {
         { width: 12 },
         { width: 25 },
         { width: 25 },
-        { width: 40 },
+        { width: 100 },
         { width: 20 },
         { width: 12 },
     ]
