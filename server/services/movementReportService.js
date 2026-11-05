@@ -3,7 +3,7 @@ import Movement from "../models/Movement.js";
 import MovementItem from "../models/MovementItem.js";
 import { generateMovementExcel } from "./movementExcelGenerator.js";
 import emailService from "./emailService.js";
-import { MOVEMENT_REPORT_EMAILS } from "../config/department.js";
+import { MOVEMENT_REPORT_EMAILS, SHERRIZON_SERVICE_EMAILS } from "../config/department.js";
 export const generateAndSendMovementReports = async () => {
     const today = new Date().toISOString().split('T')[0]
     const prettyDate = new Date().toLocaleDateString('ru-RU')
@@ -33,14 +33,18 @@ export const generateAndSendMovementReports = async () => {
     }
     for (const dept of departments) {
         const excel = await generateMovementExcel(dept, prettyDate, grouped[dept])
+        let allEmails = [...MOVEMENT_REPORT_EMAILS]
+        if (dept === "Сервис Шерризон") {
+            allEmails = [...allEmails, ...SHERRIZON_SERVICE_EMAILS]
+        }
         try {
             await emailService.sendEmail(
-                MOVEMENT_REPORT_EMAILS.join(', '),
+                allEmails.join(', '),
                 `Движение запчастей по ${dept} за ${prettyDate}`,
                 `Отчет по движению запчастей за ${prettyDate}.`,
-                [{ filename: `Движение_${dept}_${today}.xlsx`, content: excel }]
+                [{ filename: `Движение_${dept}_${today}.xlsx`, content: excel}]
             )
-            console.log(`[Движение] Отчет отправлен: ${dept}`)
+            console.log(`[Движение] Отчт отправлен (${dept}): ${allEmails.join(', ')}`)
         } catch (error) {
             console.error(`[Движение] Ошибка отправки (${dept}):`, error.message)
         }

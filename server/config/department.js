@@ -8,3 +8,9 @@ export const MOVEMENT_REPORT_EMAILS = [
     'alarionov@breez.ru',
     'abogdanov@breez.ru',
 ]
+
+export const SHERRIZON_SERVICE_EMAILS = [
+        "akorg@breez.ru",
+        "dlebedev@breez.ru",
+        "nimukova@breez.ru"
+]
