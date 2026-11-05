@@ -10,7 +10,7 @@ cron.schedule('30 16 * * *', async () => {
         console.error('[Планировщик] Критическая ошибка', error)
     }
 })
-cron.schedule('30 16 * * *', async () => {
+cron.schedule('0 15 * * *', async () => {
     console.log('[Планировщик] Запуск отчета по движению запчастей...')
     try {
         await generateAndSendMovementReports()
