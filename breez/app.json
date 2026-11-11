@@ -2,7 +2,7 @@
   "expo": {
     "name": "Мобильный кладовщик",
     "slug": "mobilnyj-kladovshik",
-    "version": "1.0.0",
+    "version": "1.4.0",
     "orientation": "portrait",
     "icon": "./assets/iconlogo.png",
     "userInterfaceStyle": "dark",

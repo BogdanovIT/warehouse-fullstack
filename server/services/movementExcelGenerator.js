@@ -1,10 +1,10 @@
 import ExcelJS from 'exceljs'
-export const generateMovementExcel = async (department, date, movements) => {
+export const generateMovementExcel = async (title, period, movements) => {
     const workbook = new ExcelJS.Workbook()
     const sheet = workbook.addWorksheet('Движение запчастей')
     sheet.mergeCells('A1:G1')
     const titleCell = sheet.getCell('A1')
-    titleCell.value = `Движение запчастей по ${department} за ${date}`
+    titleCell.value = `${title} за ${period}`
     titleCell.font = {bold: true, size: 14}
     titleCell.alignment = {horizontal: 'center'}
     titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: {argb: 'FFD9E1F2' } }

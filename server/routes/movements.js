@@ -4,6 +4,8 @@ import Movement from '../models/Movement.js'
 import MovementItem from '../models/MovementItem.js'
 import { Op } from 'sequelize'
 import sequelize from '../config/db.js'
+import { generateMovementExcel } from '../services/movementExcelGenerator.js'
+import emailService from '../services/emailService.js'
 
 const router = express.Router()
 router.use(authMiddleware)
@@ -30,6 +32,57 @@ router.post('/', async (req, res) => {
             message: 'Данные сохранены',
             movementId: movement.id
         })
+    } catch (error) {
+        res.status(500).json({ message: 'Ошибка сервера', error: error.message })
+    }
+})
+
+router.get('/export', async (req,res) => {
+    try {
+        const {startDate, endDate, department} = req.query
+        if (!startDate || !endDate) {
+            return res.status(400).json({ message: 'Укажите даты начала и окончания периода'})
+        }
+        const toServerDate = (date) => {
+                if (!date) return date
+                const parts = date.split('.')
+                if (parts.length === 3) return `${parts[2]} - ${parts[1]} - ${parts[0]}`
+                return date
+            }
+        const start = toServerDate(startDate)
+        const end = toServerDate(endDate)
+        const where = {
+            createdAt: {
+                [Op.gte]: new Date(`${start}T00:00:00`),
+                [Op.lt]: new Date(`${end}T23:59:59`)
+            }
+        }
+        if (department) {
+            where.department = department
+        }
+        const movements = await Movement.findAll({
+            where,
+            include:[{ model: MovementItem, as: 'items', attributes: ['qrData'] }],
+            order: [['createdAt', 'ASC']],
+        })
+        if (movements.length === 0) {
+            return res.status(404).json({ message: "За указанный период записей по выбранному СЦ нет"})
+        }
+        const title = department ? `Движение запчастей - ${department}` : 'Движение запчастей. Все подразделения'
+        const prettyStart = start.split('-').reverse().join('.')
+        const prettyEnd = end.split('-').reverse().join('.')
+        const excel = await generateMovementExcel(
+            title,
+            `${prettyStart} - ${prettyEnd}`,
+            movements
+        )
+        await emailService.sendEmail(
+            req.user.email,
+            `Выгрузка движения запчастей за ${prettyStart} - ${prettyEnd}`,
+            `Запрошенная выгрузка движения запчастей. `,
+            [{ filename: `Движение_выгрузка_${start}_${end}.xlsx`, content: excel }]
+        )
+        res.json({ message: 'Отчет отправлен на вашу почту'})
     } catch (error) {
         res.status(500).json({ message: 'Ошибка сервера', error: error.message })
     }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, ScrollView, Alert, StyleSheet, Platform, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, ScrollView, Alert, StyleSheet, Platform, TouchableOpacity, Modal } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useAtom } from "jotai";
 import { authAtom } from "@/entities/auth/model/auth.state";
@@ -10,6 +10,7 @@ import { Button } from "@/button/button";
 import BarcodeScanner from "@/components/BarcodeScanner";
 import symbolicateStackTrace from "react-native/Libraries/Core/Devtools/symbolicateStackTrace";
 import { apiFetch } from "@/shared/apiFetch";
+import { isChestnyZnak } from "@/shared/chestnyZnak";
 
 const API_URL = Config.HOME_URL
 
@@ -47,6 +48,13 @@ const MovementScreen = () => {
     const [loading, setLoading] = useState(false)
     const [employeeName, setEmployeeName] = useState('')
     const [suggestions, setSuggestions] = useState<string[]>([])
+    const [exportVisible, setExportVisible] = useState(false)
+    const [exportStartDate, setExportStartDate] = useState('')
+    const [exportEndDate, setExportEndDate] = useState('')
+    const [exportLoading, setExportLoading] = useState(false)
+    const [exportDepartment, setExportDepartment] = useState('')
+    
+
 
     useEffect(() => {
         if (employeeName.trim().length < 2) {
@@ -74,6 +82,9 @@ const MovementScreen = () => {
         
         if (codes.length === 0) return;
         for (const code of codes) {
+            if (!isChestnyZnak(code)) {
+                Alert.alert('Внимание', 'Отсканирован не Честный Знак, код не принят')
+            }
             if (qrCodes.includes(code)) {
                 Alert.alert("Внимание", `Код ${code.slice(1, 15)}...  уже отсканирован`)
                 continue
@@ -85,6 +96,38 @@ const MovementScreen = () => {
     };
     const removeQrCode = (index: number) => {
         setQrCodes(prev => prev.filter((_, i) => i !== index))
+    }
+    const handleExport = async () => {
+        if (!exportStartDate || !exportEndDate) {
+            Alert.alert('Ошибка', 'Укажите начало и окончание периода')
+            return
+        }
+        try {
+            setExportLoading(true)
+            const toServerDate = (date: string) => {
+                const parts = date.split('.')
+                if (parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`
+                return date
+            }
+            const params = new URLSearchParams({
+                startDate: toServerDate(exportStartDate),
+                endDate: toServerDate(exportEndDate),
+            })
+            if (exportDepartment) params.append('department', exportDepartment)
+            const response = await apiFetch(`${API_URL}/api/movements/export?${params.toString()}`)
+            const data = await response.json()
+
+            if(!response.ok) throw new Error(data.message || 'Ошибка выгрузки')
+            Alert.alert('Готово', data.message)
+        setExportVisible(false)
+        setExportStartDate('')
+        setExportEndDate('')
+        setExportDepartment('')
+        } catch (error) {
+            Alert.alert('Ошибка', error instanceof Error ? error.message : 'Ошибка выгрузки')
+        } finally {
+            setExportLoading(false)
+        }
     }
     const handleSave = async () => {
         if (!department) {
@@ -136,6 +179,7 @@ const MovementScreen = () => {
         }
     };
     return (
+    <View style={{flex: 1}}>
         <ScrollView style={styles.container} contentContainerStyle = {styles.content}>
             {/* тип операции*/}
             <Text style={styles.label}>Тип операции</Text>
@@ -210,12 +254,51 @@ const MovementScreen = () => {
                     disabled={loading}
                 />
             </View>
-            <BarcodeScanner
+            <View style={{ marginTop: 16, marginBottom: 40 }}>
+                <Button text="Выгрузить за период" onPress={() => setExportVisible(true)} />
+            </View>
+            
+        </ScrollView>
+        <Modal visible={exportVisible} animationType="slide" transparent>
+            <View style = {styles.modalOverlay}>
+                <View style={styles.modalContent}>
+                    <Text style={styles.modalTitle}>Выгрузка движения</Text>
+                    <Text style={styles.label}>Подразделение</Text>
+                    <View style={styles.pickWrapper}>
+                        <Picker
+                            selectedValue={exportDepartment}
+                            onValueChange={setExportDepartment}
+                            style={styles.picker}
+                            dropdownIconColor={SystemColors.VeryLightBlue}>
+                            <Picker.Item label="Все сервисные центры" value="" color={SystemColors.VeryLightBlue} />
+                            {DEPARTMENTS.map(d => (
+                                <Picker.Item key={d} label={d} value={d} color={SystemColors.VeryLightBlue} />                            ))}
+                        </Picker>
+                    </View>
+                    <Text style={styles.label}>Период</Text>
+                    <View style={styles.dateRow}>
+                        <View style={styles.dateBlock}>
+                            <Text style={styles.dateLabel}>C</Text>
+                            <TextInput style={styles.dateInput} value={exportStartDate} onChangeText={setExportStartDate} placeholder="ДД.ММ.ГГГГ" />
+                        </View>
+                        <View style={styles.dateBlock}>
+                            <Text style={styles.dateLabel}>По</Text>
+                            <TextInput style={styles.dateInput} value={exportEndDate} onChangeText={setExportEndDate} placeholder="ДД.ММ.ГГГГ" />
+                        </View>
+                    </View>
+                    <View style={{marginTop: 20, marginBottom: 20}}>
+                        <Button text="Сформировать отчет" isLoading={exportLoading} onPress={handleExport} disabled={exportLoading} />
+                    </View>
+                    <Button text="Отмена" onPress={() => setExportVisible(false)}/>
+                </View>
+            </View>
+        </Modal>
+        <BarcodeScanner
                 visible={scannerVisible}
                 onScan={handleScan}
                 onClose={() => setScannerVisible(false)}
-            />
-        </ScrollView>
+        />
+    </View>
     )
 }
 const styles = StyleSheet.create({
@@ -326,6 +409,57 @@ const styles = StyleSheet.create({
         color: SystemColors.VeryLightBlue,
         fontFamily: CustomFonts.regular,
         fontSize: 16
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.4)'
+    },
+    modalContent: {
+        flex: 1,
+        backgroundColor: SystemColors.MutedBlue,
+        marginTop: 60,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        padding: 16
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 16
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: SystemColors.PrimaryBlue,
+        fontFamily: CustomFonts?.medium
+    },
+    closeText: {
+        fontSize: 20,
+        color: SystemColors.PrimaryBlue,
+        padding: 4
+    },
+    dateRow: {
+        flexDirection: 'row',
+        gap: 12
+    },
+    dateBlock: {
+        flex: 1
+    },
+    dateLabel: {
+        fontSize: 13,
+        color: SystemColors.PrimaryBlue,
+        marginBottom: 4,
+    },
+    dateInput: {
+        borderWidth: 1,
+        borderColor: SystemColors.VeryLightBlue,
+        borderRadius: 9,
+        padding: 10,
+        fontSize: 15, 
+        color: SystemColors.PrimaryBlue,
+        backgroundColor: SystemColors.MutedBlue,
+        textAlign: 'center'
     },
 })
 
