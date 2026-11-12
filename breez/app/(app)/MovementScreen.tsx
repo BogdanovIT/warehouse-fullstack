@@ -84,6 +84,7 @@ const MovementScreen = () => {
         for (const code of codes) {
             if (!isChestnyZnak(code)) {
                 Alert.alert('Внимание', 'Отсканирован не Честный Знак, код не принят')
+                continue
             }
             if (qrCodes.includes(code)) {
                 Alert.alert("Внимание", `Код ${code.slice(1, 15)}...  уже отсканирован`)
