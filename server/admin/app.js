@@ -246,7 +246,7 @@ async function loadDashboard(page = 1) {
                 onClick="setDashboardDept('${d.value}')">
                 ${d.label}
                 </div>
-                `.join(''))}
+                `).join('')}
         </div>
         <!-- Правая панель -->
         <div class="dashboard-content>
