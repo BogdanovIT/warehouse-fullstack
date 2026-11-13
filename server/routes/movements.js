@@ -39,31 +39,57 @@ router.post('/', async (req, res) => {
 
 router.get('/dashboard', async (req, res) => {
     try {
-        const { department, page = 1, limit = 50 } = req.query
-        const offset = (page - 1) * limit
+        const { department, page = 1, limit = 50 } = req.query;
+        const offset = (page - 1) * limit;
 
-        const where = {}
-        if (department && department !== all) {
-            where.department = department
+        const where = {};
+        if (department && department !== 'all') {
+            where.department = department;
         }
 
-        const { count, rows } = await Movement.findAndCountAll({
+        // 1. Получаем общее количество записей
+        const count = await Movement.count({ where });
+
+        // 2. Получаем сами записи (без include)
+        const movements = await Movement.findAll({
             where,
-            include: [{model: MovementItem, as: 'items', attributes: ['qrData'] }],
-            order: parseInt(limit),
-            offset: parseInt(offset)
-        })
+            order: [['createdAt', 'DESC']],
+            limit: parseInt(limit),
+            offset: parseInt(offset),
+        });
+
+        // 3. Отдельно запрашиваем items для этих выдач
+        const movementIds = movements.map(m => m.id);
+        const items = await MovementItem.findAll({
+            where: { movementId: movementIds },
+            attributes: ['id', 'movementId', 'qrData'],
+        });
+
+        // 4. Группируем items по movementId
+        const itemsMap = {};
+        items.forEach(item => {
+            if (!itemsMap[item.movementId]) itemsMap[item.movementId] = [];
+            itemsMap[item.movementId].push(item);
+        });
+
+        // 5. Прикрепляем items к движениям
+        const data = movements.map(m => {
+            const mJson = m.toJSON();
+            mJson.items = itemsMap[m.id] || [];
+            return mJson;
+        });
+
         res.json({
             total: count,
             page: parseInt(page),
             totalPages: Math.ceil(count / limit),
-            data: rows,
-        })
+            data,
+        });
     } catch (error) {
-        res.status(500).json({ message: "Ошибка сервера", error: error.message})
+        console.error('ОШИБКА В DASHBOARD:', error);
+        res.status(500).json({ message: 'Ошибка сервера', error: error.message });
     }
-})
-
+});
 router.get('/export', async (req,res) => {
     try {
         const {startDate, endDate, department} = req.query
