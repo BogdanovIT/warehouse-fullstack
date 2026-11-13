@@ -37,6 +37,33 @@ router.post('/', async (req, res) => {
     }
 })
 
+router.get('/dashboard', async (req, res) => {
+    try {
+        const { department, page = 1, limit = 50 } = req.query
+        const offset = (page - 1) * limit
+
+        const where = {}
+        if (department && department !== all) {
+            where.department = department
+        }
+
+        const { count, rows } = await Movement.findAndCountAll({
+            where,
+            include: [{model: MovementItem, as: 'items', attributes: ['qrData'] }],
+            order: parseInt(limit),
+            offset: parseInt(offset)
+        })
+        res.json({
+            total: count,
+            page: parseInt(page),
+            totalPages: Math.ceil(count / limit),
+            data: rows,
+        })
+    } catch (error) {
+        res.status(500).json({ message: "Ошибка сервера", error: error.message})
+    }
+})
+
 router.get('/export', async (req,res) => {
     try {
         const {startDate, endDate, department} = req.query

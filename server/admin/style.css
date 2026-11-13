@@ -63,3 +63,12 @@ color: #AFD3EA; border-radius: 6px; font-size: 14px; cursor: pointer; transition
 .badge { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-left: 10px; vertical-align: top; margin-top: 3px; }
 .badge-saved { background: #4caf50; color: #fff; }
 .badge-unsaved { background: #ff9800; color: #fff; }
+.dashboard-layout { display: flex; gap: 20px; align-items: flex-start;}
+.dashboard-sidebar {width: 250px; background: #fff; border-radius: 8px; padding: 10px 0; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); flex-shrink: 0;}
+.dept-item {padding: 12px 20px; cursor: pointer; font-size: 14px; color: #333; border-left: 3px solid transparent; transition: all 0.2s;}
+.dept-item:hover {background: #f0f2f5;}
+.dept-item.active {background: #e3f2fd; color: #1976d2; border-left-color: #1976d2; font-weight: 600;}
+.dashboard-content {flex: 1; background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); overflow-x: auto;}
+.pagination {display: flex; justify-content: space-between; align-items: center; margin-top: 20px; font-size: 14px; color: #666;}
+.pagination button {padding: 8px 16px; background: #02182E; color: #fff; border: none; border-radius: 6px; cursor: pointer;}
+.pagination button:disabled {background: #ccc; cursor: not-allowed;}

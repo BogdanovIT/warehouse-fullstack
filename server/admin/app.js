@@ -1,6 +1,7 @@
 const API = '/api'
 let token = ''
 let currentDepartment = ''
+let currentDashboardDept = 'all'
 
 function showLogin() {
     document.getElementById('main-content').innerHTML = `
@@ -104,6 +105,7 @@ async function loadPage(page) {
         case 'employees': return loadEmployees()
         case 'users': return loadUsers()
         case 'attendance': return loadAttendance()
+        case 'dashboard': return loadDashboard()
         case 'chozrabota': return showPlaceholder('Хозработы', "Модуль в разработке")
     }
 }
@@ -202,6 +204,104 @@ function showEmployeeForm(employee = null) {
             </form>
         </div>
     `;
+}
+async function loadDashboard(page = 1) {
+    try {
+        const res = await fetch(`${API}/movements/dashboard?department=${currentDashboardDept}&page=${page}&limit=50`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
+        if (res.status === 401 || res.status === 403) {
+            sessionStorage.removeItem('token')
+            token = ''
+            showLogin()
+            return
+        }
+        const result = await res.json()
+        if (!res.ok) throw new Error(result.message)
+            const departments = [
+        { label: 'Бриз Крым Сервис (АСЦ)', value: 'Бриз Крым Сервис (АСЦ)' },
+        { label: 'Бриз Ростов Сервис', value: 'Бриз Ростов Сервис' },
+        { label: 'Бриз Краснодар Сервис', value: 'Бриз Краснодар Сервис' },
+        { label: 'Бриз Воронеж Сервис', value: 'Бриз Воронеж Сервис' },
+        { label: 'Бриз Казань Сервис', value: 'Бриз Казань Сервис' },
+        { label: 'Бриз Н-Новгород Сервис', value: 'Бриз Н-Новгород Сервис' },
+        { label: 'Бриз Санкт-Петербург Сервис', value: 'Бриз Санкт-Петербург Сервис' },
+        { label: 'Бриз Самара Сервис', value: 'Бриз Самара Сервис' },
+        { label: 'Бриз Екатеринбург Сервис', value: 'Бриз Екатеринбург Сервис' },
+        { label: 'Бриз Красноярск Сервис', value: 'Бриз Красноярск Сервис'},
+        { label: 'Бриз Новосибирск Сервис', value: 'Бриз Новосибирск Сервис' },
+        { label: 'Сервис Шерризон', value: 'Сервис Шерризон'},
+        { label: 'Сервис Шерризон Клиентская техника', value: 'Сервис Шерризон Клиентская техника' },
+        { label: 'Сервис Шерризон НТК', value: 'Сервис Шерризон НТК' },
+        { label: 'Сервис Шерризон Ремонтные з/ч', value: 'Сервис Шерризон Ремонтные з/ч' },
+        { label: 'Сервис Шерризон ТЕСТ', value: 'Сервис Шерризон ТЕСТ' },
+    ]
+    document.getElementById('main-content').innerHTML = `
+    <div class="dashboard-layout">
+        <!-- Левая панель -->
+        <div class="dashboard-sidebar">
+            <h3 style="padding-left: 12px; margin-bottom: 10px;">Сервисы</h3>
+            ${departments.map(d => `
+                <div class="dept-item ${currentDashboardDept === d.value ? 'active' : ''}"
+                onClick="setDashboardDept('${d.value}')">
+                ${d.label}
+                </div>
+                `.join(''))}
+        </div>
+        <!-- Правая панель -->
+        <div class="dashboard-content>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>Движение запчастей (Всего:${result.total}</h2>
+                <button class="btn-add" onClick="openExportModal()">Выгрузить в Excel</button>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Склад</th>
+                            <th>Сотрудник</th>
+                            <th>Документ</th>
+                            <th>Статус</th>
+                            <th>Марка</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${result.data.map(m => {
+                            let status = 'Выдано'
+                            if (m.operationType === 'returned') status = 'Возвращено'
+                            if (m.operationType === 'installed') status = 'Установлено'
+                            return `
+                            <tr>
+                                <td>${new Date(m.createdAt).toLocaleString('ru-RU')}</td>
+                                <td>${m.department}</td>
+                                <td>${m.employeeName}</td>
+                                <td>${m.document || '-'}</td>
+                                <td>${status}</td>
+                                <td>${m.items.length} шт.</td>
+                            </tr>
+                            `
+                        }).join('')}
+                    </tbody>
+                </table>
+            </div>
+            <!-- Пагинация -->
+            <div class="pagination">
+                <button ${page === 1 ? 'disabled' : ''} onClick="loadDashboard(${page - 1})">Назад</button>
+                <span>Страница ${result.page} из ${result.totalPages}</span>
+                <button ${page === result.totalPages ? 'disabled' : ''} onClick="loadDashboard(${page + 1})">Вперед</button>
+            </div>
+        </div>
+    </div>
+    `
+    } catch (error) {
+        document.getElementById('main-content').innerHTML = `<p style="color: red">${error.message}</p>`
+    }
+}
+function setDashboardDept(dept) {
+    currentDashboardDept = dept
+    loadDashboard()
 }
 async function showRoleEditor(user) {
     const allRoles = await fetch(`${API}/users/roles`, {
