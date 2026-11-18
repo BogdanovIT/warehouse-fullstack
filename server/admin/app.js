@@ -273,7 +273,7 @@ async function loadDashboard(page = 1) {
                     <td>${m.department}</td>
                     <td>${m.employeeName}</td>
                     <td>${m.document || ''}</td>
-                    <td>${m.status}</td>
+                    <td>${status}</td>
                     <td>${m.items.length} шт.</td>
                 </tr>
                 `
