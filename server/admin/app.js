@@ -311,7 +311,7 @@ async function loadDashboard(page = 1) {
                 console.log('DETAILS:', m.id, m.items)
 
                 return `
-                <tr class="main-row" data-id="${m.id}" onclick="toggleDetails(this)" style="cursor: pointer;">
+                <tr class="main-row" onclick="toggleDetails(this)" style="cursor: pointer;">
                     <td>${new Date(m.createdAt).toLocaleString('ru-RU')}</td>
                     <td>${m.department}</td>
                     <td>${m.employeeName}</td>
@@ -343,7 +343,7 @@ function setDashboardDept(dept) {
     currentDashboardDept = dept
     loadDashboard()
 }
-function toggleDetails(id) {
+function toggleDetails(row) {
     const details = row.nextElementSibling;
     if (details && details.classList.contains('details-row')) {
         details.classList.toggle('open')
