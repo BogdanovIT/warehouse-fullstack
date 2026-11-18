@@ -1,7 +1,7 @@
 const API = '/api'
 let token = ''
 let currentDepartment = ''
-let currentDashboardDept = 'all'
+let currentDashboardDept = ''
 
 function showLogin() {
     document.getElementById('main-content').innerHTML = `
@@ -206,6 +206,55 @@ function showEmployeeForm(employee = null) {
     `;
 }
 async function loadDashboard(page = 1) {
+    if (!currentDashboardDept) {
+        const departments = [
+            "ФРЦ БРИЗ Шереметьево",
+        "МОС БРИЗ Медведково",
+        "МОС БРИЗ Саларьево",
+        "МОС БРИЗ Рязанское",
+        "ДРЦ БРИЗ Софьино",
+        "РРЦ Бриз Екатеринбург LV",
+        "РРЦ Бриз Ростов LV",
+        "РРЦ Бриз Новосибирск LV",
+        "РРЦ Бриз Самара LV",
+        "РРЦ Бриз Краснодар LV",
+        "БРИЗ Головной офис",
+        'Бриз Крым Сервис (АСЦ)',
+        'Бриз Ростов Сервис',
+        'Бриз Краснодар Сервис',
+        'Бриз Воронеж Сервис',
+        'Бриз Казань Сервис',
+        'Бриз Н Новгород Сервис',
+        'Бриз Санкт-Петербург Сервис',
+        'Бриз Самара Сервис',
+        'Бриз Екатеринбург Сервис',
+        'Бриз Красноярск Сервис',
+        'Бриз Новосибирск Сервис',
+        'Сервис Шерризон',
+        'Сервис Шерризон Клиентская техника',
+        'Сервис Шерризон НТК',
+        'Сервис Шерризон Ремонтные з/ч',
+        'Сервис Шерризон ТЕСТ',
+        ]
+        document.getElementById('main-content').innerHTML=`
+        <div class="dashboard-header">
+            <h2>Онлайн табло ЧЗ</h2>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <select class="dept-select" onchange="setDashboardDept(this.value)" style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+                    <option value="" selected>— Выберите сервис —</option>
+                    ${departments.map(d => `
+                        <option value="${d.value}">${d.label}</option>
+                    `).join('')}
+                </select>
+                <button class="btn-add" onclick="openExportModal()"> Выгрузить в Excel</button>
+            </div>
+        </div>
+        <div style="text-align: center; padding: 60px; color: #94a3b8; font-size: 16px; background: #fff; border-radius: 8px; margin-top: 20px;">
+            Пожалуйста, выберите сервис для отображения данных.
+        </div>
+        `;
+        return
+    }
     try {
         const res = await fetch(`${API}/movements/dashboard?department=${currentDashboardDept}&page=${page}&limit=50`, {
             headers: { 'Authorization': `Bearer ${token}` }
