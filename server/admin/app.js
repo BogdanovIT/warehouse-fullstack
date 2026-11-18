@@ -310,7 +310,7 @@ async function loadDashboard(page = 1) {
                     `).join('')
 
                 return `
-                <tr class="main-row" data-id="${m.id}" onclick"toggleDetails(${m.id})" style="cursor: pointer;">
+                <tr class="main-row" data-id="${m.id}" onclick"toggleDetails(this)" style="cursor: pointer;">
                     <td>${new Date(m.createdAt).toLocaleString('ru-RU')}</td>
                     <td>${m.department}</td>
                     <td>${m.employeeName}</td>
@@ -342,10 +342,10 @@ function setDashboardDept(dept) {
     currentDashboardDept = dept
     loadDashboard()
 }
-function toggleDetails(id) {
-    const row = document.getElementById(`detais-${id}`)
-    if (row) {
-        row.style.display = row.style.display === 'none' ? 'table-row' : 'none'
+function toggleDetails(tr) {
+    const details = tr.nextElementSibling
+    if (details && details.classList.contains('detail-row')) {
+        details.style.display = details.style.display === 'none'? 'table-row' : 'none'
     }
 }
 function collapseAll() {
