@@ -311,7 +311,7 @@ async function loadDashboard(page = 1) {
                 console.log('DETAILS:', m.id, m.items)
 
                 return `
-                <tr class="main-row" data-id="${m.id}" onclick="toggleDetails(${m.id})" style="cursor: pointer;">
+                <tr class="main-row" data-id="${m.id}" onclick="toggleDetails(this)" style="cursor: pointer;">
                     <td>${new Date(m.createdAt).toLocaleString('ru-RU')}</td>
                     <td>${m.department}</td>
                     <td>${m.employeeName}</td>
@@ -319,7 +319,7 @@ async function loadDashboard(page = 1) {
                     <td>${status}</td>
                     <td>${m.items.length} шт.<span class="chevron">▾</span></td>
                 </tr>
-                <tr class="details-row" id="details-${m.id}" style="display: none;">
+                <tr class="details-row">
                     <td colspan="6" style="padding: 10px 20px; background: #f8fafc; font-family: monospace; font-size: 12px; color: #475569;">
                         ${qrList}
                     </td>
@@ -344,9 +344,9 @@ function setDashboardDept(dept) {
     loadDashboard()
 }
 function toggleDetails(id) {
-    const row = document.getElementById(`detais-${id}`)
-    if (row) {
-        row.style.display = row.style.display === 'none' ? 'table-row' : 'none'
+    const details = row.nextElementSibling;
+    if (details && details.classList.contains('details-row')) {
+        details.classList.toggle('open')
     }
 }
 function collapseAll() {
