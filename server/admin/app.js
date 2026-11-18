@@ -347,11 +347,15 @@ function toggleDetails(id) {
     const details = row.nextElementSibling;
     if (details && details.classList.contains('details-row')) {
         details.classList.toggle('open')
+        row.classList.toggle('open')
     }
 }
 function collapseAll() {
-    document.querySelectorAll('.details-row').forEach(row => {
-        row.style.display = 'none'
+    document.querySelectorAll('.details-row.open').forEach(row => {
+        row.classList.remove('open')
+    })
+    document.querySelectorAll('main-row').forEach(row =>{
+        row.classList.remove('open')
     })
 }
 async function showRoleEditor(user) {
