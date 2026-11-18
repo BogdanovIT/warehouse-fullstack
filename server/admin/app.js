@@ -308,6 +308,7 @@ async function loadDashboard(page = 1) {
                 const qrList = m.items.map(item => `
                     <div class="qr-item">${item.qrCode || item.marking || item.code || JSON.stringify(item)}</div>
                     `).join('')
+                console.log('DETAILS:', m.id, m.items)
 
                 return `
                 <tr class="main-row" data-id="${m.id}" onclick"toggleDetails(${m.id})" style="cursor: pointer;">
