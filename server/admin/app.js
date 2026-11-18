@@ -310,7 +310,7 @@ async function loadDashboard(page = 1) {
                     `).join('')
 
                 return `
-                <tr class="main-row" data-id="${m.id}" onclick"toggleDetails(this)" style="cursor: pointer;">
+                <tr class="main-row" data-id="${m.id}" onclick="toggleDetails(this)" style="cursor: pointer;">
                     <td>${new Date(m.createdAt).toLocaleString('ru-RU')}</td>
                     <td>${m.department}</td>
                     <td>${m.employeeName}</td>
