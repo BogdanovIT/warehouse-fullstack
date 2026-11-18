@@ -74,3 +74,7 @@ color: #AFD3EA; border-radius: 6px; font-size: 14px; cursor: pointer; transition
 .pagination button:disabled {background: #ccc; cursor: not-allowed;}
 .menu-group { margin-bottom: 25px; }
 .menu-group-title { color: #7d9bb5; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; padding: 0 20px; margin-bottom: 8px; font-weight: 700; }
+.main-row:hover {background-color: #f1f5f9;}
+.chevron { float: right; color: #94a3b8; font-size: 14px; transition: transorm 0.2s; }
+.qr-item { padding: 4px 0; border-bottom: 1px dashed #e2e8f0; word-break: break-all; }
+.qr-item:last-child { border-bottom: none; }

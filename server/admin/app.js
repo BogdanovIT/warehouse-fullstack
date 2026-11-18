@@ -284,6 +284,7 @@ async function loadDashboard(page = 1) {
                     `).join('')}
             </select>
             <button class="btn-add" onclick="openExportModal()"> Выгрузить в Excel</button>
+            <button class="btn-add" style="background-color: #64748b;" onclick="collapseAll()">Свернуть всё</button>
         </div>
     </div>
 
@@ -304,15 +305,23 @@ async function loadDashboard(page = 1) {
                 let status = 'Выдано'
                 if (m.operationType === 'returned') status = 'Возвращено'
                 if (m.operationType === 'installed') status = 'Установлено'
+                const qrList = m.items.map(item => `
+                    <div class="qr-item">${item.qrCode || item.marking || item.code || JSON.stringify(item)}</div>
+                    `).join('')
 
                 return `
-                <tr>
+                <tr class="main-row" data-id="${m.id}" onclick"toggleDetails(${m.id})" style="cursor: pointer;">
                     <td>${new Date(m.createdAt).toLocaleString('ru-RU')}</td>
                     <td>${m.department}</td>
                     <td>${m.employeeName}</td>
                     <td>${m.document || ''}</td>
                     <td>${status}</td>
-                    <td>${m.items.length} шт.</td>
+                    <td>${m.items.length} шт.<span class="chevron">▾</span></td>
+                </tr>
+                <tr class="details-row" id="details-${m.id}" style="display: none;">
+                    <td colspan="6" style="padding: 10px 20px; background: #f8fafc; font-family: monospace; font-size: 12px; color: #475569;">
+                        ${qrList}
+                    </td>
                 </tr>
                 `
             }).join('')}
@@ -332,6 +341,17 @@ async function loadDashboard(page = 1) {
 function setDashboardDept(dept) {
     currentDashboardDept = dept
     loadDashboard()
+}
+function toggleDetails(id) {
+    const row = document.getElementById(`detais-${id}`)
+    if (row) {
+        row.style.display = row.style.display === 'none' ? 'table-row' : 'none'
+    }
+}
+function collapseAll() {
+    document.querySelectorAll('.details-row').forEach(row => {
+        row.style.display = 'none'
+    })
 }
 async function showRoleEditor(user) {
     const allRoles = await fetch(`${API}/users/roles`, {
