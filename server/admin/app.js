@@ -237,62 +237,54 @@ async function loadDashboard(page = 1) {
         { label: 'Сервис Шерризон ТЕСТ', value: 'Сервис Шерризон ТЕСТ' },
     ]
     document.getElementById('main-content').innerHTML = `
-    <div class="dashboard-layout">
-        <!-- Левая панель -->
-        <div class="dashboard-sidebar">
-            <h3 style="padding-left: 12px; margin-bottom: 10px;">Сервисы</h3>
-            ${departments.map(d => `
-                <div class="dept-item ${currentDashboardDept === d.value ? 'active' : ''}"
-                onClick="setDashboardDept('${d.value}')">
-                ${d.label}
-                </div>
-                `).join('')}
+    <div class="dashboard-header">
+        <h2>Онлайн табло ЧЗ</h2>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <select class="dept-select" onchange="setDashboardDept(this.value)" style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+                ${departments.map(d => `
+                    <option value="${d.value}" ${currentDashboardDept === d.value ? 'selected' : ''}>${d.label}</option>
+                    `).join('')}
+            </select>
+            <button class="btn-add" onclick="openExportModal()"> Выгрузить в Excel</button>
         </div>
-        <!-- Правая панель -->
-        <div class="dashboard-content>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2>Движение запчастей (Всего:${result.total}</h2>
-                <button class="btn-add" onClick="openExportModal()">Выгрузить в Excel</button>
-            </div>
+    </div>
 
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Дата</th>
-                            <th>Склад</th>
-                            <th>Сотрудник</th>
-                            <th>Документ</th>
-                            <th>Статус</th>
-                            <th>Марка</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${result.data.map(m => {
-                            let status = 'Выдано'
-                            if (m.operationType === 'returned') status = 'Возвращено'
-                            if (m.operationType === 'installed') status = 'Установлено'
-                            return `
-                            <tr>
-                                <td>${new Date(m.createdAt).toLocaleString('ru-RU')}</td>
-                                <td>${m.department}</td>
-                                <td>${m.employeeName}</td>
-                                <td>${m.document || '-'}</td>
-                                <td>${status}</td>
-                                <td>${m.items.length} шт.</td>
-                            </tr>
-                            `
-                        }).join('')}
-                    </tbody>
-                </table>
-            </div>
-            <!-- Пагинация -->
-            <div class="pagination">
-                <button ${page === 1 ? 'disabled' : ''} onClick="loadDashboard(${page - 1})">Назад</button>
-                <span>Страница ${result.page} из ${result.totalPages}</span>
-                <button ${page === result.totalPages ? 'disabled' : ''} onClick="loadDashboard(${page + 1})">Вперед</button>
-            </div>
-        </div>
+    <div class="table-wrapper">
+     <table>
+        <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Склад</th>
+                <th>Сотрудник</th>
+                <th>Документ</th>
+                <th>Статус</th>
+                <th>Марки</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${result.data.map(m => {
+                let status = 'Выдано'
+                if (m.operationType === 'returned') status = 'Возвращено'
+                if (m.operationType === 'installed') status = 'Установлено'
+
+                return `
+                <tr>
+                    <td>${new Date(m.createdAt).toLocaleString('ru-RU')}</td>
+                    <td>${m.department}</td>
+                    <td>${m.employeeName}</td>
+                    <td>${m.document || ''}</td>
+                    <td>${m.status}</td>
+                    <td>${m.items.length} шт.</td>
+                </tr>
+                `
+            }).join('')}
+        </tbody>
+     </table>
+    </div>
+    <div class="pagination">
+        <button ${page === 1 ? 'disabled' : ''} onclick="loadDashboard(${page-1})">НАЗАД</button>
+        <span>Страница ${result.page} из ${result.totalPages || 1}</span> 
+        <button ${page >=result.totalPages ? 'disabled' : ''} onclick="loadDashboard(${page+1})">ВПЕРЕД</button>
     </div>
     `
     } catch (error) {

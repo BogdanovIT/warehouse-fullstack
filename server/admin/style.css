@@ -72,3 +72,5 @@ color: #AFD3EA; border-radius: 6px; font-size: 14px; cursor: pointer; transition
 .pagination {display: flex; justify-content: space-between; align-items: center; margin-top: 20px; font-size: 14px; color: #666;}
 .pagination button {padding: 8px 16px; background: #02182E; color: #fff; border: none; border-radius: 6px; cursor: pointer;}
 .pagination button:disabled {background: #ccc; cursor: not-allowed;}
+.menu-group { margin-bottom: 25px; }
+.menu-group-title { color: #7d9bb5; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; padding: 0 20px; margin-bottom: 8px; font-weight: 700; }

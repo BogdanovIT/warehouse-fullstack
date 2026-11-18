@@ -13,13 +13,17 @@
                 <select id="department-select" class="dept-select" onchange="onDepartmentChange()">
 
                 </select>
-                <nav>
-                    <a href="#" class="nav-item active" data-page="employees">Сотрудники</a>
+                <div class="menu-group">
+                    <div class="menu-group-title">Кадры и учет</div>
+                    <a href="#" class="nav-item-active" data-page="employees">Сотрудники</a>
                     <a href="#" class="nav-item" data-page="users">Пользователи</a>
                     <a href="#" class="nav-item" data-page="attendance">Табель</a>
-                    <a href="#" class="nav-item" data-page="dashboard">Онлайн табло ЧЗ</a>
                     <a href="#" class="nav-item" data-page="chozrabota">Хозработы</a>
-                </nav>
+                </div>
+                <div class="menu-group">
+                    <div class="menu-group-title">Сервис</div>
+                    <a href="#" class="nav-item" data-page="dashboard">Онлайн табло ЧЗ</a>
+                </div>
                 <button class="logout-btn" onclick="logout()">Выход</button>
             </aside>
             <main class="main" id="main-content">
