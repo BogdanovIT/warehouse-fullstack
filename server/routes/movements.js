@@ -43,8 +43,12 @@ router.get('/dashboard', async (req, res) => {
         const offset = (page - 1) * limit;
 
         const where = {};
-        if (department && department !== 'all') {
-            where.department = department;
+        let depts = []
+        if (department) {
+            depts = Array.isArray(department) ? department : [department]
+        }
+        if (depts.length > 0) {
+            where.department = { [Op.in]: depts }
         }
 
         // 1. Получаем общее количество записей

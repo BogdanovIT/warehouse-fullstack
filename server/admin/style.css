@@ -82,3 +82,11 @@ color: #AFD3EA; border-radius: 6px; font-size: 14px; cursor: pointer; transition
 .details-row.open { display: table-row;}
 .main-row .chevron { float: right; color: #94a3b8; transition: transform 0.2s;}
 .main-row.open .chevron { transform: rotate(180deg); }
+.multi-select { position: relative; display: inline-block; min-width: 250px; font-size: 14px; }
+.multi-select-header { border: 1px solid #ccc; padding: 8px 12px; border-radius: 6px; background: #fff; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none;}
+.multi-select-body { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ccc; border-radius: 6px;    margin-top: 4px; max-height: 300px; overflow-y: auto; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
+.multi-select-item { display: block; padding: 6px 12px; cursor: pointer; border-bottom: 1px solid #f1f5f9; }
+.multi-select-item:hover { background: #f8fafc; }
+.multi-select-item input { margin-right: 8px; }
+.btn-apply { width: 100%; padding: 8px; background: #2563eb; color: #fff; border: none; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px; cursor: pointer; }
+.btn-apply:hover { background: #1d4ed8; }

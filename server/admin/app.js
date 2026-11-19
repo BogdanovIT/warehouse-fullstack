@@ -2,6 +2,25 @@ const API = '/api'
 let token = ''
 let currentDepartment = ''
 let currentDashboardDept = ''
+const DASHBOARD_DEPARTMENTS = [
+        { label: 'Бриз Крым Сервис (АСЦ)', value: 'Бриз Крым Сервис (АСЦ)' },
+        { label: 'Бриз Ростов Сервис', value: 'Бриз Ростов Сервис' },
+        { label: 'Бриз Краснодар Сервис', value: 'Бриз Краснодар Сервис' },
+        { label: 'Бриз Воронеж Сервис', value: 'Бриз Воронеж Сервис' },
+        { label: 'Бриз Казань Сервис', value: 'Бриз Казань Сервис' },
+        { label: 'Бриз Н-Новгород Сервис', value: 'Бриз Н-Новгород Сервис' },
+        { label: 'Бриз Санкт-Петербург Сервис', value: 'Бриз Санкт-Петербург Сервис' },
+        { label: 'Бриз Самара Сервис', value: 'Бриз Самара Сервис' },
+        { label: 'Бриз Екатеринбург Сервис', value: 'Бриз Екатеринбург Сервис' },
+        { label: 'Бриз Красноярск Сервис', value: 'Бриз Красноярск Сервис'},
+        { label: 'Бриз Новосибирск Сервис', value: 'Бриз Новосибирск Сервис' },
+        { label: 'Сервис Шерризон', value: 'Сервис Шерризон'},
+        { label: 'Сервис Шерризон Клиентская техника', value: 'Сервис Шерризон Клиентская техника' },
+        { label: 'Сервис Шерризон НТК', value: 'Сервис Шерризон НТК' },
+        { label: 'Сервис Шерризон Ремонтные з/ч', value: 'Сервис Шерризон Ремонтные з/ч' },
+        { label: 'Сервис Шерризон ТЕСТ', value: 'Сервис Шерризон ТЕСТ' },
+    ]
+let selectedDepts = []
 
 function showLogin() {
     document.getElementById('main-content').innerHTML = `
@@ -206,35 +225,12 @@ function showEmployeeForm(employee = null) {
     `;
 }
 async function loadDashboard(page = 1) {
-    if (!currentDashboardDept) {
-        const departments = [
-        { label: 'Бриз Крым Сервис (АСЦ)', value: 'Бриз Крым Сервис (АСЦ)' },
-        { label: 'Бриз Ростов Сервис', value: 'Бриз Ростов Сервис' },
-        { label: 'Бриз Краснодар Сервис', value: 'Бриз Краснодар Сервис' },
-        { label: 'Бриз Воронеж Сервис', value: 'Бриз Воронеж Сервис' },
-        { label: 'Бриз Казань Сервис', value: 'Бриз Казань Сервис' },
-        { label: 'Бриз Н-Новгород Сервис', value: 'Бриз Н-Новгород Сервис' },
-        { label: 'Бриз Санкт-Петербург Сервис', value: 'Бриз Санкт-Петербург Сервис' },
-        { label: 'Бриз Самара Сервис', value: 'Бриз Самара Сервис' },
-        { label: 'Бриз Екатеринбург Сервис', value: 'Бриз Екатеринбург Сервис' },
-        { label: 'Бриз Красноярск Сервис', value: 'Бриз Красноярск Сервис'},
-        { label: 'Бриз Новосибирск Сервис', value: 'Бриз Новосибирск Сервис' },
-        { label: 'Сервис Шерризон', value: 'Сервис Шерризон'},
-        { label: 'Сервис Шерризон Клиентская техника', value: 'Сервис Шерризон Клиентская техника' },
-        { label: 'Сервис Шерризон НТК', value: 'Сервис Шерризон НТК' },
-        { label: 'Сервис Шерризон Ремонтные з/ч', value: 'Сервис Шерризон Ремонтные з/ч' },
-        { label: 'Сервис Шерризон ТЕСТ', value: 'Сервис Шерризон ТЕСТ' },
-    ]
+    if (!selectedDepts.length) {
         document.getElementById('main-content').innerHTML=`
         <div class="dashboard-header">
             <h2>Онлайн табло ЧЗ</h2>
             <div style="display: flex; gap: 10px; align-items: center;">
-                <select class="dept-select" onchange="setDashboardDept(this.value)" style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                    <option value="" selected>— Выберите сервис —</option>
-                    ${departments.map(d => `
-                        <option value="${d.value}">${d.label}</option>
-                    `).join('')}
-                </select>
+                ${renderMultiSelectHtml()}
                 <button class="btn-add" onclick="openExportModal()"> Выгрузить в Excel</button>
             </div>
         </div>
@@ -242,10 +238,12 @@ async function loadDashboard(page = 1) {
             Пожалуйста, выберите сервис для отображения данных.
         </div>
         `;
+        renderDeptCheckboxes(DASHBOARD_DEPARTMENTS)
         return
     }
     try {
-        const res = await fetch(`${API}/movements/dashboard?department=${currentDashboardDept}&page=${page}&limit=50`, {
+        const deptQuery = selectedDepts.map(d => `department=${encodeURIComponent(d)}`).join('&')
+        const res = await fetch(`${API}/movements/dashboard?department=${deptQuery}&page=${page}&limit=50`, {
             headers: { 'Authorization': `Bearer ${token}` }
         })
         if (res.status === 401 || res.status === 403) {
@@ -256,33 +254,12 @@ async function loadDashboard(page = 1) {
         }
         const result = await res.json()
         if (!res.ok) throw new Error(result.message)
-            const departments = [
-        { label: 'Бриз Крым Сервис (АСЦ)', value: 'Бриз Крым Сервис (АСЦ)' },
-        { label: 'Бриз Ростов Сервис', value: 'Бриз Ростов Сервис' },
-        { label: 'Бриз Краснодар Сервис', value: 'Бриз Краснодар Сервис' },
-        { label: 'Бриз Воронеж Сервис', value: 'Бриз Воронеж Сервис' },
-        { label: 'Бриз Казань Сервис', value: 'Бриз Казань Сервис' },
-        { label: 'Бриз Н-Новгород Сервис', value: 'Бриз Н-Новгород Сервис' },
-        { label: 'Бриз Санкт-Петербург Сервис', value: 'Бриз Санкт-Петербург Сервис' },
-        { label: 'Бриз Самара Сервис', value: 'Бриз Самара Сервис' },
-        { label: 'Бриз Екатеринбург Сервис', value: 'Бриз Екатеринбург Сервис' },
-        { label: 'Бриз Красноярск Сервис', value: 'Бриз Красноярск Сервис'},
-        { label: 'Бриз Новосибирск Сервис', value: 'Бриз Новосибирск Сервис' },
-        { label: 'Сервис Шерризон', value: 'Сервис Шерризон'},
-        { label: 'Сервис Шерризон Клиентская техника', value: 'Сервис Шерризон Клиентская техника' },
-        { label: 'Сервис Шерризон НТК', value: 'Сервис Шерризон НТК' },
-        { label: 'Сервис Шерризон Ремонтные з/ч', value: 'Сервис Шерризон Ремонтные з/ч' },
-        { label: 'Сервис Шерризон ТЕСТ', value: 'Сервис Шерризон ТЕСТ' },
-    ]
+            
     document.getElementById('main-content').innerHTML = `
     <div class="dashboard-header">
         <h2>Онлайн табло ЧЗ</h2>
         <div style="display: flex; gap: 10px; align-items: center;">
-            <select class="dept-select" onchange="setDashboardDept(this.value)" style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                ${departments.map(d => `
-                    <option value="${d.value}" ${currentDashboardDept === d.value ? 'selected' : ''}>${d.label}</option>
-                    `).join('')}
-            </select>
+            ${renderMultiSelectHtml()}
             <button class="btn-add" onclick="openExportModal()"> Выгрузить в Excel</button>
             <button class="btn-add" style="background-color: #64748b;" onclick="collapseAll()">Свернуть всё</button>
         </div>
@@ -335,10 +312,77 @@ async function loadDashboard(page = 1) {
         <button ${page >=result.totalPages ? 'disabled' : ''} onclick="loadDashboard(${page+1})">ВПЕРЕД</button>
     </div>
     `
+    renderDeptCheckboxes(DASHBOARD_DEPARTMENTS)
     } catch (error) {
         document.getElementById('main-content').innerHTML = `<p style="color: red">${error.message}</p>`
     }
 }
+
+function renderMultiSelectHtml() {
+    return `
+    <div class="multi-select" id="deptMultiSelect">
+        <div class="multi-select-header" onclick="toggleMultiSelect()">
+            <span id="multi-select-label">Выберите сервис (все)</span>
+            <span class="chevron">▾</span>
+        </div>
+        <div class="multi-select-body" id="multi-select-body" style="display: none;">
+            <label class="multi-select-item">
+                <input type="checkbox" id="selectAllDepts" onchange="toggleAllDepts(this)">
+                <strong>Все склады</strong>
+            </label>
+            <div id="depts-list"></div>
+            <button class="btn-apply" onclick="applyMultiSelect()">Применить</button>
+        </div>
+    </div>`
+}
+function renderDeptCheckboxes(departments) {
+    const list = document.getElementById('dept-list')
+    if (!list) return
+
+    list.innerHTML = departments.map(d => `
+        <label class="multi-select-item">
+            <input type="checkbox" value="${d.value}"
+            ${selectedDepts.includes(d.value) ? 'checked' : ''}
+            onchange="updateSelectedDepts()">
+            ${d.label}
+        </label>`).join('')
+        updateLabel()
+}
+
+function toggleAllDepts() {
+    const allCheckboxes = document.querySelectorAll('#depts-list input[type="checkbox"]')
+    allCheckboxes.forEach(ch => ch.checked = cb.checked)
+    updateSelectedDepts()
+}
+
+function updateLabel() {
+    const label = document.getElementById('multi-selected-label')
+    if (selectedDepts.length === 0) {
+        label.textContent = 'Выберите сервис (все)'
+    } else if (selectedDepts === 1) {
+        label.textContent = selectedDepts[0]
+    } else {
+        label.textContent = `Выбрано: ${selectedDepts.length}`
+    }
+}
+
+function updateSelectedDepts() {
+    const checkboxes = document.querySelectorAll('#depts-list input[type="checkbox"]:checked');
+    selectedDepts = Array.from(checkboxes).map(cb => cb.value)
+
+    const allCb = document.getElementById('selectAllDepts')
+    const allCheckboxes = document.querySelectorAll('#depts-list input[type="checkbox"]')
+    if (allCb) {
+        allCb.checked = allCheckboxes.length > 0 && selectedDepts.length === allCheckboxes.length
+    }
+    updateLabel()
+}
+
+function applyMultiSelect() {
+    document.getElementById('multi-select-body').style.display = 'none'
+    loadDashboard(1)
+}
+
 function setDashboardDept(dept) {
     currentDashboardDept = dept
     loadDashboard()
@@ -350,6 +394,12 @@ function toggleDetails(row) {
         row.classList.toggle('open')
     }
 }
+
+function toggleMultiSelect() {
+    const body = document.getElementById('multi-select-body')
+    body.style.display = body.style.display === 'none' ? 'block' : 'none'
+}
+
 function collapseAll() {
     document.querySelectorAll('.details-row.open').forEach(row => {
         row.classList.remove('open')
