@@ -356,7 +356,7 @@ function toggleAllDepts() {
 }
 
 function updateLabel() {
-    const label = document.getElementById('multi-selected-label')
+    const label = document.getElementById('multi-select-label')
     if (selectedDepts.length === 0) {
         label.textContent = 'Выберите сервис (все)'
     } else if (selectedDepts === 1) {
