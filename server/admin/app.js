@@ -351,7 +351,7 @@ function renderDeptCheckboxes(departments) {
         updateLabel()
 }
 
-function toggleAllDepts() {
+function toggleAllDepts(cb) {
     const allCheckboxes = document.querySelectorAll('#depts-list input[type="checkbox"]')
     allCheckboxes.forEach(ch => {ch.checked = cb.checked})
     if (cb.checked) {
