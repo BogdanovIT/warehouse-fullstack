@@ -336,7 +336,7 @@ function renderMultiSelectHtml() {
     </div>`
 }
 function renderDeptCheckboxes(departments) {
-    const list = document.getElementById('dept-list')
+    const list = document.getElementById('depts-list')
     if (!list) return
 
     list.innerHTML = departments.map(d => `
