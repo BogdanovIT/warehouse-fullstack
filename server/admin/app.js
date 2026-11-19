@@ -353,12 +353,8 @@ function renderDeptCheckboxes(departments) {
 
 function toggleAllDepts(cb) {
     const allCheckboxes = document.querySelectorAll('#depts-list input[type="checkbox"]')
-    allCheckboxes.forEach(ch => {ch.checked = cb.checked})
-    if (cb.checked) {
-        selectedDepts = DASHBOARD_DEPARTMENTS.map(d => d.value)
-    } else { 
-        selectedDepts = []
-    }
+    allCheckboxes.forEach(ch => ch.checked = cb.checked)
+    selectedDepts = cb.checked ? DASHBOARD_DEPARTMENTS.map(d => d.value) : []
     updateLabel()
 }
 
