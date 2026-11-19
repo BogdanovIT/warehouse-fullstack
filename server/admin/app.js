@@ -245,7 +245,7 @@ async function loadDashboard(page = 1) {
     
     try {
         const deptQuery = isAllSelected ? 'department=all' : selectedDepts.map(d => `department=${encodeURIComponent(d)}`).join('&')
-        const res = await fetch(`${API}/movements/dashboard?department=${deptQuery}&page=${page}&limit=50`, {
+        const res = await fetch(`${API}/movements/dashboard?${deptQuery}&page=${page}&limit=50`, {
             headers: { 'Authorization': `Bearer ${token}` }
         })
         if (res.status === 401 || res.status === 403) {
