@@ -225,7 +225,8 @@ function showEmployeeForm(employee = null) {
     `;
 }
 async function loadDashboard(page = 1) {
-    if (!selectedDepts.length) {
+    const isAllSelected = selectedDepts.length === DASHBOARD_DEPARTMENTS.length
+    if (selectedDepts.length === 0 && !isAllSelected) {
         document.getElementById('main-content').innerHTML=`
         <div class="dashboard-header">
             <h2>Онлайн табло ЧЗ</h2>
@@ -241,8 +242,9 @@ async function loadDashboard(page = 1) {
         renderDeptCheckboxes(DASHBOARD_DEPARTMENTS)
         return
     }
+    
     try {
-        const deptQuery = selectedDepts.map(d => `department=${encodeURIComponent(d)}`).join('&')
+        const deptQuery = isAllSelected ? 'department=all' : selectedDepts.map(d => `department=${encodeURIComponent(d)}`).join('&')
         const res = await fetch(`${API}/movements/dashboard?department=${deptQuery}&page=${page}&limit=50`, {
             headers: { 'Authorization': `Bearer ${token}` }
         })

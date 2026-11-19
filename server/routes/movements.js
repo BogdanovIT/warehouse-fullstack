@@ -47,7 +47,7 @@ router.get('/dashboard', async (req, res) => {
         if (department) {
             depts = Array.isArray(department) ? department : [department]
         }
-        if (depts.length > 0) {
+        if (depts.length > 0 && !depts.includes('all')) {
             where.department = { [Op.in]: depts }
         }
 
