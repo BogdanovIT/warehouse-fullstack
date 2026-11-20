@@ -224,9 +224,10 @@ function showEmployeeForm(employee = null) {
         </div>
     `;
 }
-async function loadDashboard(page = 1) {
-    const isAllSelected = selectedDepts.length === DASHBOARD_DEPARTMENTS.length
-    if (selectedDepts.length === 0 && !isAllSelected) {
+async function loadDashboard(page = 1, overrideDepts = null) {
+    const deptsToFilter = overrideDepts || selectedDepts
+    const isAllSelected = deptsToFilter.length === DASHBOARD_DEPARTMENTS.length
+    if (deptsToFilter.length === 0 && !isAllSelected) {
         document.getElementById('main-content').innerHTML=`
         <div class="dashboard-header">
             <h2>Онлайн табло ЧЗ</h2>
@@ -244,7 +245,7 @@ async function loadDashboard(page = 1) {
     }
     
     try {
-        const deptQuery = isAllSelected ? 'department=all' : selectedDepts.map(d => `department=${encodeURIComponent(d)}`).join('&')
+        const deptQuery = isAllSelected ? 'department=all' : deptsToFilter.map(d => `department=${encodeURIComponent(d)}`).join('&')
         const res = await fetch(`${API}/movements/dashboard?${deptQuery}&page=${page}&limit=50`, {
             headers: { 'Authorization': `Bearer ${token}` }
         })
@@ -383,7 +384,13 @@ function updateSelectedDepts() {
 
 function applyMultiSelect() {
     document.getElementById('multi-select-body').style.display = 'none'
-    loadDashboard(1)
+    const deptsToLoad = [...selectedDepts]
+    selectedDepts = []
+    document.querySelectorAll('#depts-list input[type="checkbox"]').forEach(cb => cb.checked = false)
+    const allCb = document.getElementById('selectAllDepts')
+    if (allCb) allCb.checked = false
+    updateLabel()
+    loadDashboard(1, deptsToLoad)
 }
 
 function setDashboardDept(dept) {
@@ -783,3 +790,10 @@ async function saveAttendance() {
         alert(error.message)
     }
 }
+document.addEventListener('click', (e) => {
+    const multiSelect = document.getElementById('deptMultiSelect')
+    if (multiSelect && !multiSelect.contains(e.target)) {
+        const body = document.getElementById('multi-select-body')
+        if (body) body.style.display = 'none'
+    }
+})
