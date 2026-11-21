@@ -248,7 +248,7 @@ async function loadDashboard( page = 1 ) {
     let effectiveTo = currentDateTo
     let showWarning = false
 
-    if(!effectiveFrom && effectiveTo) {
+    if(!effectiveFrom && !effectiveTo) {
         effectiveTo = getTodayISO()
         effectiveFrom = getDateMinusDays(45)
         showWarning = true
