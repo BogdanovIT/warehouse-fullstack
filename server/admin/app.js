@@ -269,6 +269,14 @@ async function loadDashboard( page = 1 ) {
         const res = await fetch(`${API}/movements/dashboard?${deptQuery}${dateQuery}&page=${page}&limit=50`, {
             headers: {'Authorization': `Bearer ${token}`}
         })
+        if (res.status === 401 || res.status === 403) {
+            sessionStorage.removeItem('token')
+            token = ''
+            showLogin()
+            return
+        }
+        const result = await res.json()
+        if (!res.ok) throw new Error(result.message)
 
         let warningHtml = ''
         if (showWarning) {
@@ -366,7 +374,6 @@ function renderMultiSelectHtml() {
                 <strong>Все склады</strong>
             </label>
             <div id="depts-list"></div>
-            <button class="btn-apply" onclick="applyMultiSelect()">Применить</button>
         </div>
     </div>`
 }
@@ -413,17 +420,6 @@ function updateSelectedDepts() {
         allCb.checked = allCheckboxes.length > 0 && selectedDepts.length === allCheckboxes.length
     }
     updateLabel()
-}
-
-function applyMultiSelect() {
-    document.getElementById('multi-select-body').style.display = 'none'
-    const deptsToLoad = [...selectedDepts]
-    selectedDepts = []
-    document.querySelectorAll('#depts-list input[type="checkbox"]').forEach(cb => cb.checked = false)
-    const allCb = document.getElementById('selectAllDepts')
-    if (allCb) allCb.checked = false
-    updateLabel()
-    loadDashboard(1, deptsToLoad)
 }
 
 function setDashboardDept(dept) {
