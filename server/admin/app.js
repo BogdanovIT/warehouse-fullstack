@@ -1,5 +1,7 @@
 const API = '/api'
 let token = ''
+let currentDateFrom = ''
+let currentDateTo = ''
 let currentDepartment = ''
 let currentDashboardDept = ''
 const DASHBOARD_DEPARTMENTS = [
@@ -224,98 +226,128 @@ function showEmployeeForm(employee = null) {
         </div>
     `;
 }
-async function loadDashboard(page = 1, overrideDepts = null) {
-    const deptsToFilter = overrideDepts || selectedDepts
-    const isAllSelected = deptsToFilter.length === DASHBOARD_DEPARTMENTS.length
-    if (deptsToFilter.length === 0 && !isAllSelected) {
-        document.getElementById('main-content').innerHTML=`
-        <div class="dashboard-header">
-            <h2>Онлайн табло ЧЗ</h2>
-            <div style="display: flex; gap: 10px; align-items: center;">
+async function loadDashboard( page = 1 ) {
+    const isAllSelected = selectedDepts.length === DASHBOARD_DEPARTMENTS.length
+    if (selectedDepts.length === 0 && !isAllSelected) {
+        document.getElementById('main-content').innerHTML = `
+        <div class ="dashboard-header">
+            <h2>Онлайн Табло ЧЗ</h2>
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                 ${renderMultiSelectHtml()}
-                <button class="btn-add" onclick="openExportModal()"> Выгрузить в Excel</button>
+                ${renderDateFilterHtml()}
+                <button class="btn-add" onclick="openExportModal()">Выгрузить в Excel</button>
             </div>
         </div>
         <div style="text-align: center; padding: 60px; color: #94a3b8; font-size: 16px; background: #fff; border-radius: 8px; margin-top: 20px;">
-            Пожалуйста, выберите сервис для отображения данных.
-        </div>
-        `;
+        Пожалуйста, выберите сервис для отображения данных
+        </div>`
         renderDeptCheckboxes(DASHBOARD_DEPARTMENTS)
         return
     }
-    
+    let effectiveFrom = currentDateFrom
+    let effectiveTo = currentDateTo
+    let showWarning = false
+
+    if(!effectiveFrom && effectiveTo) {
+        effectiveTo = getTodayISO()
+        effectiveFrom = getDateMinusDays(45)
+        showWarning = true
+    } else if (!effectiveFrom) {
+        const toDate = new Date(effectiveTo)
+        toDate.setDate(toDate.getDate() - 45)
+        effectiveFrom = toDate.toISOString().split('T')[0]
+        showWarning = true
+    } else if (!effectiveTo) {
+        effectiveTo = getTodayISO()
+    }
     try {
-        const deptQuery = isAllSelected ? 'department=all' : deptsToFilter.map(d => `department=${encodeURIComponent(d)}`).join('&')
-        const res = await fetch(`${API}/movements/dashboard?${deptQuery}&page=${page}&limit=50`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+        const deptQuery = isAllSelected
+        ? 'department-all'
+        : selectedDepts.map(d => `department=${encodeURIComponent(d)}`).join('&')
+        
+        const dateQuery = `&dateFrom=${effectiveFrom}&dateTo=${effectiveTo}`
+        const res = await fetch(`${API}/movements/dashboard?${deptQuery}${dateQuery}&page=${page}&limit=50`, {
+            headers: {'Authorization': `Bearer ${token}`}
         })
-        if (res.status === 401 || res.status === 403) {
-            sessionStorage.removeItem('token')
-            token = ''
-            showLogin()
-            return
+
+        let warningHtml = ''
+        if (showWarning) {
+            const warnText = !currentDateFrom && !currentDateTo
+                ? 'Начало периода не выбрано, показаны данные за последние 45 дней. Для получения более ранних записей выберите дату начала периода.'
+                : 'Дата начала не выбрана, показаны данные за 45 дней до указанной даты. '
+            warningHtml = `<div style="bacground: #fef3c7; color: #92400e; padding: 10px 15px; border-radius: 6px; margin-bottom: 15px; font-size: 14px ">⚠️ ${warnText}</div>` 
         }
-        const result = await res.json()
-        if (!res.ok) throw new Error(result.message)
-            
-    document.getElementById('main-content').innerHTML = `
-    <div class="dashboard-header">
-        <h2>Онлайн табло ЧЗ</h2>
-        <div style="display: flex; gap: 10px; align-items: center;">
-            ${renderMultiSelectHtml()}
-            <button class="btn-add" onclick="openExportModal()"> Выгрузить в Excel</button>
-            <button class="btn-add" style="background-color: #64748b;" onclick="collapseAll()">Свернуть всё</button>
+        let tableHtml = ''
+        if (result.data.length === 0) {
+            tableHtml = `
+            <div style=" text-align: center; padding: 60px; color: #94a3b8; font-sixe: 16px; background: #fff; border-radius: 8px ">
+            Данных по выбранному сервису за указанный период нет.
+            </div>`
+        } else {
+            tableHtml = `
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Склад</th>
+                            <th>Сотрудник</th>
+                            <th>Документ</th>
+                            <th>Статус</th>
+                            <th>Марки</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${result.data.map(m => {
+                            let status = 'Выдано'
+                            if (m.operationType === 'returned') status = 'Возвращено'
+                            if (m.operationType === 'installed') status = 'Установлено'
+
+                            // Генерируем список QR-кодов (каждый с новой строки)
+                            const qrList = m.items.map(item => `
+                                <div class="qr-item">${item.qrData || '—'}</div>
+                            `).join('');
+
+                            return `
+                            <tr class="main-row" onclick="toggleDetails(this)" style="cursor: pointer;">
+                                <td>${new Date(m.createdAt).toLocaleString('ru-RU')}</td>
+                                <td>${m.department}</td>
+                                <td>${m.employeeName}</td>
+                                <td>${m.document || ''}</td>
+                                <td>${status}</td>
+                                <td>${m.items.length} шт. <span class="chevron">▾</span></td>
+                            </tr>
+                            <tr class="details-row">
+                                <td colspan="6" style="padding: 10px 20px; background: #f8fafc; font-family: monospace; font-size: 12px; color: #475569;">
+                                    ${qrList}
+                                </td>
+                            </tr>
+                            `
+                        }).join('')}
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination">
+                <button ${page === 1 ? 'disabled' : ''} onclick="loadDasboard(${page - 1})">⬅️Назад</button>
+                <span>Страница ${result.page} из ${result.totalPages || 1} </span>
+                <button ${page >=result.totalPages ? 'disabled' : ''} onclick="loadDasboard(${page + 1})">Вперёд➡️</button>
+            </div>
+            `
+        }
+        document.getElementById('main-content').innerHTML = `
+        <div class="dashboard-header">
+            <h2>Онлайн табло ЧЗ</h2>
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                ${renderMultiSelectHtml()}
+                ${renderDateFilterHtml()}
+                <button class="btn-add" onclick="openExportModal()">Выгрузить в Excel</button>
+                <button class="btn-add" style="background-color: #64748b" onclick="collapseAll()">Свернуть всё</button>
+            </div>
         </div>
-    </div>
-
-    <div class="table-wrapper">
-     <table>
-        <thead>
-            <tr>
-                <th>Дата</th>
-                <th>Склад</th>
-                <th>Сотрудник</th>
-                <th>Документ</th>
-                <th>Статус</th>
-                <th>Марки</th>
-            </tr>
-        </thead>
-        <tbody>
-            ${result.data.map(m => {
-                let status = 'Выдано'
-                if (m.operationType === 'returned') status = 'Возвращено'
-                if (m.operationType === 'installed') status = 'Установлено'
-                const qrList = m.items.map(item => `
-                    <div class="qr-item">${item.qrData || '--'}</div>
-                    `).join('')
-                console.log('DETAILS:', m.id, m.items)
-
-                return `
-                <tr class="main-row" onclick="toggleDetails(this)" style="cursor: pointer;">
-                    <td>${new Date(m.createdAt).toLocaleString('ru-RU')}</td>
-                    <td>${m.department}</td>
-                    <td>${m.employeeName}</td>
-                    <td>${m.document || ''}</td>
-                    <td>${status}</td>
-                    <td>${m.items.length} шт.<span class="chevron">▾</span></td>
-                </tr>
-                <tr class="details-row">
-                    <td colspan="6" style="padding: 10px 20px; background: #f8fafc; font-family: monospace; font-size: 12px; color: #475569;">
-                        ${qrList}
-                    </td>
-                </tr>
-                `
-            }).join('')}
-        </tbody>
-     </table>
-    </div>
-    <div class="pagination">
-        <button ${page === 1 ? 'disabled' : ''} onclick="loadDashboard(${page-1})">НАЗАД</button>
-        <span>Страница ${result.page} из ${result.totalPages || 1}</span> 
-        <button ${page >=result.totalPages ? 'disabled' : ''} onclick="loadDashboard(${page+1})">ВПЕРЕД</button>
-    </div>
-    `
-    renderDeptCheckboxes(DASHBOARD_DEPARTMENTS)
+        ${warningHtml}
+        ${tableHtml}
+        `
+        renderDeptCheckboxes(DASHBOARD_DEPARTMENTS)
     } catch (error) {
         document.getElementById('main-content').innerHTML = `<p style="color: red">${error.message}</p>`
     }
@@ -338,6 +370,7 @@ function renderMultiSelectHtml() {
         </div>
     </div>`
 }
+
 function renderDeptCheckboxes(departments) {
     const list = document.getElementById('depts-list')
     if (!list) return
@@ -397,6 +430,7 @@ function setDashboardDept(dept) {
     currentDashboardDept = dept
     loadDashboard()
 }
+
 function toggleDetails(row) {
     const details = row.nextElementSibling;
     if (details && details.classList.contains('details-row')) {
@@ -418,6 +452,7 @@ function collapseAll() {
         row.classList.remove('open')
     })
 }
+
 async function showRoleEditor(user) {
     const allRoles = await fetch(`${API}/users/roles`, {
         headers: { 'Authorization': `Bearer ${token}` },
@@ -444,6 +479,7 @@ async function showRoleEditor(user) {
     </div>
     `
 }
+
 async function saveRoles(event, userId) {
     event.preventDefault()
     const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked')
@@ -464,6 +500,7 @@ async function saveRoles(event, userId) {
         alert(error.message)
     }
 }
+
 async function toggleBlock(userId, isBlocked) {
     const action = isBlocked ? 'разблокировать' : 'заблокировать'
     if (!confirm(`Точно ${action} пользователя?`)) return
@@ -482,6 +519,7 @@ async function toggleBlock(userId, isBlocked) {
         alert(error.message)
     }
 }
+
 async function saveEmployee(event, id) {
     event.preventDefault()
     const dept = document.getElementById('department-select')?.value || currentDepartment
@@ -517,6 +555,7 @@ async function saveEmployee(event, id) {
         alert(error.message)
     }
 }
+
 async function deactivateEmployee(id) {
     if (!confirm('Деактивировать сотрудника?')) return
     try {
@@ -534,6 +573,7 @@ async function deactivateEmployee(id) {
         alert(error.message)
     }
 }
+
 async function loadUsers() {
     try {
         const dept = document.getElementById('department-select')?.value || currentDepartment
@@ -594,17 +634,71 @@ async function loadUsers() {
         }    
     }
 }
+
 function onDepartmentChange() {
     currentDepartment = document.getElementById('department-select').value
     const activePage = document.querySelector('.nav-item.active')?.dataset?.page || 'employees'
     loadPage(activePage)
 }
+
+function getTodayISO() {
+    return new Date().toISOString().split('T')[0]
+}
+
+function getDateMinusDays(days) {
+    const d = new Date()
+    d.setDate(d.getDate() - days)
+    return d.toISOString().split('T')[0]
+}
+
+function applyFilters() {
+    const fromInput = document.getElementById('date-from')?.value || ''
+    const toInput = document.getElementById('date-to')?.value || ''
+    if (fromInput && toInput && fromInput > toInput) {
+        alert('Дата начала не может быть позже даты окончания периода')
+        return
+    }
+    currentDateFrom = fromInput
+    currentDateTo = toInput
+    if (selectedDepts === 0) {
+        loadDashboard(1)
+        return
+    }
+    loadDashboard(1)
+}
+
+function clearFilters() {
+    currentDateFrom = ''
+    currentDateTo = ''
+    selectedDepts = []
+    const fromEl = document.getElementById('date-from')
+    const toEl = document.getElementById('date-to')
+    if (fromEl) fromEl.value = ''
+    if (toEl) toEl.value = ''
+    document.querySelectorAll('#depts-list input[type="checkbox"]').forEach(cb => cb.checked = false)
+    const allCb = document.getElementById('selectAllDepts')
+    if (allCb) allCb.checked = false
+    updateLabel()
+    loadDashboard(1)
+}
+
+function renderDateFilterHtml() {
+    return`
+    <input type="date" id="date-from" class="date-input" title="Начало периода" value="${currentDateFrom}">
+    <span>-</span>
+    <input type="date" id="date-to" class="date-input" title="Конец периода" value="${currentDateTo}">
+    <button class="btn-add" onclick="applyFilters()">Применить</button>
+    <button class="btn-add" style="background-color: #6474b" onclick="clearFilters()">Сброс</button>
+    `
+}
+
 function showPlaceholder(title, text) {
     document.getElementById('main-content').innerHTML= `
         <h2>${title}</h2>
         <div class="table-wrapper"><p>${text}</p></div>
     `
 }
+
 if (sessionStorage.getItem('token')) {
     token = sessionStorage.getItem('token')
     fetch(`${API}/auth/login`, {
@@ -635,6 +729,7 @@ function logout() {
     document.getElementById('department-select').innerHTML = ''
     showLogin()
 }
+
 async function loadAttendance() {
     const dept = document.getElementById('department-select')?.value || currentDepartment
     const date = document.getElementById('att-date')?.value || new Date().toISOString().split('T')[0]
@@ -726,6 +821,7 @@ async function loadAttendance() {
         }
     }
 }
+
 function changeDate(delta) {
     const input = document.getElementById('att-date')
     const date = new Date(input.value)
@@ -733,6 +829,7 @@ function changeDate(delta) {
     input.value = date.toISOString().split('T')[0]
     loadAttendance
 }
+
 function onStatusChange(employeeId, status) {
     const hours = document.getElementById(`hours-${employeeId}`)
     const overtime = document.getElementById(`overtime-${employeeId}`)
@@ -756,6 +853,7 @@ function onStatusChange(employeeId, status) {
         trip.value = 0
     }
 }
+
 async function saveAttendance() {
     const date = document.getElementById('att-date').value
     const records = window._attendanceRecords || []
@@ -790,6 +888,7 @@ async function saveAttendance() {
         alert(error.message)
     }
 }
+
 document.addEventListener('click', (e) => {
     const multiSelect = document.getElementById('deptMultiSelect')
     if (multiSelect && !multiSelect.contains(e.target)) {

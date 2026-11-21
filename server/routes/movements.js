@@ -39,7 +39,7 @@ router.post('/', async (req, res) => {
 
 router.get('/dashboard', async (req, res) => {
     try {
-        const { department, page = 1, limit = 50 } = req.query;
+        const { department, dateFrom, dateTo, page = 1, limit = 50 } = req.query;
         const offset = (page - 1) * limit;
 
         const where = {};
@@ -50,6 +50,11 @@ router.get('/dashboard', async (req, res) => {
         if (depts.length > 0 && !depts.includes('all')) {
             where.department = { [Op.in]: depts }
         }
+        if (dateFrom || dateTo) {
+            where.createdAt = {}
+            if (dateFrom) where.createdAt[Op.gte] = new Date(`${dateFrom}T00:00:00`)
+            if (dateTo) where.createdAt[Op.lt] = new Date(`${dateTo}T23:59:59`)
+            }
 
         // 1. Получаем общее количество записей
         const count = await Movement.count({ where });
