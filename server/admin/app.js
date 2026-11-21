@@ -680,9 +680,11 @@ function clearFilters() {
 
 function renderDateFilterHtml() {
     return`
-    <input type="date" id="date-from" class="date-input" title="Начало периода" value="${currentDateFrom}">
+    <input type="date" id="date-from" class="custom-date" placeholder="📆 с" value="${currentDateFrom}"
+        onfocus="this.type='date'" onblur="if(!this.value) this.type='text'">
     <span>-</span>
-    <input type="date" id="date-to" class="date-input" title="Конец периода" value="${currentDateTo}">
+    <input type="date" id="date-to" class="custom-date" placeholder="📆 по" value="${currentDateTo}"
+        onfocus="this.type='date'" onblur="if(!this.value) this.type='text'">
     <button class="btn-add" onclick="applyFilters()">Применить</button>
     <button class="btn-add" style="background-color: #6474b" onclick="clearFilters()">Сброс</button>
     `

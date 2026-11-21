@@ -92,3 +92,12 @@ color: #AFD3EA; border-radius: 6px; font-size: 14px; cursor: pointer; transition
 .btn-apply:hover { background: #1d4ed8; }
 #depts-list { overflow-y: auto; flex-grow: 1; max-height: 250px; }
 .multi-select-item:first-child { border-bottom: 1px solid #e2e8f0; background: #f8fafc; flex-shrink: 0; }
+.custom-date {padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; color: #334155; background: #fff; width: 130px; transition: all 0.2s ease; cursor: pointer; font-family: inherit; }
+.custom-date:hover { border-color: #94a3b8; }
+.custom-date:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+.custom-date::placeholder { color: #94a3b8; font-size: 14px; font-weight: 400; }
+.custom-date[type="date"] { cursor: pointer }
+.custom-date::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
+.custom-date::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+.date-separator { color: #94a3b8; font-weight: 500; margin: 0 4px; }
+.dashboard-header > div { flex-wrap: wrap; }
