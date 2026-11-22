@@ -674,65 +674,17 @@ function clearFilters() {
     const allCb = document.getElementById('selectAllDepts')
     if (allCb) allCb.checked = false
     updateLabel()
-    updateDateLabels()
     loadDashboard(1)
 }
 
 function renderDateFilterHtml() {
-    const formatDate = (iso) => {
-        if (!iso) return ''
-        const [y, m, d] = iso.split('-')
-        return`${d}.${m}.${y}`
-    }
-    return`
-    <div class="date-wrapper">
-        <span class="date-icon">📆</span>
-        <span class="date-text ${currentDateFrom ? 'has-value' : ''}" id=""date-from-text>
-        ${currentDateFrom ? formatDate(currentDateFrom) : 'Начало'}
-        </span>
-        <input type="date" id="date-from" class="date-input-native" value="${currentDateFrom}" onchange="updateDateLabel()">
-    </div>
-    <span class="date-separator">-</span>
-    <div class="date-wrapper">
-        <span class="date-icon">📆</span>
-        <span class="date-text ${currentDateTo ? 'has-value' : ''}" id=""date-to-text>
-        ${currentDateTo ? formatDate(currentDateTo) : 'Конец'}
-        </span>
+    return `
+        <input type="date" id="date-from" class="date-input-native" value="${currentDateFrom}">
+        <span class="date-separator">-</span>
         <input type="date" id="date-to" class="date-input-native" value="${currentDateTo}">
-    </div>
-    <button class="btn-add" onclick="applyFilters()">Применить</button>
-    <button class="btn-add" style="background-color: #64748b" onclick="clearFilters()" onchange="updateDateLabel()">Сброс</button>
+        <button class="btn-add" onclick="applyFilters()">Применить</button>
+        <button class="btn-add" style="background-color: #64748b" onclick="clearFilters()">Сброс</button>
     `
-}
-
-function updateDateLabels() {
-    const fromInput = document.getElementById('date-from')
-    const toInput = document.getElementById('date-to')
-    const fromText = document.getElementById('date-from-text')
-    const toText = document.getElementById('date-to-text')
-    const formatDate = (iso) => {
-        if (!iso) return ''
-        const [y, m, d] = iso.split('-')
-        return `${d}.${m}.${y}`
-    }
-    if (fromInput && fromText) {
-        if (fromInput.value) {
-            fromText.textContent = formatDate(fromInput.value)
-            fromText.classList.add('has-value')
-        } else {
-            fromText.textContent = 'Начало'
-            fromText.classList.remove('has-value')
-        }
-    }
-    if (toInput && toText) {
-        if (toInput.value) {
-            toText.textContent = formatDate(toInput.value)
-            toText.classList.add('has-value')
-        } else {
-            toText.textContent = 'Конец'
-            toText.classList.remove('has-value')
-        }
-     }
 }
 
 function showPlaceholder(title, text) {
