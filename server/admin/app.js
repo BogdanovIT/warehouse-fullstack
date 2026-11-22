@@ -690,7 +690,7 @@ function renderDateFilterHtml() {
         <span class="date-text ${currentDateFrom ? 'has-value' : ''}" id=""date-from-text>
         ${currentDateFrom ? formatDate(currentDateFrom) : 'Начало'}
         </span>
-        <input type="date" id="date-from" class="date-input-hidden" value="${currentDateFrom}" onchange="updateDateLabel()">
+        <input type="date" id="date-from" class="date-input-native" value="${currentDateFrom}" onchange="updateDateLabel()">
     </div>
     <span class="date-separator">-</span>
     <div class="date-wrapper">
@@ -698,7 +698,7 @@ function renderDateFilterHtml() {
         <span class="date-text ${currentDateTo ? 'has-value' : ''}" id=""date-to-text>
         ${currentDateTo ? formatDate(currentDateTo) : 'Конец'}
         </span>
-        <input type="date" id="date-to" class="date-input-hidden" value="${currentDateTo}">
+        <input type="date" id="date-to" class="date-input-native" value="${currentDateTo}">
     </div>
     <button class="btn-add" onclick="applyFilters()">Применить</button>
     <button class="btn-add" style="background-color: #64748b" onclick="clearFilters()" onchange="updateDateLabel()">Сброс</button>
