@@ -336,9 +336,9 @@ async function loadDashboard( page = 1 ) {
                 </table>
             </div>
             <div class="pagination">
-                <button ${page === 1 ? 'disabled' : ''} onclick="loadDasboard(${page - 1})">⬅️Назад</button>
+                <button ${page === 1 ? 'disabled' : ''} onclick="loadDashboard(${page - 1})">⬅️Назад</button>
                 <span>Страница ${result.page} из ${result.totalPages || 1} </span>
-                <button ${page >=result.totalPages ? 'disabled' : ''} onclick="loadDasboard(${page + 1})">Вперёд➡️</button>
+                <button ${page >=result.totalPages ? 'disabled' : ''} onclick="loadDashboard(${page + 1})">Вперёд➡️</button>
             </div>
             `
         }
