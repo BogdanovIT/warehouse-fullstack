@@ -656,10 +656,7 @@ function applyFilters() {
     }
     currentDateFrom = fromInput
     currentDateTo = toInput
-    if (selectedDepts === 0) {
-        loadDashboard(1)
-        return
-    }
+
     loadDashboard(1)
 }
 
@@ -667,27 +664,75 @@ function clearFilters() {
     currentDateFrom = ''
     currentDateTo = ''
     selectedDepts = []
-    const fromEl = document.getElementById('date-from')
-    const toEl = document.getElementById('date-to')
-    if (fromEl) fromEl.value = ''
-    if (toEl) toEl.value = ''
+    
+    const fromInput = document.getElementById('date-from')
+    const toInput = document.getElementById('date-to')
+    if (fromInput) fromInput.value = ''
+    if (toInput) toInput.value = ''
+
     document.querySelectorAll('#depts-list input[type="checkbox"]').forEach(cb => cb.checked = false)
     const allCb = document.getElementById('selectAllDepts')
     if (allCb) allCb.checked = false
     updateLabel()
+    updateDateLabels()
     loadDashboard(1)
 }
 
 function renderDateFilterHtml() {
+    const formatDate = (iso) => {
+        if (!iso) return ''
+        const [y, m, d] = iso.split('-')
+        return`${d}.${m}.${y}`
+    }
     return`
-    <input type="date" id="date-from" class="custom-date" placeholder="📆 с" value="${currentDateFrom}"
-        onfocus="this.type='date'" onblur="if(!this.value) this.type='text'">
-    <span>-</span>
-    <input type="date" id="date-to" class="custom-date" placeholder="📆 по" value="${currentDateTo}"
-        onfocus="this.type='date'" onblur="if(!this.value) this.type='text'">
+    <div class="date-wrapper">
+        <span class="date-icon">📆</span>
+        <span class="date-text ${currentDateFrom ? 'has-value' : ''}" id=""date-from-text>
+        ${currentDateFrom ? formatDate(currentDateFrom) : 'Начало'}
+        </span>
+        <input type="date" id="date-from" class="date-input-hidden" value="${currentDateFrom}" onchange="updateDateLabel()">
+    </div>
+    <span class="date-separator">-</span>
+    <div class="date-wrapper">
+        <span class="date-icon">📆</span>
+        <span class="date-text ${currentDateTo ? 'has-value' : ''}" id=""date-to-text>
+        ${currentDateTo ? formatDate(currentDateTo) : 'Конец'}
+        </span>
+        <input type="date" id="date-to" class="date-input-hidden" value="${currentDateTo}">
+    </div>
     <button class="btn-add" onclick="applyFilters()">Применить</button>
-    <button class="btn-add" style="background-color: #6474b" onclick="clearFilters()">Сброс</button>
+    <button class="btn-add" style="background-color: #64748b" onclick="clearFilters()" onchange="updateDateLabel()">Сброс</button>
     `
+}
+
+function updateDateLabels() {
+    const fromInput = document.getElementById('date-from')
+    const toInput = document.getElementById('date-to')
+    const fromText = document.getElementById('date-from-text')
+    const toText = document.getElementById('date-to-text')
+    const formatDate = (iso) => {
+        if (!iso) return ''
+        const [y, m, d] = iso.split('-')
+        return `${d}.${m}.${y}`
+    }
+    if (fromInput && fromText) {
+        if (fromInput.value) {
+            fromText.textContent = formatDate(fromInput.value)
+            fromText.classList.add('has-value')
+        } else {
+            fromText.textContent = 'Начало'
+            fromText.classList.remove('has-value')
+        }
+    }
+    if (toInput && toText) {
+        if (toInput.value) {
+            toText.textContent = formatDate(toInput.value)
+            toText.classList.add('has-value')
+        } else {
+            toText.textContent = 'Конец'
+            toText.classList.remove('has-value')
+        }
+     }
 }
 
 function showPlaceholder(title, text) {

@@ -92,12 +92,12 @@ color: #AFD3EA; border-radius: 6px; font-size: 14px; cursor: pointer; transition
 .btn-apply:hover { background: #1d4ed8; }
 #depts-list { overflow-y: auto; flex-grow: 1; max-height: 250px; }
 .multi-select-item:first-child { border-bottom: 1px solid #e2e8f0; background: #f8fafc; flex-shrink: 0; }
-.custom-date {padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; color: #334155; background: #fff; width: 130px; transition: all 0.2s ease; cursor: pointer; font-family: inherit; }
-.custom-date:hover { border-color: #94a3b8; }
-.custom-date:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
-.custom-date::placeholder { color: #94a3b8; font-size: 14px; font-weight: 400; }
-.custom-date[type="date"] { cursor: pointer }
-.custom-date::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
-.custom-date::-webkit-calendar-picker-indicator:hover { opacity: 1; }
 .date-separator { color: #94a3b8; font-weight: 500; margin: 0 4px; }
 .dashboard-header > div { flex-wrap: wrap; }
+.date-wrapper {position: relative; display: inline-flex; align-items:center; gap: 6px; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; cursor: pointer; transition: all 0.2s ease; box-sizing: border-box; }
+.date-wrapper:hover { border-color: #94a3b8; }
+.date-wrapper:focus-within {border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);}
+.date-icon { font-size: 16px; pointer-events: none; }
+.date-text { font-size: 14px; color: #94a3b8; pointer-events: none; white-space: nowrap; }
+.date-text.has-value {color: #334155; }
+.date-input-hidden { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; -webkit-apperance: none; appearance: none; }
