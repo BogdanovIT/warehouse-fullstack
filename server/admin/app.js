@@ -266,7 +266,7 @@ async function loadDashboard( page = 1 ) {
         : selectedDepts.map(d => `department=${encodeURIComponent(d)}`).join('&')
         
         const dateQuery = `&dateFrom=${effectiveFrom}&dateTo=${effectiveTo}`
-        const res = await fetch(`${API}/movements/dashboard?${deptQuery}${dateQuery}&page=${page}&limit=50`, {
+        const res = await fetch(`${API}/movements/dashboard?${deptQuery}${dateQuery}&page=${page}&limit=15`, {
             headers: {'Authorization': `Bearer ${token}`}
         })
         if (res.status === 401 || res.status === 403) {

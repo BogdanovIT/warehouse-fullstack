@@ -39,7 +39,7 @@ router.post('/', async (req, res) => {
 
 router.get('/dashboard', async (req, res) => {
     try {
-        const { department, dateFrom, dateTo, page = 1, limit = 50 } = req.query;
+        const { department, dateFrom, dateTo, page = 1, limit = 15 } = req.query;
         const offset = (page - 1) * limit;
 
         const where = {};
