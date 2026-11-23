@@ -108,7 +108,7 @@ router.get('/export', async (req,res) => {
         const toServerDate = (date) => {
                 if (!date) return date
                 const parts = date.split('.')
-                if (parts.length === 3) return `${parts[2]} - ${parts[1]} - ${parts[0]}`
+                if (parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`
                 return date
             }
         const start = toServerDate(startDate)
