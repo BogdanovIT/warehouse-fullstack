@@ -399,7 +399,7 @@ function toggleExportSelect() {
 }
 
 function renderExportCheckboxes() {
-    const list = document.getElementById('expo-depts-list')
+    const list = document.getElementById('export-depts-list')
     if (!list) return
 
     list.innerHTML = DASHBOARD_DEPARTMENTS.map(d => `
