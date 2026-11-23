@@ -197,7 +197,7 @@ router.get('/export/download', async (req, res) => {
             movements
         )
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        res.setHeader('Content-Disposition', `attachment; filename="Движение_выгрузка_${start}-${end}.xlsx"`)
+        res.setHeader('Content-Disposition', `attachment; filename="Movement_export_${start}-${end}.xlsx"; filename*=UTF-8''${encodedFilename}`)
         res.send(excel)
     } catch (error) {
         console.error('ОШИБКА В EXPORT/DOWNLOAD:', error)
