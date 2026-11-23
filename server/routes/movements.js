@@ -196,6 +196,9 @@ router.get('/export/download', async (req, res) => {
             `${prettyStart} - ${prettyEnd}`,
             movements
         )
+        const filename = `Движение_выгрузка_${start}_${end}.xlsx`
+        const encodedFilename = encodeURIComponent(filename)
+
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         res.setHeader('Content-Disposition', `attachment; filename="Movement_export_${start}-${end}.xlsx"; filename*=UTF-8''${encodedFilename}`)
         res.send(excel)
