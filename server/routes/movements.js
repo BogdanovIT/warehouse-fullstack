@@ -150,6 +150,61 @@ router.get('/export', async (req,res) => {
     }
 })
 
+router.get('/export/download', async (req, res) => {
+    try {
+        const {startDate, endDate, department} = req.query
+        if (!startDate || !endDate) {
+            return res.status(400).json({ message: 'Укажите даты начала и окончания периода'})
+        }
+        const toServerDate = (date) => {
+                if (!date) return date
+                const parts = date.split('.')
+                if (parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`
+                return date
+            }
+        const start = toServerDate(startDate)
+        const end = toServerDate(endDate)
+        const where = {
+            createdAt: {
+                [Op.gte]: new Date(`${start}T00:00:00`),
+                [Op.lt]: new Date(`${end}T23:59:59`)
+            }
+        }
+        let depts = []
+        if (department) {
+            depts = Array.isArray(department) ? department : [department]
+        }
+        if (depts.length > 0 && !depts.includes('all')) {
+            where.department = { [Op.in]: depts }
+        }
+        const movements = await Movement.findAll({
+            where,
+            include: [{ model: MovementItem, as: 'items', attributes: ['qrData'] }],
+            order: [['createdAt', 'ASC']],
+        })
+        if (movements.length === 0) {
+            return res.status(404).json({ message: "За указанный период записей по выбранному СЦ нет"})
+        }
+        const title = depts.includes('all') || depts.length === 0
+            ? 'Движение запчастей. Все подразделения'
+            : `Движение запчастей - ${depts.join(', ')}`
+        const prettyStart = start.split('-').reverse().join('.')
+        const prettyEnd = end.split('-').reverse().join('.')
+
+        const excel = await generateMovementExcel(
+            title,
+            `${prettyStart} - ${prettyEnd}`,
+            movements
+        )
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        res.setHeader('Content-Disposition', `attachment; filename="Движение_выгрузка_${start}-${end}.xlsx"`)
+        res.send(excel)
+    } catch (error) {
+        console.error('ОШИБКА В EXPORT/DOWNLOAD:', error)
+        res.status(500).json({ message: 'Ошибка сервера', error: error.message})
+    }
+})
+
 router.get('/', async (req, res) => {
     try {
         const { date, department } = req.query

@@ -493,7 +493,7 @@ async function downloadExcel(btn) {
         ? 'department=all'
         : exportSelectedDepts.map(d => `department=${encodeURIComponent(d)}`).join('&')
 
-    const url = `${API}/movements/export?startDate=${formatForBackend(effectiveFrom)}&endDate=${formatForBackend(effectiveTo)}&${deptQuery}`;
+    const url = `${API}/movements/export/download?startDate=${formatForBackend(effectiveFrom)}&endDate=${formatForBackend(effectiveTo)}&${deptQuery}`;
 
     try {
         const originalText = btn.textContent
