@@ -22,7 +22,7 @@ export const generateMovementExcel = async (title, period, movements) => {
 
     movements.forEach((m, index) => {
         const dateStr = new Date(m.createdAt).toLocaleDateString('ru-RU')
-        const qrCodes = m.items.map(i => i.qrData)
+        const qrCodes = (m.items || []).map(i => i.qrData)
         let status = ''
         if (m.operationType === 'issued') status = 'Выдано'
         else if (m.operationType === 'returned') status = 'Возвращено'
@@ -31,7 +31,7 @@ export const generateMovementExcel = async (title, period, movements) => {
         if (qrCodes.length === 0) {
             qrCodes.push('-')
         }
-        const bgColor = index % 2 === 0 ? 'FFFFFFF' : 'FFE0E0E0'
+        const bgColor = index % 2 === 0 ? 'FFFFFFFF' : 'FFE0E0E0'
 
         qrCodes.forEach((qr, idx) => {
             const row = sheet.addRow([

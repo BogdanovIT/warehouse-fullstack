@@ -505,7 +505,7 @@ async function downloadExcel(btn) {
         })
         if (!res.ok) {
             const err = await res.json()
-            throw new Error(err.message)
+            throw new Error(err.error || err.message)
         }
         const blob = await res.blob()
         const downloadUrl = window.URL.createObjectURL(blob)
