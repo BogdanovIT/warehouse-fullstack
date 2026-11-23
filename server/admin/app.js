@@ -336,9 +336,9 @@ async function loadDashboard( page = 1 ) {
                 </table>
             </div>
             <div class="pagination">
-                <button ${page === 1 ? 'disabled' : ''} onclick="loadDashboard(${page - 1})">⬅️Назад</button>
+                <button ${page === 1 ? 'disabled' : ''} onclick="loadDashboard(${page - 1})">⬅️ Назад</button>
                 <span>Страница ${result.page} из ${result.totalPages || 1} </span>
-                <button ${page >=result.totalPages ? 'disabled' : ''} onclick="loadDashboard(${page + 1})">Вперёд➡️</button>
+                <button ${page >=result.totalPages ? 'disabled' : ''} onclick="loadDashboard(${page + 1})">Вперёд ➡️</button>
             </div>
             `
         }
@@ -376,6 +376,157 @@ function renderMultiSelectHtml() {
             <div id="depts-list"></div>
         </div>
     </div>`
+}
+
+let exportSelectedDepts = []
+function openExportModal() {
+    exportSelectedDepts = [...selectedDepts]
+    document.getElementById('export-date-from').value = currentDateFrom
+    document.getElementById('export-date-to').value = currentDateTo
+
+    renderExportCheckboxes()
+    document.getElementById('export-modal').style.display = 'flex'
+}
+
+function closeExportModal() {
+    document.getElementById('export-modal').style.display = 'none'
+    document.getElementById('export-select-body').style.display = 'none'
+}
+
+function toggleExportSelect() {
+    const body = document.getElementById('export-select-body')
+    body.style.display = body.style.display === 'none' ? 'block' : 'none'
+}
+
+function renderExportCheckboxes() {
+    const list = document.getElementById('expo-depts-list')
+    if (!list) return
+
+    list.innerHTML = DASHBOARD_DEPARTMENTS.map(d => `
+        <label class="multi-select-item">
+            <input type="checkbox" value="${d.value}"
+            ${exportSelectedDepts.includes(d.value) ? 'checked' : ''}
+            onchange="updateExportSelected()">
+            ${d.label}
+        </label>
+        `).join('')
+        updateExportLabel()
+}
+
+function updateExportSelected() {
+    const checkboxes = document.querySelectorAll('#export-depts-list input[type="checkbox"]:checked')
+    exportSelectedDepts = Array.from(checkboxes).map(cb => cb.value)
+
+    const allCb = document.getElementById('export-select-all')
+    const total = document.querySelectorAll('#export-depts-list input[type="checkbox"]').length
+    if (allCb) {
+        allCb.checked = total > 0 && exportSelectedDepts.length === total
+    }
+    updateExportLabel()
+}
+
+function toggleExportAll(cb) {
+    const checkboxes = document.querySelectorAll('#export-depts-list input[type="checkbox"]')
+    checkboxes.forEach(ch => ch.checked = cb.checked)
+
+    exportSelectedDepts = cb.checked
+    ? DASHBOARD_DEPARTMENTS.map(d => d.value)
+    : ''
+
+    updateExportLabel()
+}
+
+function updateExportLabel() {
+    const label = document.getElementById('export-select-label')
+    if (!label) return
+
+    if (exportSelectedDepts.length === 0) {
+        label.textContent = 'Выберите сервис(ы)'
+    } else if 
+        (exportSelectedDepts.length === DASHBOARD_DEPARTMENTS.length) {
+            label.textContent = 'Все склады'
+    } else if (exportSelectedDepts.length === 1) {
+        label.textContent = exportSelectedDepts[0]
+    } else {
+        label.textContent = `Выбрано ${exportSelectedDepts.length}`
+    }
+}
+
+function resetExportFilters() {
+    exportSelectedDepts = []
+    document.getElementById('export-date-from').value = ''
+    document.getElementById('export-date-to').value = ''
+    renderExportCheckboxes()
+}
+
+async function downloadExcel(btn) {
+    if (exportSelectedDepts.length === 0) {
+        alert('Выберите хотя бы один склад для выгрузки данных')
+        return
+    }
+    const from = document.getElementById('export-date-from').value
+    const to = document.getElementById('export-date-to').value
+
+    if (from && to && from > to) {
+        alert('Дата начала не может быть позже даты окончания')
+        return
+    }
+    let effectiveFrom = from
+    let effectiveTo = to
+    if (!effectiveFrom && !effectiveTo) {
+        effectiveTo = getTodayISO()
+        effectiveFrom = getDateMinusDays(45)
+    } else if (!effectiveFrom) {
+        const toDate = new Date(effectiveTo)
+        toDate.setDate(toDate.getDate() - 45)
+        effectiveFrom = toDate.toISOString().split('T')[0]
+    } else if (!effectiveTo) {
+        effectiveTo = getTodayISO()
+    }
+
+    const formatForBackend = (iso) => {
+        const [y, m, d] = iso.split('-')
+        return `${d}.${m}.${y}`
+    }
+    const isAllSelected = exportSelectedDepts.length === DASHBOARD_DEPARTMENTS.length
+    const deptQuery = isAllSelected
+        ? 'department=all'
+        : exportSelectedDepts.map(d => `department=${encodeURIComponent(d)}`).join('&')
+
+    const url = `${API}/movements/export?startDate=${formatForBackend(effectiveFrom)}&endDate=${formatForBackend(effectiveTo)}&${deptQuery}`;
+
+    try {
+        const originalText = btn.textContent
+        btn.textContent = 'Формируем...'
+        btn.disabled = true
+
+        const res = await fetch(url, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
+        if (!res.ok) {
+            const err = await res.json()
+            throw new Error(err.message)
+        }
+        const blob = await res.blob()
+        const downloadUrl = window.URL.createObjectURL(blob)
+
+        const a = document.createElement('a')
+        a.href = downloadUrl
+        a.download = `Движение_выгрузка_${effectiveFrom}_${effectiveTo}.xlsx`
+        document.body.appendChild(a)
+        a.click()
+        a.remove()
+        window.URL.revokeObjectURL(downloadUrl)
+
+        closeExportModal()
+    } catch (error) {
+        alert('Ошибка при выгрузке: ' + error.message)
+    } finally {
+        if (btn) {
+            btn.textContent = 'Скачать'
+            btn.disabled = false
+        }
+    }
 }
 
 function renderDeptCheckboxes(departments) {

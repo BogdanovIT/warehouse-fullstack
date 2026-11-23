@@ -30,6 +30,42 @@
 
             </main>
         </div>
+        <div id="export-modal" class="modal-overlay" style="display: none;">
+            <div class="modal-content">
+                <h3 style="margin-top: 0;">Выгрузка в Excel</h3>
+                <div class="modal-field">
+                    <label>Сервисы</label>
+                    <div class="multi-select" id="export-multi-select" style="width: 100%;">
+                        <div class="multi-select-header" onclick="toggleExportSelect()">
+                            <span id="export-select-label">Выберите сервис(ы)</span>
+                            <span class="chevron">▾</span>
+                        </div>
+                        <div class="multi-select-body" id="export-select-body" style="display: none; position: relative; box-shadow: none;border: 1px solid #ccc; max-block-size: 300px;">
+                            <label class="multi-select-item">
+                                <input type="checkbox" id="export-select-all" onchange="toggleExportAll(this)">
+                                <strong>Все склады</strong>
+                            </label>
+                            <div id="export-depts-list" style="overflow-y: auto; max-height: 200px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-field">
+                    <label>Период</label>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="date" id="export-date-from" class="date-input-native" style="width: 100%;">
+                        <span>-</span>
+                        <input type="date" id="export-date-to" class="date-input-native" style="width: 100%;">
+                    </div>
+                </div>
+                <div class="modal-actions" style="display: flex; justify-content: space-between;">
+                    <button class="btn-add" style="background-color: #64748b;" onclick="resetExportFilters()">Сброс</button>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-cancel" onclick="closeExportModal()">Отмена</button>
+                        <button class="btn-save" onclick="downloadExcel(this)">Скачать</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <script src="app.js"></script>
     </body>
 </html>

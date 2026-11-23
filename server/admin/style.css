@@ -108,3 +108,19 @@ color: #AFD3EA; border-radius: 6px; font-size: 14px; cursor: pointer; transition
 .date-input-native::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.6; transition: opacity 0.2s;}
 .date-input-native::-webkit-calendar-picker-indicator:hover { opacity: 1; }
 .date-input-native::-webkit-datetime-edit-fields-wrapper { color: inherit; }
+/* --- Модальное окно (общие стили) --- */
+.modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.5); display: flex; align-items: center; justify-content: center; z-index: 9999; backdrop-filter: blur(2px); }
+.modal-content { background: #fff; padding: 24px; border-radius: 10px; width: 500px; max-width: 90%; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); font-family: inherit; }
+.modal-content h3 { margin-top: 0; margin-bottom: 20px; font-size: 20px; color: #1e293b; font-weight: 600; }
+.modal-field { margin-bottom: 20px; }
+.modal-field label { display: block; margin-bottom: 8px; font-weight: 500; color: #475569; font-size: 14px; }
+#export-multi-select { width: 100%; position: relative; }
+#export-multi-select .multi-select-header { width: 100%; box-sizing: border-box; }
+#export-select-body { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; margin-top: 4px; max-height: 250px; overflow-y: auto; z-index: 1000; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+.modal-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 28px; padding-top: 20px; border-top: 1px solid #e2e8f0; }
+.btn-cancel { padding: 8px 16px; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; font-size: 14px; transition: all 0.2s; }
+.btn-cancel:hover { background: #e2e8f0; color: #1e293b; }
+.modal-actions .btn-save { padding: 8px 16px; background: #2563eb; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s; }
+.modal-actions .btn-save:hover { background: #1d4ed8; }
+.modal-actions .btn-save:disabled { background: #94a3b8; cursor: not-allowed; }
+
